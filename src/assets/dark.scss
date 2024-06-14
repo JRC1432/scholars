@@ -1,0 +1,303 @@
+.body--dark {
+  .primary {
+    background-color: rgb(143 206 243) !important;
+  }
+  .surface-tint {
+    background-color: rgb(143 206 243) !important;
+  }
+  .on-primary {
+    background-color: rgb(0 53 73) !important;
+  }
+  .primary-container {
+    background-color: rgb(0 76 104) !important;
+  }
+  .on-primary-container {
+    background-color: rgb(195 232 255) !important;
+  }
+  .secondary {
+    background-color: rgb(181 201 215) !important;
+  }
+  .on-secondary {
+    background-color: rgb(32 51 62) !important;
+  }
+  .secondary-container {
+    background-color: rgb(54 73 85) !important;
+  }
+  .on-secondary-container {
+    background-color: rgb(209 229 244) !important;
+  }
+  .tertiary {
+    background-color: rgb(202 193 234) !important;
+  }
+  .on-tertiary {
+    background-color: rgb(50 44 76) !important;
+  }
+  .tertiary-container {
+    background-color: rgb(72 66 100) !important;
+  }
+  .on-tertiary-container {
+    background-color: rgb(230 222 255) !important;
+  }
+  .error {
+    background-color: rgb(255 180 171) !important;
+  }
+  .on-error {
+    background-color: rgb(105 0 5) !important;
+  }
+  .error-container {
+    background-color: rgb(147 0 10) !important;
+  }
+  .on-error-container {
+    background-color: rgb(255 218 214) !important;
+  }
+  .background {
+    background-color: rgb(15 20 23) !important;
+  }
+  .on-background {
+    background-color: rgb(223 227 231) !important;
+  }
+  .surface {
+    background-color: rgb(15 20 23) !important;
+  }
+  .on-surface {
+    background-color: rgb(223 227 231) !important;
+  }
+  .surface-variant {
+    background-color: rgb(65 72 77) !important;
+  }
+  .on-surface-variant {
+    background-color: rgb(192 199 205) !important;
+  }
+  .outline {
+    background-color: rgb(138 146 151) !important;
+  }
+  .outline-variant {
+    background-color: rgb(65 72 77) !important;
+  }
+  .shadow {
+    background-color: rgb(0 0 0) !important;
+  }
+  .scrim {
+    background-color: rgb(0 0 0) !important;
+  }
+  .inverse-surface {
+    background-color: rgb(223 227 231) !important;
+  }
+  .inverse-on-surface {
+    background-color: rgb(44 49 52) !important;
+  }
+  .inverse-primary {
+    background-color: rgb(27 101 133) !important;
+  }
+  .primary-fixed {
+    background-color: rgb(195 232 255) !important;
+  }
+  .on-primary-fixed {
+    background-color: rgb(0 30 44) !important;
+  }
+  .primary-fixed-dim {
+    background-color: rgb(143 206 243) !important;
+  }
+  .on-primary-fixed-variant {
+    background-color: rgb(0 76 104) !important;
+  }
+  .secondary-fixed {
+    background-color: rgb(209 229 244) !important;
+  }
+  .on-secondary-fixed {
+    background-color: rgb(10 30 40) !important;
+  }
+  .secondary-fixed-dim {
+    background-color: rgb(181 201 215) !important;
+  }
+  .on-secondary-fixed-variant {
+    background-color: rgb(54 73 85) !important;
+  }
+  .tertiary-fixed {
+    background-color: rgb(230 222 255) !important;
+  }
+  .on-tertiary-fixed {
+    background-color: rgb(28 23 54) !important;
+  }
+  .tertiary-fixed-dim {
+    background-color: rgb(202 193 234) !important;
+  }
+  .on-tertiary-fixed-variant {
+    background-color: rgb(72 66 100) !important;
+  }
+  .surface-dim {
+    background-color: rgb(15 20 23) !important;
+  }
+  .surface-bright {
+    background-color: rgb(53 58 61) !important;
+  }
+  .surface-container-lowest {
+    background-color: rgb(10 15 18) !important;
+  }
+  .surface-container-low {
+    background-color: rgb(24 28 31) !important;
+  }
+  .surface-container {
+    background-color: rgb(28 32 35) !important;
+  }
+  .surface-container-high {
+    background-color: rgb(38 43 46) !important;
+  }
+  .surface-container-highest {
+    background-color: rgb(49 53 57) !important;
+  }
+
+  .text-color {
+    color: rgb(255 255 255) !important;
+  }
+
+  // Text Only
+
+  .primary-text {
+    color: rgb(143 206 243) !important;
+  }
+  .surface-tint-text {
+    color: rgb(143 206 243) !important;
+  }
+  .on-primary-text {
+    color: rgb(0 53 73) !important;
+  }
+  .primary-container-text {
+    color: rgb(0 76 104) !important;
+  }
+  .on-primary-container-text {
+    color: rgb(195 232 255) !important;
+  }
+  .secondary-text {
+    color: rgb(181 201 215) !important;
+  }
+  .on-secondary-text {
+    color: rgb(32 51 62) !important;
+  }
+  .secondary-container-text {
+    color: rgb(54 73 85) !important;
+  }
+  .on-secondary-container-text {
+    color: rgb(209 229 244) !important;
+  }
+  .tertiary-text {
+    color: rgb(202 193 234) !important;
+  }
+  .on-tertiary-text {
+    color: rgb(50 44 76) !important;
+  }
+  .tertiary-container-text {
+    color: rgb(72 66 100) !important;
+  }
+  .on-tertiary-container-text {
+    color: rgb(230 222 255) !important;
+  }
+  .error-text {
+    color: rgb(255 180 171) !important;
+  }
+  .on-error-text {
+    color: rgb(105 0 5) !important;
+  }
+  .error-container-text {
+    color: rgb(147 0 10) !important;
+  }
+  .on-error-container-text {
+    color: rgb(255 218 214) !important;
+  }
+  .background-text {
+    color: rgb(15 20 23) !important;
+  }
+  .on-background-text {
+    color: rgb(223 227 231) !important;
+  }
+  .surface-text {
+    color: rgb(15 20 23) !important;
+  }
+  .on-surface-text {
+    color: rgb(223 227 231) !important;
+  }
+  .surface-variant-text {
+    color: rgb(65 72 77) !important;
+  }
+  .on-surface-variant-text {
+    color: rgb(192 199 205) !important;
+  }
+  .outline-text {
+    color: rgb(138 146 151) !important;
+  }
+  .outline-variant-text {
+    color: rgb(65 72 77) !important;
+  }
+  .shadow-text {
+    color: rgb(0 0 0) !important;
+  }
+  .scrim-text {
+    color: rgb(0 0 0) !important;
+  }
+  .inverse-surface-text {
+    color: rgb(223 227 231) !important;
+  }
+  .inverse-on-surface-text {
+    color: rgb(44 49 52) !important;
+  }
+  .inverse-primary-text {
+    color: rgb(27 101 133) !important;
+  }
+  .primary-fixed-text {
+    color: rgb(195 232 255) !important;
+  }
+  .on-primary-fixed-text {
+    color: rgb(0 30 44) !important;
+  }
+  .primary-fixed-dim-text {
+    color: rgb(143 206 243) !important;
+  }
+  .on-primary-fixed-variant-text {
+    color: rgb(0 76 104) !important;
+  }
+  .secondary-fixed-text {
+    color: rgb(209 229 244) !important;
+  }
+  .on-secondary-fixed-text {
+    color: rgb(10 30 40) !important;
+  }
+  .secondary-fixed-dim-text {
+    color: rgb(181 201 215) !important;
+  }
+  .on-secondary-fixed-variant-text {
+    color: rgb(54 73 85) !important;
+  }
+  .tertiary-fixed-text {
+    color: rgb(230 222 255) !important;
+  }
+  .on-tertiary-fixed-text {
+    color: rgb(28 23 54) !important;
+  }
+  .tertiary-fixed-dim-text {
+    color: rgb(202 193 234) !important;
+  }
+  .on-tertiary-fixed-variant-text {
+    color: rgb(72 66 100) !important;
+  }
+  .surface-dim-text {
+    color: rgb(15 20 23) !important;
+  }
+  .surface-bright-text {
+    color: rgb(53 58 61) !important;
+  }
+  .surface-container-lowest-text {
+    color: rgb(10 15 18) !important;
+  }
+  .surface-container-low-text {
+    color: rgb(24 28 31) !important;
+  }
+  .surface-container-text {
+    color: rgb(28 32 35) !important;
+  }
+  .surface-container-high-text {
+    color: rgb(38 43 46) !important;
+  }
+  .surface-container-highest-text {
+    color: rgb(49 53 57) !important;
+  }
+}
