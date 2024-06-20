@@ -39,7 +39,7 @@
           no-wrap
           class="q-ml-xs"
           v-if="$q.screen.gt.xs"
-          to="/scholar"
+          to="/reports"
         >
           <q-avatar size="28px" rounded>
             <img src="http://localhost/scholars/public/seilogopng.png" />

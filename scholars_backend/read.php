@@ -192,29 +192,24 @@ if(isset($_GET['checkUser'])){
 
     // Count Merit
 
-
 if(isset($_GET['merit'])){
 
 
     $data = array();
-    // $frstyr = $_POST["frstYearSelect"];
-    // $scndyr = $_POST["yearselect"];
+    $frstyr = $_POST["frstYearSelect"];
+    $scndyr = $_POST["yearselect"];
     
     
     try
     {
     
-    //     $stnt = $pdo->prepare("SELECT COUNT(sex) AS malecount 
-    // FROM g_scholar_profile 
-    // WHERE sex LIKE '%M%' 
-    // AND EXTRACT(YEAR FROM added_on) BETWEEN ? AND ?");
-    //     $stnt->execute([$frstyr,$scndyr]);
-
-
-        $stnt = $pdo->prepare("SELECT COUNT(program) AS meritcount 
-    FROM scholarship_info 
-    WHERE program LIKE '%MERIT%'");
-        $stnt->execute();
+        $stnt = $pdo->prepare("SELECT COUNT(*) AS meritcount, s.program
+        FROM scholarship_info as s 
+        LEFT OUTER JOIN standing_history AS h ON h.spas_id = s.spas_id
+        WHERE s.yr_awarded BETWEEN ? AND ?
+        AND program = 'MERIT'
+        GROUP BY s.program");
+        $stnt->execute([$frstyr,$scndyr]);
     
     }catch (Exception $ex){
         die("Failed to run query". $ex);
@@ -242,24 +237,21 @@ if(isset($_GET['ra10612'])){
 
 
     $data = array();
-    // $frstyr = $_POST["frstYearSelect"];
-    // $scndyr = $_POST["yearselect"];
+    $frstyr = $_POST["frstYearSelect"];
+    $scndyr = $_POST["yearselect"];
     
     
     try
     {
     
-    //     $stnt = $pdo->prepare("SELECT COUNT(sex) AS malecount 
-    // FROM g_scholar_profile 
-    // WHERE sex LIKE '%M%' 
-    // AND EXTRACT(YEAR FROM added_on) BETWEEN ? AND ?");
-    //     $stnt->execute([$frstyr,$scndyr]);
+     $stnt = $pdo->prepare("SELECT COUNT(*) AS ra10612count, s.program
+    FROM scholarship_info as s 
+    LEFT OUTER JOIN standing_history AS h ON h.spas_id = s.spas_id
+    WHERE s.yr_awarded BETWEEN ? AND ?
+    AND program = 'RA 10612'
+    GROUP BY s.program");
+    $stnt->execute([$frstyr,$scndyr]);
 
-
-        $stnt = $pdo->prepare("SELECT COUNT(program) AS ra10612count 
-    FROM scholarship_info 
-    WHERE program LIKE '%RA 10612%'");
-        $stnt->execute();
     
     }catch (Exception $ex){
         die("Failed to run query". $ex);
@@ -287,24 +279,21 @@ if(isset($_GET['ra7687'])){
 
 
     $data = array();
-    // $frstyr = $_POST["frstYearSelect"];
-    // $scndyr = $_POST["yearselect"];
+    $frstyr = $_POST["frstYearSelect"];
+    $scndyr = $_POST["yearselect"];
     
     
     try
     {
     
-    //     $stnt = $pdo->prepare("SELECT COUNT(sex) AS malecount 
-    // FROM g_scholar_profile 
-    // WHERE sex LIKE '%M%' 
-    // AND EXTRACT(YEAR FROM added_on) BETWEEN ? AND ?");
-    //     $stnt->execute([$frstyr,$scndyr]);
+        $stnt = $pdo->prepare("SELECT COUNT(*) AS ra7687count, s.program
+        FROM scholarship_info as s 
+        LEFT OUTER JOIN standing_history AS h ON h.spas_id = s.spas_id
+        WHERE s.yr_awarded BETWEEN ? AND ?
+        AND program = 'RA 7687'
+        GROUP BY s.program");
+        $stnt->execute([$frstyr,$scndyr]);
 
-
-        $stnt = $pdo->prepare("SELECT COUNT(program) AS ra7687count 
-    FROM scholarship_info 
-    WHERE program LIKE '%RA 7687%'");
-        $stnt->execute();
     
     }catch (Exception $ex){
         die("Failed to run query". $ex);
@@ -973,7 +962,6 @@ if(isset($_GET['years'])){
 
     // Line Data Query
 
-// The data is not accurate due to not scholar status in ROWS in some of data in school_grad_status
 
 
 if(isset($_GET['LineDataScholar'])){
@@ -984,14 +972,15 @@ if(isset($_GET['LineDataScholar'])){
     {
     
         $stnt = $pdo->prepare("SELECT 
-        yr_awarded, 
+        si.yr_awarded, 
         COUNT(*) as scholar 
-    FROM scholarship_info
-    WHERE yr_awarded BETWEEN ? AND ?
+    FROM scholarship_info as si
+	LEFT OUTER JOIN standing_history AS sh ON sh.spas_id = si.spas_id
+    WHERE si.yr_awarded BETWEEN ? AND ?
     GROUP BY 
-        yr_awarded
+        si.yr_awarded
     ORDER BY 
-        yr_awarded");
+        si.yr_awarded");
         $stnt->execute([$frstyr,$scndyr]);
     
     }catch (Exception $ex){
@@ -1025,6 +1014,618 @@ if(isset($_GET['LineDataScholar'])){
     $pdo = null;
     
     }
+
+    // Merit Count Good Standing
+
+    if(isset($_GET['meritCountStanding'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS merit_g_standing
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'MERIT' 
+              AND h.standing = 'GOOD STANDING' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // Merit Count Good LOA
+
+    if(isset($_GET['meritCountLoa'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS merit_loa
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'MERIT' 
+              AND h.standing = 'LOA' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+        // Merit Count No Report
+
+    if(isset($_GET['meritCountNReport'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS merit_nreport
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'MERIT' 
+              AND h.standing = 'NO REPORT' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+        // Merit Count Extension
+
+    if(isset($_GET['meritCountOExtension'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS merit_extension
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'MERIT' 
+              AND h.standing = 'ON EXTENSION' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // Merit Suspended
+
+    if(isset($_GET['meritCountSuspended'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS merit_suspended
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'MERIT' 
+              AND h.standing = 'SUSPENDED' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 10612 Good Standing
+
+    if(isset($_GET['ra1CountGStanding'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra1_g_standing
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 10612' 
+              AND h.standing = 'GOOD STANDING' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+        // RA 10612 LOA
+
+    if(isset($_GET['ra1CountLOA'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra1_loa
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 10612' 
+              AND h.standing = 'LOA' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 10612 No Report
+
+    if(isset($_GET['ra1CountNreport'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra1_nreport
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 10612' 
+              AND h.standing = 'NO REPORT' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+        // RA 10612 On Extension
+
+    if(isset($_GET['ra1CountExtension'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra1_extension
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 10612' 
+              AND h.standing = 'ON EXTENSION' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 10612 Suspended
+
+    if(isset($_GET['ra1CountSuspended'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra1_suspended
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 10612' 
+              AND h.standing = 'SUSPENDED' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 7687 Good Standing
+
+    if(isset($_GET['ra7CountGStanding'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra7_g_standing
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 7687' 
+              AND h.standing = 'GOOD STANDING' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 7687 LOA
+
+    if(isset($_GET['ra7CountLoa'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra7_loa
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 7687' 
+              AND h.standing = 'LOA' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 7687 No Report
+
+    if(isset($_GET['ra7CountNreport'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra7_nreport
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 7687' 
+              AND h.standing = 'NO REPORT' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 7687 On Extension
+
+    if(isset($_GET['ra7CountExtension'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra7_extension
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 7687' 
+              AND h.standing = 'ON EXTENSION' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // RA 7687 Suspended
+
+    if(isset($_GET['ra7CountSuspended'])){
+
+
+        $data = array();
+        $frstyr = $_POST["frstYearSelect"];
+        $scndyr = $_POST["yearselect"];
+        
+        
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT s.program, h.standing, COUNT(*) AS ra7_suspended
+            FROM standing_history AS h
+            LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
+            WHERE s.program = 'RA 7687' 
+              AND h.standing = 'SUSPENDED' 
+              AND s.yr_awarded BETWEEN ? AND ?
+            GROUP BY s.program, h.standing");
+            $stnt->execute([$frstyr,$scndyr]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
 
 
 
