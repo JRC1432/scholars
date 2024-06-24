@@ -369,7 +369,7 @@
 
 <script setup>
 import DashCounter from "../components/DashCounter.vue";
-import { ref, onMounted, reactive, inject, computed } from "vue";
+import { ref, onMounted, reactive, inject, computed, watch } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
@@ -409,7 +409,7 @@ ChartJS.register(
 // Declared Variables
 
 const state = reactive({
-  frstYearSelect: 2016,
+  frstYearSelect: 2023,
   yearselect: 2023,
 });
 
@@ -564,12 +564,15 @@ const populateyears = async () => {
     // Calculate allG_standing.value
     allG_standing.value =
       mgstanding.value + ra1gstanding.value + ra7gstanding.value;
+    // LOA
     all_Loa.value = mloa.value + ra1LOA.value + ra7LOA.value;
     all_Reports.value = mnreport.value + ra1nreport.value + ra7nreport.value;
     all_Extension.value =
       mextension.value + ra1extension.value + ra7extension.value;
     all_Suspended.value =
       msuspended.value + ra1suspended.value + ra7suspended.value;
+
+    console.log(all_Loa.value);
   } catch (error) {
     console.error("Error fetching data:", error);
     // Handle errors here

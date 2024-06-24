@@ -91,6 +91,11 @@ const router = createRouter({
           name: "monitorsheet",
           component: () => import("../views/MonitorSheetView.vue"),
         },
+        {
+          path: "/financial/",
+          name: "financial",
+          component: () => import("../views/FinancialAssistView.vue"),
+        },
       ],
     },
   ],

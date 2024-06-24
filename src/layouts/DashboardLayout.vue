@@ -119,7 +119,7 @@
             icon="account_balance"
           >
             <q-list>
-              <q-item clickable active-class="my-menu-link" to="">
+              <q-item clickable active-class="my-menu-link" to="/financial">
                 <q-item-section avatar>
                   <q-icon name="volunteer_activism" />
                 </q-item-section>

@@ -203,12 +203,11 @@ if(isset($_GET['merit'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT COUNT(*) AS meritcount, s.program
-        FROM scholarship_info as s 
-        LEFT OUTER JOIN standing_history AS h ON h.spas_id = s.spas_id
-        WHERE s.yr_awarded BETWEEN ? AND ?
+        $stnt = $pdo->prepare("SELECT COUNT(*) AS meritcount, program
+        FROM scholarship_info 
+        WHERE yr_awarded BETWEEN ? AND ?
         AND program = 'MERIT'
-        GROUP BY s.program");
+        GROUP BY program");
         $stnt->execute([$frstyr,$scndyr]);
     
     }catch (Exception $ex){
@@ -222,7 +221,10 @@ if(isset($_GET['merit'])){
         $data = $row;
     }
     
-    echo json_encode($data);
+    if(count($data) > 0)
+        echo json_encode($data);
+        else
+        echo json_encode(["meritcount" => 0]);
     
     $stnt = null;
     $pdo = null;
@@ -244,12 +246,11 @@ if(isset($_GET['ra10612'])){
     try
     {
     
-     $stnt = $pdo->prepare("SELECT COUNT(*) AS ra10612count, s.program
-    FROM scholarship_info as s 
-    LEFT OUTER JOIN standing_history AS h ON h.spas_id = s.spas_id
-    WHERE s.yr_awarded BETWEEN ? AND ?
-    AND program = 'RA 10612'
-    GROUP BY s.program");
+     $stnt = $pdo->prepare("SELECT COUNT(*) AS ra10612count, program
+     FROM scholarship_info
+     WHERE yr_awarded BETWEEN ? AND ?
+     AND program = 'RA 10612'
+     GROUP BY program");
     $stnt->execute([$frstyr,$scndyr]);
 
     
@@ -263,8 +264,14 @@ if(isset($_GET['ra10612'])){
     while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
         $data = $row;
     }
+
+
+        if(count($data) > 0)
+        echo json_encode($data);
+        else
+        echo json_encode(["ra10612count" => 0]);
     
-    echo json_encode($data);
+    
     
     $stnt = null;
     $pdo = null;
@@ -286,12 +293,11 @@ if(isset($_GET['ra7687'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT COUNT(*) AS ra7687count, s.program
-        FROM scholarship_info as s 
-        LEFT OUTER JOIN standing_history AS h ON h.spas_id = s.spas_id
-        WHERE s.yr_awarded BETWEEN ? AND ?
+        $stnt = $pdo->prepare("SELECT COUNT(*) AS ra7687count, program
+        FROM scholarship_info
+        WHERE yr_awarded BETWEEN ? AND ?
         AND program = 'RA 7687'
-        GROUP BY s.program");
+        GROUP BY program");
         $stnt->execute([$frstyr,$scndyr]);
 
     
@@ -306,7 +312,10 @@ if(isset($_GET['ra7687'])){
         $data = $row;
     }
     
-    echo json_encode($data);
+    if(count($data) > 0)
+        echo json_encode($data);
+        else
+        echo json_encode(["ra7687count" => 0]);
     
     $stnt = null;
     $pdo = null;
@@ -972,15 +981,14 @@ if(isset($_GET['LineDataScholar'])){
     {
     
         $stnt = $pdo->prepare("SELECT 
-        si.yr_awarded, 
-        COUNT(*) as scholar 
-    FROM scholarship_info as si
-	LEFT OUTER JOIN standing_history AS sh ON sh.spas_id = si.spas_id
-    WHERE si.yr_awarded BETWEEN ? AND ?
-    GROUP BY 
-        si.yr_awarded
-    ORDER BY 
-        si.yr_awarded");
+        yr_awarded, 
+     COUNT(*) as scholar 
+ FROM scholarship_info 
+ WHERE yr_awarded BETWEEN ? AND ?
+ GROUP BY 
+     yr_awarded
+ ORDER BY 
+     yr_awarded");
         $stnt->execute([$frstyr,$scndyr]);
     
     }catch (Exception $ex){
@@ -1032,7 +1040,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'MERIT' 
-              AND h.standing = 'GOOD STANDING' 
+              AND h.standing = 'GOOD STANDING'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1048,7 +1057,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["merit_g_standing" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1073,7 +1085,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'MERIT' 
-              AND h.standing = 'LOA' 
+              AND h.standing = 'LOA'
+              AND h.latest_flag = 'TRUE'
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1089,7 +1102,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["merit_loa" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1113,7 +1129,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'MERIT' 
-              AND h.standing = 'NO REPORT' 
+              AND h.standing = 'NO REPORT'
+			  AND h.latest_flag = 'TRUE'
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1129,7 +1146,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["merit_nreport" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1153,7 +1173,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'MERIT' 
-              AND h.standing = 'ON EXTENSION' 
+              AND h.standing = 'ON EXTENSION'
+			  AND h.latest_flag = 'TRUE'
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1169,7 +1190,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["merit_extension" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1194,7 +1218,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'MERIT' 
-              AND h.standing = 'SUSPENDED' 
+              AND h.standing = 'SUSPENDED'
+			  AND h.latest_flag = 'TRUE'
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1210,7 +1235,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["merit_suspended" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1235,7 +1263,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 10612' 
-              AND h.standing = 'GOOD STANDING' 
+              AND h.standing = 'GOOD STANDING'
+			  AND h.latest_flag = 'TRUE'
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1251,7 +1280,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra1_g_standing" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1275,7 +1307,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 10612' 
-              AND h.standing = 'LOA' 
+              AND h.standing = 'LOA'
+			  AND h.latest_flag = 'TRUE'
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1291,7 +1324,13 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+
+        // Use this code if the return is no value
+
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra1_loa" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1316,7 +1355,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 10612' 
-              AND h.standing = 'NO REPORT' 
+              AND h.standing = 'NO REPORT'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1332,7 +1372,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra1_nreport" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1356,7 +1399,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 10612' 
-              AND h.standing = 'ON EXTENSION' 
+              AND h.standing = 'ON EXTENSION'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1372,7 +1416,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra1_extension" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1397,7 +1444,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 10612' 
-              AND h.standing = 'SUSPENDED' 
+              AND h.standing = 'SUSPENDED'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1413,7 +1461,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra1_suspended" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1438,7 +1489,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 7687' 
-              AND h.standing = 'GOOD STANDING' 
+              AND h.standing = 'GOOD STANDING'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1454,7 +1506,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra7_g_standing" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1479,7 +1534,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 7687' 
-              AND h.standing = 'LOA' 
+              AND h.standing = 'LOA'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1495,7 +1551,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra7_loa" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1520,7 +1579,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 7687' 
-              AND h.standing = 'NO REPORT' 
+              AND h.standing = 'NO REPORT'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1536,7 +1596,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra7_nreport" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1561,7 +1624,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 7687' 
-              AND h.standing = 'ON EXTENSION' 
+              AND h.standing = 'ON EXTENSION'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1577,7 +1641,10 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
         echo json_encode($data);
+        else
+        echo json_encode(["ra7_extension" => 0]);
         
         $stnt = null;
         $pdo = null;
@@ -1602,7 +1669,8 @@ if(isset($_GET['LineDataScholar'])){
             FROM standing_history AS h
             LEFT OUTER JOIN scholarship_info AS s ON s.spas_id = h.spas_id
             WHERE s.program = 'RA 7687' 
-              AND h.standing = 'SUSPENDED' 
+              AND h.standing = 'SUSPENDED'
+              AND h.latest_flag = 'TRUE' 
               AND s.yr_awarded BETWEEN ? AND ?
             GROUP BY s.program, h.standing");
             $stnt->execute([$frstyr,$scndyr]);
@@ -1618,12 +1686,134 @@ if(isset($_GET['LineDataScholar'])){
             $data = $row;
         }
         
+        if(count($data) > 0)
+        echo json_encode($data);
+        else
+        echo json_encode(["ra7_suspended" => 0]);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // Read Scholars Eligible for Financial Assistance
+
+if(isset($_GET['readEligible'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT sr.full_name, si.spas_id, si.yr_awarded, sh.standing, sh.sy, sh.term, sh.term_type,
+        sh.term_id
+        FROM scholars_record as sr
+        
+        INNER JOIN scholarship_info AS si ON sr.spas_id = si.primary_spas_id
+        INNER JOIN standing_history AS sh ON si.spas_id = sh.spas_id
+        
+        WHERE sh.latest_flag = 'TRUE'
+        AND sh.start_end = 1
+         AND (
+                (sh.standing = 'GOOD STANDING')
+                OR
+                (sh.standing = 'SUSPENDED')
+            )
+        ORDER BY sr.full_name
+        ");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+      // Export CSV
+
+
+    if(isset($_GET['exportCSV'])){
+        $data = array();
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT
+            scholars_record.spas_id, 
+            scholars_record.full_name,
+            scholarship_info.program,
+            scholarship_info.sub_program,
+            colleges.name,
+            colleges.region,
+            courses.name,
+            courses.discipline,
+            progress_status_history.progress_status,
+            standing_history.standing, 
+            standing_history.sy,
+            CASE
+            WHEN standing_history.term = 1 THEN '1st Term'
+            WHEN standing_history.term = 2 THEN '2nd Term'
+            WHEN standing_history.term = 3 THEN 'Summer'
+            ELSE 'Mid Year'
+            END AS Term,
+            CASE
+            WHEN standing_history.start_end = 1 THEN 'Start'
+            ELSE 'End'
+            End AS Start_End,
+            standing_history.updated_at
+        FROM
+            scholars_record
+        JOIN
+            scholarship_info ON scholars_record.spas_id = scholarship_info.primary_spas_id
+        JOIN
+            standing_history ON (
+                (standing_history.spas_id = scholarship_info.spas_id AND standing_history.standing = 'GOOD STANDING' AND standing_history.latest_flag = 'TRUE' AND standing_history.start_end = 1)
+                OR
+                (standing_history.spas_id = scholarship_info.spas_id AND standing_history.standing = 'SUSPENDED' AND standing_history.latest_flag = 'TRUE' AND standing_history.start_end = 1)
+            )
+        JOIN
+            progress_status_history ON
+                standing_history.term_id = progress_status_history.term_id AND
+                standing_history.start_end = progress_status_history.start_end
+        LEFT JOIN
+            course_record ON course_record.spas_id = scholarship_info.spas_id AND course_record.latest_flag = 1
+        LEFT JOIN
+            courses ON course_record.course_code = CAST(courses.id AS VARCHAR)
+        LEFT JOIN
+            colleges ON CAST(course_record.school_code AS INTEGER) = colleges.id
+            
+            ORDER BY scholars_record.full_name
+        ");
+            $stnt->execute();
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data[] = $row;
+        }
+        
         echo json_encode($data);
         
         $stnt = null;
         $pdo = null;
         
         }
+
 
 
 
