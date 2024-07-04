@@ -409,7 +409,7 @@ ChartJS.register(
 // Declared Variables
 
 const state = reactive({
-  frstYearSelect: 2023,
+  frstYearSelect: 2016,
   yearselect: 2023,
 });
 

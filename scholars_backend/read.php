@@ -63,13 +63,11 @@ if(isset($_GET['readuser'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT 
-       *
-    FROM 
-        users 
-    WHERE 
-        status = 'active' 
-    ORDER BY 
+        $stnt = $pdo->prepare("SELECT *
+        FROM staff_record as s
+        LEFT OUTER JOIN users AS u ON s.user_id = u.id
+        WHERE u.status = 'active' 
+        ORDER BY 
         id DESC;
     ");
         $stnt->execute();

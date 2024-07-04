@@ -2,8 +2,8 @@
   <div class="q-pa-md">
     <q-card flat bordered class="my-card rounded-borders-40">
       <q-card-section>
-        <div class="text-h6 text-primary">Users Control Panel</div>
-        <div class="text-subtitle2 text-primary">Users Profile Details</div>
+        <div class="text-h6 text-primary">Staff Records</div>
+        <div class="text-subtitle2 text-primary">Staff Profile Details</div>
       </q-card-section>
       <q-card-section>
         <UserTbl />
