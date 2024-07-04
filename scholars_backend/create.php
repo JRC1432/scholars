@@ -159,29 +159,54 @@ if(!$b) {       //edited for accuracy
     
     $password_sha1 = sha1($emapData[2]);
 
-    $stnt = $pdo->prepare("INSERT INTO users(internal_id,username,password,account_type,region,school_code,date_added) VALUES (?,?,?,?,?,?,?)");
+    $pdo->beginTransaction();
+    $stnt = $pdo->prepare("INSERT INTO users(internal_id,username,password,account_type,region,school_code,date_added) VALUES (?,?,?,?,?,?,?) RETURNING ID");
+    $stntp = $pdo->prepare("INSERT INTO staff_record(staff_id,user_id,first_name,middle_name,last_name,suffix_name,sex,dob,pob,work_region,school_code,street,village,barangay,municipality,province,region,district,zipcode,email,contact_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $params = array($emapData[0],$emapData[1],$password_sha1,$emapData[3],$emapData[4],$emapData[5],$dates);
+
+
+
     $stnt -> execute($params);
 
 
     if($stnt){
-    $result[] =  true;
+    $errors[] =  true;
     } else{
 
-    $result[] = false;
+    $errors[] = false;
     }
 
-    if(in_array(false, $result)){
-     $status = "false";
-    
+    $sid = "";
+    try{
+
+        $result = $stnt->fetch();
+        $sid = $result["id"];
+    }catch(Exception $e){
+        echo $e;
+    }
+
+
+    $sparams = array($emapData[6],$sid,$emapData[7],$emapData[8],$emapData[9],$emapData[10],$emapData[11],$emapData[12],$emapData[13],
+    $emapData[14],$emapData[15],$emapData[16],$emapData[17],$emapData[18],$emapData[19],$emapData[20],$emapData[21],$emapData[22],$emapData[23],$emapData[24],$emapData[25]);
+    $stntp -> execute($sparams);
+    if($stntp){
+        $errors[] =  true;
     } else{
-    $status = "true";
 
+        $errors[] = false;
     }
-    // echo json_encode($result);
-    
-    }
-    echo $status;
+
+
+    if(in_array(false, $errors)){
+        $status = "false";
+        $pdo->rollback();
+       } else{
+       $status = "true";
+       $pdo->commit();
+       }
+       
+       }
+   echo $status;
 
 
 

@@ -50,21 +50,24 @@
         </q-btn>
         <q-list padding>
           <!-- Users Item -->
-          <q-item
-            clickable
-            v-ripple
-            tag="a"
-            to="/user"
-            class="rounded-borders q-my-xs"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <IconUsersGroup :size="30" stroke-width="2" />
-            </q-item-section>
+          <q-expansion-item label="User Management" icon="groups">
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="/user">
+                <q-item-section avatar>
+                  <IconUsers :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Staff Records</q-item-section>
+              </q-item>
+              <q-item clickable active-class="my-menu-link" to="/scholarrec">
+                <q-item-section avatar>
+                  <IconUserStar :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Scholar Records</q-item-section>
+              </q-item>
+            </q-list>
+          </q-expansion-item>
 
-            <q-item-section> User Management </q-item-section>
-          </q-item>
-
+          <!-- Scholars -->
           <q-item
             clickable
             v-ripple
@@ -158,6 +161,8 @@ import {
   IconFiles,
   IconReport,
   IconCertificate,
+  IconUsers,
+  IconUserStar,
 } from "@tabler/icons-vue";
 
 import router from "../router";
