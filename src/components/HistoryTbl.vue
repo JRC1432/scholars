@@ -109,46 +109,77 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="text-subtitle1 primary-text">
-            School Year:
-            <text class="on-surface-text text-bold">{{ sy }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Term:
-            <text class="on-surface-text text-bold">{{ term }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            School:
-            <text class="on-surface-text text-bold">{{ school }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Course:
-            <text class="on-surface-text text-bold">{{ course }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created By:
-            <text class="on-surface-text text-bold">{{ create }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated By:
-            <text class="on-surface-text text-bold">{{ update }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Verified By:
-            <text class="on-surface-text text-bold">{{ verified }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created At:
-            <text class="on-surface-text text-bold">{{ created_at }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated At:
-            <text class="on-surface-text text-bold">{{ updated_at }}</text>
-          </div>
+          <q-markup-table separator="cell" flat bordered>
+            <tbody>
+              <tr>
+                <td class="primary-text text-bold">School Year:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ sy }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Term:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ term }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">School:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ school }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Course:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ course }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ create }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ update }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Verified By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ verified }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    created_at
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    updated_at
+                  }}</text>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
         </q-card-section>
       </q-card>
 
-      <q-card class="my-q-card rounded-borders-20" flat bordered v-if="pstart">
+      <q-card
+        class="my-q-card rounded-borders-20"
+        flat
+        bordered
+        v-else-if="pstart"
+      >
         <q-card-section
           ><q-toolbar>
             <IconProgress :size="30" stroke-width="2" />
@@ -160,49 +191,82 @@
           </q-toolbar>
         </q-card-section>
 
-        <q-card-section
-          ><div class="text-subtitle1 primary-text">
-            School Year:
-            <text class="on-surface-text text-bold">{{ pstartSy }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Term:
-            <text class="on-surface-text text-bold">{{ pstartTerm }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Start/End:
-            <span v-if="pstartSE === 1" class="on-surface-text text-bold"
-              >START</span
-            >
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Progress Status:
-            <text class="on-surface-text text-bold">{{ pstartProgress }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created By:
-            <text class="on-surface-text text-bold">{{ pstartCreate }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated By:
-            <text class="on-surface-text text-bold">{{ pstartUpdate }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Verified By:
-            <text class="on-surface-text text-bold">{{ pstartVerified }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created At:
-            <text class="on-surface-text text-bold">{{
-              pstartCreated_at
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated At:
-            <text class="on-surface-text text-bold">{{
-              pstartUpdated_at
-            }}</text>
-          </div>
+        <q-card-section>
+          <q-markup-table separator="cell" flat bordered>
+            <tbody>
+              <tr>
+                <td class="primary-text text-bold">School Year:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ pstartSy }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Term:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartTerm
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Start/End:</td>
+                <td v-if="pstartSE === 1">
+                  <text class="on-surface-text text-bold">START</text>
+                </td>
+                <td v-else>
+                  <text class="on-surface-text text-bold">END</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Progress Status:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartProgress
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartCreate
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartUpdate
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Verified By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartVerified
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartCreated_at
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pstartUpdated_at
+                  }}</text>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
         </q-card-section>
       </q-card>
 
@@ -210,7 +274,7 @@
         class="my-q-card rounded-borders-20"
         flat
         bordered
-        v-if="standstart"
+        v-else-if="standstart"
       >
         <q-card-section
           ><q-toolbar>
@@ -224,61 +288,99 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="text-subtitle1 primary-text">
-            School Year:
-            <text class="on-surface-text text-bold">{{ startTermsy }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Term:
-            <text class="on-surface-text text-bold">{{ startTermterm }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Start/End:
-            <span v-if="startTermStrEnd === 1" class="on-surface-text text-bold"
-              >START</span
-            >
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Standing:
-            <text class="on-surface-text text-bold">{{ startTermStand }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Monitoring Status:
-            <text class="on-surface-text text-bold">{{
-              startTermMonitor
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created By:
-            <text class="on-surface-text text-bold">{{
-              startTermCreated
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated By:
-            <text class="on-surface-text text-bold">{{ startTermUpdate }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Verified By:
-            <text class="on-surface-text text-bold">{{
-              startTermVerified_by
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created At:
-            <text class="on-surface-text text-bold">{{
-              startTermCreated_at
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated At:
-            <text class="on-surface-text text-bold">{{
-              startTermUpdated_at
-            }}</text>
-          </div>
+          <q-markup-table separator="cell" flat bordered>
+            <tbody>
+              <tr>
+                <td class="primary-text text-bold">School Year:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermsy
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Term:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermterm
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Start/End:</td>
+                <td v-if="startTermStrEnd === 1">
+                  <text class="on-surface-text text-bold">START</text>
+                </td>
+                <td v-else>
+                  <text class="on-surface-text text-bold">END</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Standing:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermStand
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Monitoring Status:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermMonitor
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermCreated
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermUpdate
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Verified By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermVerified_by
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermCreated_at
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    startTermUpdated_at
+                  }}</text>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
         </q-card-section>
       </q-card>
-      <q-card class="my-q-card rounded-borders-20" flat bordered v-if="pend">
+      <q-card
+        class="my-q-card rounded-borders-20"
+        flat
+        bordered
+        v-else-if="pend"
+      >
         <q-card-section
           ><q-toolbar>
             <IconProgress :size="30" stroke-width="2" />
@@ -291,44 +393,79 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="text-subtitle1 primary-text">
-            School Year:
-            <text class="on-surface-text text-bold">{{ pendSy }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Term:
-            <text class="on-surface-text text-bold">{{ pendTerm }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Start/End:
-            <span v-if="pendSE === 2" class="on-surface-text text-bold"
-              >END</span
-            >
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Progress Status:
-            <text class="on-surface-text text-bold">{{ pendProgress }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created By:
-            <text class="on-surface-text text-bold">{{ pendCreate }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated By:
-            <text class="on-surface-text text-bold">{{ pendUpdate }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Verified By:
-            <text class="on-surface-text text-bold">{{ pendVerified }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created At:
-            <text class="on-surface-text text-bold">{{ pendCreated_at }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated At:
-            <text class="on-surface-text text-bold">{{ pendUpdated_at }}</text>
-          </div>
+          <q-markup-table separator="cell" flat bordered>
+            <tbody>
+              <tr>
+                <td class="primary-text text-bold">School Year:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ pendSy }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Term:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ pendTerm }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Start/End:</td>
+                <td v-if="pendSE === 2">
+                  <text class="on-surface-text text-bold">END</text>
+                </td>
+                <td v-else>
+                  <text class="on-surface-text text-bold">START</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Progress Status:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pendProgress
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pendCreate
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pendUpdate
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Verified By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pendVerified
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pendCreated_at
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    pendUpdated_at
+                  }}</text>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
         </q-card-section>
       </q-card>
 
@@ -336,7 +473,7 @@
         class="my-q-card rounded-borders-20"
         flat
         bordered
-        v-if="standend"
+        v-else-if="standend"
       >
         <q-card-section
           ><q-toolbar>
@@ -350,55 +487,98 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="text-subtitle1 primary-text">
-            School Year:
-            <text class="on-surface-text text-bold">{{ endTermsy }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Term:
-            <text class="on-surface-text text-bold">{{ endTermterm }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Start/End:
-            <span v-if="endTermStrEnd === 2" class="on-surface-text text-bold"
-              >END</span
-            >
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Standing:
-            <text class="on-surface-text text-bold">{{ endTermStand }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Monitoring Status:
-            <text class="on-surface-text text-bold">{{ endTermMonitor }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created By:
-            <text class="on-surface-text text-bold">{{ endTermCreated }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated By:
-            <text class="on-surface-text text-bold">{{ endTermUpdate }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Verified By:
-            <text class="on-surface-text text-bold">{{
-              endTermVerified_by
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Created At:
-            <text class="on-surface-text text-bold">{{
-              endTermCreated_at
-            }}</text>
-          </div>
-          <div class="text-subtitle1 primary-text">
-            Updated At:
-            <text class="on-surface-text text-bold">{{
-              endTermUpdated_at
-            }}</text>
-          </div>
+          <q-markup-table separator="cell" flat bordered>
+            <tbody>
+              <tr>
+                <td class="primary-text text-bold">School Year:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{ endTermsy }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Term:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermterm
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Start/End:</td>
+                <td v-if="endTermStrEnd === 2">
+                  <text class="on-surface-text text-bold">END</text>
+                </td>
+                <td v-else>
+                  <text class="on-surface-text text-bold">START</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Standing:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermStand
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Monitoring Status:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermMonitor
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermCreated
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermUpdate
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Verified By:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermVerified_by
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Created At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermCreated_at
+                  }}</text>
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Updated At:</td>
+                <td>
+                  <text class="on-surface-text text-bold">{{
+                    endTermUpdated_at
+                  }}</text>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
         </q-card-section>
+      </q-card>
+      <q-card class="my-q-card rounded-borders-20" flat bordered v-else>
+        <Vue3Lottie
+          animationLink="https://lottie.host/3a3a54dc-d976-46fd-9610-70caf9191c05/QMrukbOnfT.json"
+          style="height: calc(30vh)"
+          :height="500"
+          :width="500"
+        />
       </q-card>
     </div>
   </div>

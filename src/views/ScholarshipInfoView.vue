@@ -93,66 +93,94 @@
         <div class="q-mb-sm text-h5 primary-text text-bold">
           Contract Details
         </div>
-        <div class="text-subtitle1 primary-text">
-          Contract Status:
-          <text class="on-surface-text text-bold">{{ contractStats }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Availed Award:
-          <text class="on-surface-text text-bold">{{ avail }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Other Scholarship:
-          <text class="on-surface-text text-bold">{{ otherScholarship }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Duration:
-          <text class="on-surface-text text-bold">{{ duration }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          ETG Month:
-          <text class="on-surface-text text-bold">{{ etgMonth }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          ETG:
-          <text class="on-surface-text text-bold">{{ etg }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Scholar Deferred Before:
-          <text class="on-surface-text">{{}}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          School:
-          <text class="on-surface-text text-bold">{{ school }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Course:
-          <text class="on-surface-text text-bold">{{ course }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          School Year Availed:
-          <text class="on-surface-text text-bold">{{ scYearAvail }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Term Type Availed:
-          <text class="on-surface-text text-bold">{{ termType }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Term Availed:
-          <text class="on-surface-text">{{}}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Created By:
-          <text class="on-surface-text text-bold">{{ created }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Updated By:
-          <text class="on-surface-text text-bold">{{ update }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text">
-          Verified By:
-          <text class="on-surface-text text-bold">{{ verified }}</text>
-        </div>
+
+        <q-markup-table separator="cell" flat bordered>
+          <tbody>
+            <tr>
+              <td class="primary-text text-bold">Contract Status</td>
+              <td class="on-surface-text text-bold">
+                {{ contractStats }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Availed Award:</td>
+              <td class="on-surface-text text-bold">
+                {{ avail }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Other Scholarship:</td>
+              <td class="on-surface-text text-bold">
+                {{ otherScholarship }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Duration:</td>
+              <td class="on-surface-text text-bold">
+                {{ duration }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">ETG Month:</td>
+              <td class="on-surface-text text-bold">
+                {{ etgMonth }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">ETG:</td>
+              <td class="on-surface-text text-bold">
+                {{ etg }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Scholar Deferred Before:</td>
+              <td class="on-surface-text text-bold" v-if="scdefbef === 1">
+                YES
+              </td>
+              <td class="on-surface-text text-bold" v-else>NO</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">School:</td>
+              <td class="on-surface-text text-bold">
+                {{ school }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Course:</td>
+              <td class="on-surface-text text-bold">
+                {{ course }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">School Year Availed:</td>
+              <td class="on-surface-text text-bold">
+                {{ scYearAvail }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Term Type Availed:</td>
+              <td class="on-surface-text text-bold">
+                {{ termType }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Term Availed:</td>
+              <td class="on-surface-text text-bold">{{}}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Created By:</td>
+              <td class="on-surface-text text-bold">{{ created }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Updated By:</td>
+              <td class="on-surface-text text-bold">{{ update }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Verified By:</td>
+              <td class="on-surface-text text-bold">{{ verified }}</td>
+            </tr>
+          </tbody>
+        </q-markup-table>
       </q-card-section>
 
       <q-separator />
@@ -307,6 +335,7 @@ const readscholarinfo = () => {
     etg.value = response.data.etg;
     school.value = response.data.schools;
     course.value = response.data.course;
+    scdefbef.value = response.data.deferment_status;
     scYearAvail.value = response.data.sy;
     termType.value = response.data.term_type;
     created.value = response.data.created_by;

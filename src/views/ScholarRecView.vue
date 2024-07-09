@@ -5,10 +5,10 @@
         <div class="text-h6 text-primary">Scholar Records</div>
         <div class="text-subtitle2 text-primary">Scholar Profile Details</div>
       </q-card-section>
-      <q-card-section> </q-card-section>
+      <q-card-section> <ScholarsRecTbl /> </q-card-section>
     </q-card>
   </div>
 </template>
 <script setup>
-import UserTbl from "../components/UserTbl.vue";
+import ScholarsRecTbl from "../components/ScholarsRecTbl.vue";
 </script>

@@ -27,7 +27,7 @@
                   style="max-width: 200px"
                 />
               </div>
-              <div class="col-xs-12 col-sm-3 col-md-3">
+              <div class="col-xs-12 col-sm-3 col-md-6">
                 <span class="text-bold primary-text">First Name:</span>
                 <q-input
                   ref="reffname"
@@ -38,7 +38,7 @@
                   name="fname"
                 />
               </div>
-              <div class="col-xs-12 col-sm-3 col-md-3">
+              <div class="col-xs-12 col-sm-3 col-md-6">
                 <span class="text-bold primary-text">Middle Name:</span>
                 <q-input
                   ref="refmname"
@@ -49,7 +49,7 @@
                   name="mname"
                 />
               </div>
-              <div class="col-xs-12 col-sm-3 col-md-3">
+              <div class="col-xs-12 col-sm-3 col-md-6">
                 <span class="text-bold primary-text">Last Name:</span>
                 <q-input
                   ref="reflname"
@@ -60,7 +60,7 @@
                   name="lname"
                 />
               </div>
-              <div class="col-xs-12 col-sm-3 col-md-3">
+              <div class="col-xs-12 col-sm-3 col-md-6">
                 <span class="text-bold primary-text">Suffix Name:</span>
                 <q-input
                   ref="refsname"
@@ -71,7 +71,7 @@
                   name="sname"
                 />
               </div>
-              <div class="col-xs-12 col-sm-4 col-md-4">
+              <div class="col-xs-12 col-sm-4 col-md-6">
                 <span class="text-bold primary-text">Sex:</span>
                 <q-input
                   ref="refsex"
@@ -82,7 +82,7 @@
                   name="sex"
                 />
               </div>
-              <div class="col-xs-12 col-sm-4 col-md-4">
+              <div class="col-xs-12 col-sm-4 col-md-6">
                 <span class="text-bold primary-text">Birthday:</span>
                 <q-input
                   ref="refbirthday"
@@ -93,7 +93,7 @@
                   name="birthday"
                 />
               </div>
-              <div class="col-xs-12 col-sm-4 col-md-4">
+              <div class="col-xs-12 col-sm-4 col-md-6">
                 <span class="text-bold primary-text">Place of Birth:</span>
                 <q-input
                   ref="refbirth"
@@ -126,7 +126,7 @@
                   name="contact"
                 />
               </div>
-              <div class="col-xs-12 col-sm-12 col-md-12">
+              <div class="col-xs-12 col-sm-12 col-md-6">
                 <span class="text-bold primary-text">Tribe:</span>
                 <q-input
                   ref="reftribe"
@@ -144,7 +144,7 @@
                 </div>
               </div>
 
-              <div class="col-xs-12 col-sm-6 col-md-12">
+              <div class="col-xs-12 col-sm-6 col-md-3">
                 <span class="text-bold primary-text">Street:</span>
                 <q-input
                   ref="refstreet"
@@ -199,7 +199,7 @@
                   name="province"
                 />
               </div>
-              <div class="col-xs-12 col-sm-6 col-md-4">
+              <div class="col-xs-12 col-sm-6 col-md-3">
                 <span class="text-bold primary-text">Region:</span>
                 <q-input
                   ref="refregion"
@@ -210,7 +210,7 @@
                   name="region"
                 />
               </div>
-              <div class="col-xs-12 col-sm-6 col-md-4">
+              <div class="col-xs-12 col-sm-6 col-md-3">
                 <span class="text-bold primary-text">District:</span>
                 <q-input
                   ref="refdistrict"
@@ -221,7 +221,7 @@
                   name="district"
                 />
               </div>
-              <div class="col-xs-12 col-sm-6 col-md-4">
+              <div class="col-xs-12 col-sm-6 col-md-3">
                 <span class="text-bold primary-text">Zip Code:</span>
                 <q-input
                   ref="refzip"

@@ -6,12 +6,14 @@
         <IconTool :size="30" stroke-width="2" />
         Monitoring Sheet
       </div>
-      <q-separator class="q-mt-md q-mb-xs" inset />
     </q-card>
+    <EditGrades />
   </div>
 </template>
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
+import EditGrades from "../components/EditGrades.vue";
+
 import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";

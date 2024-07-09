@@ -391,7 +391,7 @@ if(isset($_GET['readScholarInfoID'])){
     {
     
         $stnt = $pdo->prepare("SELECT s.spas_id, s.yr_awarded, s.program, s.sub_program, s.category, c.duration, s.remarks,
-        c.contract_status, s.sy_insured, s.batch_insured
+        c.contract_status, s.sy_insured, s.batch_insured, c.deferment_status
         FROM scholarship_info AS s
         LEFT OUTER JOIN contract_status_details AS c ON s.spas_id = c.spas_id
         WHERE s.spas_id = ?");
@@ -429,17 +429,17 @@ if(isset($_GET['readSCID'])){
         c.contract_status, c.avail_award, c.other_schp, c.duration,
         c.etg, c.etg_month, c.created_by, c.updated_by, c.verified_by, 
         t.term_type, t.sy, c.term_id, t.term_id, 
-        p.name as course, s.name as schools
+        p.name as course, s.name as schools, c.deferment_status
     FROM 
         contract_status_details AS c
     LEFT OUTER JOIN 
         term_record AS t ON t.term_id = c.term_id
     LEFT OUTER JOIN 
-        course_record AS r ON r.spas_id = c.spas_id
+        course_record AS r ON  c.spas_id = r.spas_id
     LEFT OUTER JOIN 
-        courses AS p ON p.id::text = r.course_code 
+        courses AS p ON r.course_code = p.id::text
     LEFT OUTER JOIN 
-        colleges AS s ON s.id::text = r.school_code WHERE c.spas_id = ?");
+        colleges AS s ON r.school_code = s.id::text  WHERE c.spas_id = ?");
         $params = array($id);
         $stnt->execute($params);
     
@@ -1811,6 +1811,116 @@ if(isset($_GET['readEligible'])){
         $pdo = null;
         
         }
+
+
+        // Read Scholars Records on Dashboard
+
+if(isset($_GET['readScholarRec'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT s.spas_id, s.user_id, s.first_name, s.middle_name, s.last_name,
+		s.suffix_name, s.full_name, s.sex, s.dob, s.pob, s.tribe,
+		s.street, s.village, s.barangay, s.municipality, s.province,
+		s.region, s.district, s.zipcode, s.diff_curr_add, s.email,
+		s.contact_no, s.school_region, s.school_code, u.id, u.username,
+		u.internal_id, u.account_type
+        FROM scholars_record as s
+        LEFT OUTER JOIN users AS u ON s.user_id = u.id
+        WHERE u.status = 'active' 
+        ORDER BY 
+        id DESC;
+    ");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+    // Read Stat2
+
+if(isset($_GET['readstat2'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM lu_monitoring_status ORDER BY code");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['code'],
+    
+                "value" => $row['code']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+    // Read Stat1
+
+if(isset($_GET['readstat1'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM lu_progress_status ORDER BY name");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['name'],
+    
+                "value" => $row['name']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
 
 
 
