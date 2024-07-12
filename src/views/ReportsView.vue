@@ -299,6 +299,7 @@
   </div>
 
   <q-page-sticky position="bottom-right" :offset="[18, 18]">
+    <q-tooltip class="primary">Year Adjustment</q-tooltip>
     <q-fab
       icon="calendar_month"
       direction="up"

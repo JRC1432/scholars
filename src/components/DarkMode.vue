@@ -3,6 +3,7 @@
     <q-btn flat round @click="changetheme">
       <IconMoonStars :size="30" stroke-width="2" v-if="isMoonStars" />
       <IconBrightness2 v-else :size="30" stroke-width="2" />
+      <q-tooltip>Light/Dark Modes</q-tooltip>
     </q-btn>
   </div>
 </template>

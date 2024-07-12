@@ -7,11 +7,12 @@
         Monitoring Sheet
       </div>
     </q-card>
-    <!-- Show Something here -->
+    <EditGrades />
   </div>
 </template>
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
+import EditGrades from "../components/EditGrades.vue";
 
 import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";

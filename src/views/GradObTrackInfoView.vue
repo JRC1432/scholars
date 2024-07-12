@@ -3,70 +3,84 @@
   <div class="q-pa-lg">
     <q-card flat class="my-card surface-container rounded-borders-20">
       <div class="q-pa-md text-center text-bold primary-text text-h4">
-        Scholarship Informations
+        Graduate Obligation & Tracking Informations
       </div>
       <q-separator class="q-mt-md q-mb-xs" inset />
 
-      <div class="q-pa-md">
-        <div class="text-subtitle1 primary-text text-bold">
-          Service Obligation Status:
-          <text class="on-surface-text">{{ servObStats }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Service Obligation Years:
-          <text class="on-surface-text">{{ servObYrs }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Mode of Clearance:
-          <text class="on-surface-text">{{ modClear }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Year Cleared:
-          <text class="on-surface-text">{{ yrClear }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Clearance Date:
-          <text class="on-surface-text">{{ clearDate }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Refunded Amount:
-          <text class="on-surface-text">{{ refAmount }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Remarks:
-          <text class="on-surface-text">{{ remarks }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          TOR Submitted:
-          <text class="on-surface-text">{{ torSub }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Date TOR Submitted:
-          <text class="on-surface-text">{{ dateTor }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Diploma Submitted:
-          <text class="on-surface-text">{{ dipSub }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Date Diploma Submitted:
-          <text class="on-surface-text">{{ dateDipSub }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Certificate of Graduation Submitted:
-          <text class="on-surface-text">{{ certGradSub }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Date Certificate of Graduation Submitted:
-          <text class="on-surface-text">{{ dateCertGrad }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Academic Award:
-          <text class="on-surface-text">{{ acadAward }}</text>
-        </div>
-        <div class="text-subtitle1 primary-text text-bold">
-          Board Passer:
-          <text class="on-surface-text">{{ boardPass }}</text>
+      <div style="display: flex; justify-content: center">
+        <div class="q-pa-xl" style="width: fit-content">
+          <q-markup-table separator="cell" flat bordered>
+            <tbody>
+              <tr>
+                <td class="primary-text text-bold">
+                  Service Obligation Status:
+                </td>
+                <td class="on-surface-text text-bold">{{ servObStats }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">
+                  Service Obligation Years:
+                </td>
+                <td class="on-surface-text text-bold">{{ servObYrs }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Mode of Clearance:</td>
+                <td class="on-surface-text text-bold">{{ modClear }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Year Cleared:</td>
+                <td class="on-surface-text text-bold">{{ yrClear }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Clearance Date:</td>
+                <td class="on-surface-text text-bold">{{ clearDate }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Refunded Amount:</td>
+                <td class="on-surface-text text-bold">{{ refAmount }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Remarks:</td>
+                <td class="on-surface-text text-bold">{{ remarks }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">TOR Submitted:</td>
+                <td class="on-surface-text text-bold">{{ torSub }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Date TOR Submitted:</td>
+                <td class="on-surface-text text-bold">{{ dateTor }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Diploma Submitted::</td>
+                <td class="on-surface-text text-bold">{{ dipSub }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Date Diploma Submitted</td>
+                <td class="on-surface-text text-bold">{{ dateDipSub }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">
+                  Certificate of Graduation Submitted:
+                </td>
+                <td class="on-surface-text text-bold">{{ certGradSub }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">
+                  Date Certificate of Graduation Submitted:
+                </td>
+                <td class="on-surface-text text-bold">{{ dateCertGrad }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Academic Award:</td>
+                <td class="on-surface-text text-bold">{{ acadAward }}</td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Board Passer:</td>
+                <td class="on-surface-text text-bold">{{ boardPass }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
         </div>
       </div>
     </q-card>

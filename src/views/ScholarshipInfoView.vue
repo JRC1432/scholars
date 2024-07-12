@@ -165,7 +165,7 @@
             </tr>
             <tr>
               <td class="primary-text text-bold">Term Availed:</td>
-              <td class="on-surface-text text-bold">{{}}</td>
+              <td class="on-surface-text text-bold">{{ termAvail }}</td>
             </tr>
             <tr>
               <td class="primary-text text-bold">Created By:</td>
@@ -338,6 +338,7 @@ const readscholarinfo = () => {
     scdefbef.value = response.data.deferment_status;
     scYearAvail.value = response.data.sy;
     termType.value = response.data.term_type;
+    termAvail.value = response.data.term;
     created.value = response.data.created_by;
     update.value = response.data.updated_by;
     verified.value = response.data.verified_by;

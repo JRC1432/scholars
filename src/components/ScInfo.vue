@@ -32,49 +32,82 @@
             label="Personal Info"
             icon="person"
             :to="'/personal/' + scids"
-            class="primary-text text-bold"
-          />
+            :class="
+              route.name == 'personal'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
+          >
+          </q-breadcrumbs-el>
           <q-breadcrumbs-el
             label="Scholarship Info"
             icon="school"
             :to="'/scholarinfo/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'scholarinfo'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
           <q-breadcrumbs-el
             label="Undergraduate Record"
             icon="history_edu"
             :to="'/undergradinfo/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'undergradinfo'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
           <q-breadcrumbs-el
             label="Status Record"
             icon="check_circle"
             :to="'/statsrecord/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'statsrecord'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
           <q-breadcrumbs-el
             label="Monitoring Sheet"
             icon="info"
             :to="'/monitorsheet/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'monitorsheet'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
           <q-breadcrumbs-el
             label="High School Record"
             icon="inventory"
             :to="'/highschoolrec/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'highschoolrec'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
           <q-breadcrumbs-el
             label="Family Info"
             icon="diversity_3"
             :to="'/familyinfo/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'familyinfo'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
           <q-breadcrumbs-el
             label="Graduate Obligation & Tracking Info"
             icon="gavel"
             :to="'/gradtrackinfo/' + scids"
-            class="primary-text text-bold"
+            :class="
+              route.name == 'gradtrackinfo'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
           />
         </q-breadcrumbs>
       </q-toolbar>

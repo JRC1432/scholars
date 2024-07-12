@@ -1,23 +1,20 @@
 <template>
   <q-page class="q-pa-md fullbody">
-    <q-header class="bg-transparent q-py-sm text-dark q-pa-md">
-      <q-toolbar>
+    <q-toolbar>
+      <q-toolbar-title class="text-bold text-h5 q-pt-sm text-white text-center">
         <q-avatar size="xl" rounded class="q-mr-md">
           <img src="http://localhost/scholars/public/seilogopng.png" />
         </q-avatar>
-        <q-toolbar-title class="text-bold text-h5 q-pt-sm text-black">
-          <div style="line-height: 1">
-            Department of Science and Technology
-            <span class="text-subtitle1" style="display: block"
-              >Science Education Institute</span
-            >
-          </div>
-        </q-toolbar-title>
-        <div class="q-gutter-sm row"></div>
-      </q-toolbar>
-    </q-header>
+        <div style="line-height: 1">
+          Department of Science and Technology - Science Education Institute
+          <span class="text-subtitle1" style="display: block"
+            >Undergraduate Scholarship Information System V2.0</span
+          >
+        </div>
+      </q-toolbar-title>
+    </q-toolbar>
 
-    <q-card class="login-card rounded-borders-40">
+    <q-card class="login-card rounded-borders-20">
       <q-card-section>
         <div class="col-12 col-lg-4 col-md-4 q-px-sm">
           <div class="justify-center">
@@ -157,6 +154,12 @@ const LogSubmit = async () => {
   max-width: 500px;
   margin: 0 auto;
   margin-top: 150px;
+  /* background: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important; */
 }
 
 .rounded-borders-40 {
@@ -173,5 +176,6 @@ const LogSubmit = async () => {
 
 .fullbody {
   background: url("bg.jpg") no-repeat;
+  background-size: cover;
 }
 </style>

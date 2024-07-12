@@ -429,7 +429,7 @@ if(isset($_GET['readSCID'])){
         c.contract_status, c.avail_award, c.other_schp, c.duration,
         c.etg, c.etg_month, c.created_by, c.updated_by, c.verified_by, 
         t.term_type, t.sy, c.term_id, t.term_id, 
-        p.name as course, s.name as schools, c.deferment_status
+        p.name as course, s.name as schools, c.deferment_status, t.term
     FROM 
         contract_status_details AS c
     LEFT OUTER JOIN 

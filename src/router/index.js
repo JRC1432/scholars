@@ -101,6 +101,11 @@ const router = createRouter({
           name: "financial",
           component: () => import("../views/FinancialAssistView.vue"),
         },
+        {
+          path: "/editgrades/:id",
+          name: "editgrades",
+          component: () => import("../views/EditGradesView.vue"),
+        },
       ],
     },
   ],

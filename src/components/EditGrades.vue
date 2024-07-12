@@ -17,6 +17,27 @@
                     <span class="text-h6">Term Required: </span>
                     <q-radio v-model="termreq" val="YES" label="YES" />
                     <q-radio v-model="termreq" val="NO" label="NO" />
+                    <div class="q-pa-xs q-gutter-sm">
+                      <q-btn
+                        color="positive"
+                        label="Verify Grades"
+                        icon="verified"
+                        rounded
+                      />
+                      <q-btn
+                        color="negative"
+                        label="Disallow Grades"
+                        icon="cancel"
+                        rounded
+                      />
+                      <q-btn
+                        color="warning"
+                        label="Print"
+                        icon="print"
+                        rounded
+                        @click="exportToCSV"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div class="col-xs-12 col-sm-3 col-md-6">
@@ -132,6 +153,7 @@
                 label="Add Subject"
                 color="primary"
                 class="q-mt-md"
+                rounded
               />
             </q-form>
           </q-card-section>
@@ -194,29 +216,16 @@
     </q-card-section>
   </q-card>
 </template>
+
 <script setup>
-import ScInfo from "../components/ScInfo.vue";
-import EditGrades from "../components/EditGrades.vue";
+import { ref, reactive, computed, onMounted, inject } from "vue";
+import { uid } from "quasar";
 
-import { ref, onMounted, reactive, inject, computed } from "vue";
-import router from "../router";
-import { useQuasar, uid } from "quasar";
-import { useRoute, useRouter } from "vue-router";
-import { IconTool } from "@tabler/icons-vue";
-
-import Swal from "sweetalert2";
-
-const user = inject("$user");
-const q$ = useQuasar();
-const $q = useQuasar();
 const axios = inject("$axios");
-const route = useRoute();
 
 const state = reactive({
   term: "",
 });
-//
-
 const scode = ref("");
 const academic = ref(false);
 const units = ref("");
@@ -225,7 +234,6 @@ const completion = ref("");
 const remarks = ref("");
 const termreq = ref("");
 const toggle = ref(false);
-
 const todos = ref([]);
 
 const addTodo = () => {
@@ -352,5 +360,31 @@ const filterstat1 = (val, update) => {
       return option.label.toLowerCase().includes(needle);
     });
   });
+};
+
+// Method to export table data to CSV
+const exportToCSV = () => {
+  const headers = columns.map((col) => col.label);
+  const rows = todos.value.map((todo) => [
+    todo.scode,
+    todo.academic ? "Yes" : "No",
+    todo.units,
+    todo.grade,
+    todo.completion,
+    todo.remarks,
+  ]);
+
+  let csvContent =
+    "data:text/csv;charset=utf-8," +
+    [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "grades.csv");
+  document.body.appendChild(link);
+
+  link.click();
+  document.body.removeChild(link);
 };
 </script>

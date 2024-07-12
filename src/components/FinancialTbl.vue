@@ -10,6 +10,7 @@
     class="rounded-borders-20 no-border custom-table"
     model:pagination="pagination"
   >
+    //
     <template v-slot:top-right>
       <q-input
         borderless
@@ -141,6 +142,8 @@ const readScholarsEligible = () => {
   });
 };
 
+// CSV Export
+
 const fetchData = async (queryParams) => {
   try {
     const response = await axios.get(`/read.php?exportCSV&${queryParams}`);
@@ -203,6 +206,14 @@ const downloadCSV = async () => {
     console.error("Error downloading CSV:", error);
     // Handle error as needed
   }
+};
+
+// Show Monitor
+
+const showMonitor = (props) => {
+  router.push({
+    path: "/editgrades/" + props.row.spas_id,
+  });
 };
 </script>
 <style scoped>
