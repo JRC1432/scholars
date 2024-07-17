@@ -300,15 +300,26 @@ const readscholar = () => {
     state.email = response.data.email;
     state.contact = response.data.contact_no;
     state.tribe = response.data.tribe;
-    state.street = response.data.street;
-    state.village = response.data.village;
-    state.brgy = response.data.barangay;
-    state.mun = response.data.municipality;
-    state.province = response.data.province;
-    state.region = response.data.region;
-    state.district = response.data.district;
-    state.zip = response.data.zipcode;
-    state.currentAdd = response.data.diff_curr_add;
+    state.street = response.data.srstreet;
+    state.village = response.data.srvillage;
+    state.brgy = response.data.srbarangay;
+    state.mun = response.data.srmunicipality;
+    state.province = response.data.srprovince;
+    state.region = response.data.srregion;
+    state.district = response.data.srdistrict;
+    state.zip = response.data.srzipcode;
+
+    let addressParts = [
+      response.data.castreet,
+      response.data.cavillage,
+      response.data.cabarangay ? "BRGY. " + response.data.cabarangay : "",
+      response.data.camunicipality,
+      response.data.caprovince,
+      response.data.caregion ? "REG. " + response.data.caregion : "",
+      response.data.cazipcode,
+    ];
+
+    state.currentAdd = addressParts.filter((part) => part).join(" ");
   });
 };
 </script>

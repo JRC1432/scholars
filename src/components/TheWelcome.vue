@@ -5,7 +5,7 @@
         <q-avatar size="xl" rounded class="q-mr-md">
           <img src="http://localhost/scholars/public/seilogopng.png" />
         </q-avatar>
-        <div style="line-height: 1">
+        <div style="line-height: 1" class="text-bold">
           Department of Science and Technology - Science Education Institute
           <span class="text-subtitle1" style="display: block"
             >Undergraduate Scholarship Information System V2.0</span
@@ -151,7 +151,7 @@ const LogSubmit = async () => {
 
 <style>
 .login-card {
-  max-width: 500px;
+  max-width: 400px;
   margin: 0 auto;
   margin-top: 150px;
   /* background: rgba(255, 255, 255, 0.25) !important;

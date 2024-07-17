@@ -359,7 +359,20 @@ if(isset($_GET['readScholarID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT * FROM scholars_record WHERE spas_id = ?");
+        $stnt = $pdo->prepare("SELECT sr.spas_id, sr.user_id, sr.first_name, sr.middle_name, sr.last_name, sr.suffix_name,
+sr.full_name, sr.sex, sr.dob, sr.pob, sr.tribe, sr.street as srstreet,
+sr.street as srstreet, sr.village as srvillage, sr.barangay as srbarangay,
+sr.municipality as srmunicipality, sr.province as srprovince,
+sr.region as srregion, sr.district as srdistrict, sr.zipcode as srzipcode,
+sr.email, sr.contact_no, sr.school_region, sr.school_code, ca.street as castreet,
+ca.village as cavillage, ca.barangay as cabarangay, ca.municipality as camunicipality,
+ca.province as caprovince, ca.region as caregion, ca.district as cadistrict,
+ca.zipcode as cazipcode
+
+FROM scholars_record as sr
+
+LEFT OUTER JOIN curr_add as ca ON sr.spas_id = ca.spas_id
+WHERE sr.spas_id = ?");
         $params = array($id);
         $stnt->execute($params);
     
@@ -1825,7 +1838,8 @@ if(isset($_GET['readScholarRec'])){
 		s.street, s.village, s.barangay, s.municipality, s.province,
 		s.region, s.district, s.zipcode, s.diff_curr_add, s.email,
 		s.contact_no, s.school_region, s.school_code, u.id, u.username,
-		u.internal_id, u.account_type
+		u.internal_id, u.account_type, u.region as uregion, u.school_code as uschoolcode,
+        u.status
         FROM scholars_record as s
         LEFT OUTER JOIN users AS u ON s.user_id = u.id
         WHERE u.status = 'active' 
@@ -1913,6 +1927,71 @@ if(isset($_GET['readstat1'])){
                 "value" => $row['name']
     
             );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+     // Read EditGrades
+
+if(isset($_GET['readEditGrades'])){
+    $data = array();
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT 
+    tr.sy, 
+    tr.term, 
+    cl.name AS college_name, 
+    c.name AS course_name, 
+    tr.term_required, 
+    sh.standing, 
+    tr.reg_verified_by,
+    tr.latest_flag, 
+    tr.grades_verified_by 
+FROM 
+    term_record AS tr
+LEFT OUTER JOIN 
+    course_record AS cr ON tr.spas_id = cr.spas_id
+LEFT OUTER JOIN 
+    courses AS c ON CAST(cr.course_code AS integer) = c.id
+LEFT OUTER JOIN 
+    colleges AS cl ON CAST(cr.school_code AS integer) = cl.id
+LEFT OUTER JOIN 
+    standing_history AS sh ON tr.spas_id = sh.spas_id
+WHERE 
+    tr.spas_id = ?
+    AND tr.latest_flag = 1
+GROUP BY 
+    tr.sy, 
+    tr.term, 
+    cl.name, 
+    c.name, 
+    tr.term_required, 
+    sh.standing, 
+    tr.reg_verified_by,
+	 tr.latest_flag,
+    tr.grades_verified_by
+");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
     }
     
     echo json_encode($data);

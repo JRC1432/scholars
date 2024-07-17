@@ -11,12 +11,23 @@
             <div class="col-12">
               <div class="q-col-gutter-md row items-start">
                 <div class="col-xs-12 col-sm-3 col-md-6">
-                  <div class="text-h6">SY: {{}}, {{  }}</div>
-                  <div class="text-h6">School: {{}}, Course: {{}}</div>
+                  <div class="text-h6" v-if="sem === 1">
+                    SY: {{ sy }}, {{ sem }}st Term
+                  </div>
+                  <div class="text-h6" v-else-if="sem === 2">
+                    SY: {{ sy }}, {{ sem }}nd Term
+                  </div>
+                  <div class="text-h6" v-else-if="sem === 3">
+                    SY: {{ sy }}, Summer
+                  </div>
+                  <div class="text-h6" v-else>SY: {{ sy }}, Midyear</div>
+                  <div class="text-h6">School: {{ school }}</div>
+                  <div class="text-h6">Course: {{ course }}</div>
                   <div>
                     <span class="text-h6">Term Required: </span>
                     <q-radio v-model="termreq" val="YES" label="YES" />
                     <q-radio v-model="termreq" val="NO" label="NO" />
+
                     <div class="q-pa-xs q-gutter-sm">
                       <q-btn
                         color="positive"
@@ -46,9 +57,15 @@
                     <q-toggle v-model="toggle" />
                   </div>
 
-                  <div class="text-h6">Registration Form Verified by: {{}}</div>
-                  <div class="text-h6">Grades Verified by: {{}}</div>
-                  <div class="text-h6">Status (Start of Term): {{}}</div>
+                  <div class="text-h6">
+                    Registration Form Verified by: {{ regVerified }}
+                  </div>
+                  <div class="text-h6">
+                    Grades Verified by: {{ gradeVerified }}
+                  </div>
+                  <div class="text-h6">
+                    Status (Start of Term): {{}} - {{ statEnd }}
+                  </div>
 
                   <div class="q-gutter-sm row items-start">
                     <div class="col-xs-12 col-sm-6 col-md-4">
@@ -209,7 +226,13 @@
           </q-card-section>
           <q-card-actions align="around">
             <q-btn rounded style="width: 40%" color="primary">SAVE</q-btn>
-            <q-btn rounded style="width: 40%" color="warning">RESET</q-btn>
+            <q-btn
+              rounded
+              style="width: 40%"
+              color="warning"
+              @click="resetTodos"
+              >RESET</q-btn
+            >
           </q-card-actions>
         </q-card>
       </q-page>
@@ -218,13 +241,25 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, inject } from "vue";
+import ScInfo from "../components/ScInfo.vue";
+import { ref, reactive, computed, onMounted, inject, watchEffect } from "vue";
+import router from "../router";
 import { uid } from "quasar";
+import { useQuasar } from "quasar";
+import { useRoute, useRouter } from "vue-router";
 
+import Swal from "sweetalert2";
+
+const user = inject("$user");
+const q$ = useQuasar();
+const $q = useQuasar();
 const axios = inject("$axios");
+const route = useRoute();
 
 const state = reactive({
   term: "",
+  stat1: "SELECT",
+  stat2: "SELECT",
 });
 const scode = ref("");
 const academic = ref(false);
@@ -232,9 +267,21 @@ const units = ref("");
 const grade = ref("");
 const completion = ref("");
 const remarks = ref("");
-const termreq = ref("");
-const toggle = ref(false);
+
+const toggle = ref("");
 const todos = ref([]);
+
+const term_required = ref(0);
+
+const sy = ref("");
+const sem = ref("");
+const school = ref("");
+const course = ref("");
+const termreq = ref("");
+const regVerified = ref("");
+const gradeVerified = ref("");
+const statStart = ref("");
+const statEnd = ref("");
 
 const addTodo = () => {
   if (
@@ -265,6 +312,16 @@ const addTodo = () => {
 const removeTodo = (id) => {
   const index = todos.value.findIndex((todo) => todo.id === id);
   todos.value.splice(index, 1);
+};
+
+const resetTodos = () => {
+  todos.value = [];
+  scode.value = "";
+  academic.value = "";
+  units.value = "";
+  grade.value = "";
+  completion.value = "";
+  remarks.value = "";
 };
 
 const columns = [
@@ -387,4 +444,36 @@ const exportToCSV = () => {
   link.click();
   document.body.removeChild(link);
 };
+
+// Grades Info
+
+const id = ref();
+onMounted(() => {
+  populateEditGrades();
+});
+
+const populateEditGrades = () => {
+  console.log(toggle.value + "start");
+  id.value = route.params.id;
+  var formData = new FormData();
+  formData.append("id", id.value);
+  axios.post("/read.php?readEditGrades", formData).then((response) => {
+    console.log(response.data);
+
+    sy.value = response.data.sy;
+    sem.value = response.data.term;
+    school.value = response.data.college_name;
+    course.value = response.data.course_name;
+    termreq.value = response.data.term_required;
+    regVerified.value = response.data.reg_verified_by;
+    gradeVerified.value = response.data.grades_verified_by;
+    statEnd.value = response.data.standing;
+    toggle.value = response.data.latest_flag == 1 ? true : false;
+
+    watchEffect(() => {
+      termreq.value = term_required.value === 1 ? "YES" : "NO";
+    });
+  });
+};
 </script>
+.

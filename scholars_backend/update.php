@@ -18,7 +18,7 @@ if(isset($_GET['updateuser'])){
     
     $stnt = $pdo->prepare("UPDATE users SET username = ?, internal_id = ?, password = ?, account_type = ?, region = ?, school_code = ?
     WHERE id = ?");
-    $stnt -> execute([$upusernames,$upintid,$passwordsHash,$upacttype,$upregions,$upcode,$upid]);
+    $stnt->execute([$upusernames,$upintid,$passwordsHash,$upacttype,$upregions,$upcode,$upid]);
     
      if($stnt){
             $result =  true;
@@ -67,7 +67,7 @@ if(isset($_GET['updateuser'])){
         dob = ?, pob = ?, work_region = ?, school_code = ?, street = ?, village = ?, barangay = ?, municipality = ?, province = ?, region = ?,
         district = ?, zipcode = ?, email = ?, contact_no = ?
         WHERE user_id = ?");
-        $stnt -> execute([$upstaffid,$upfname,$upmname,$uplname,$upsname,$upgender,$upbirth,$uppob,$upwregion,$upscCode,$upstreet,$upvillage,$upbarangay,$upmunicipality,
+        $stnt->execute([$upstaffid,$upfname,$upmname,$uplname,$upsname,$upgender,$upbirth,$uppob,$upwregion,$upscCode,$upstreet,$upvillage,$upbarangay,$upmunicipality,
         $upprovince,$upregion,$updistrict,$upzipcode,$upmail,$upcontact,$upid]);
         
          if($stnt){
@@ -80,5 +80,36 @@ if(isset($_GET['updateuser'])){
             echo json_encode($result);
         
         }
+
+
+
+        if(isset($_GET['updateScholar'])){
+
+            $upintid = $_POST["upintid"];
+            $upusernames = $_POST["upusernames"];
+            $uppassword = $_POST["uppassword"];
+            $upacttype = $_POST["upacttype"];
+            $passwordsHash = sha1("digi".$uppassword."digi");
+            $upregions = $_POST["upregions"];
+            $upscode = $_POST["upscode"];
+            $upid = $_POST["id"];
+            
+            
+            $stnt = $pdo->prepare("UPDATE users SET username = ?, internal_id = ?, password = ?, account_type = ?, region = ?, school_code = ?
+            WHERE id = ?");
+            $stnt->execute([$upusernames,$upintid,$passwordsHash,$upacttype,$upregions,$upscode,$upid]);
+            
+             if($stnt){
+                    $result =  true;
+                } else{
+                    
+                    $result = false;
+                }
+            
+                echo json_encode($result);
+            
+            }
+
+        
 
 ?>

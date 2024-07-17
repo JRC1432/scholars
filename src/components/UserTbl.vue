@@ -1715,6 +1715,7 @@ const CreateUser = () => {
         state.code = "";
         newUser.value = false;
         showalert();
+        readusers();
       } else {
         $q.notify({
           color: "red",
@@ -1743,6 +1744,7 @@ const batchUp = () => {
       if (response.data == true) {
         batchUpload.value = false;
         batchUplAlert();
+        readusers();
       } else {
         $q.notify({
           color: "red",
@@ -1818,6 +1820,7 @@ const UpdateUser = () => {
       if (response.data == true) {
         upUserAlert();
         showedit.value = false;
+        readusers();
       } else {
         $q.notify({
           color: "red",
@@ -1897,6 +1900,7 @@ const UpdateStaffInfo = () => {
         if (response.data == true) {
           upUserAlert();
           showedit.value = false;
+          readusers();
         } else {
           $q.notify({
             color: "red",
