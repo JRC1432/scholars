@@ -16,9 +16,9 @@
         no-caps
         round
         icon="add"
-        @click="newUser = true"
+        @click="newScholar = true"
       >
-        <q-tooltip class="bg-primary">Add user list</q-tooltip>
+        <q-tooltip class="bg-primary">Add Scholar</q-tooltip>
       </q-btn>
       <div class="q-ml-sm">
         <q-btn
@@ -82,6 +82,499 @@
     </template>
   </q-table>
 
+  <!-- New Scholar -->
+
+  <q-dialog v-model="newScholar" persistent>
+    <q-card class="rounded-borders-20" style="width: 700px; max-width: 80vw">
+      <q-toolbar>
+        <IconUserPlus :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">NEW</span> Scholar
+          Profile</q-toolbar-title
+        >
+
+        <q-btn flat round dense icon="close" @click="CloseBtn" />
+      </q-toolbar>
+      <form id="UserForm" @submit.prevent.stop="CreateUser">
+        <q-stepper
+          class="rounded-borders-20"
+          v-model="step"
+          ref="stepper"
+          alternative-labels
+          color="primary"
+          flat
+          animated
+        >
+          <!-- Stepper 1 -->
+          <q-step
+            :name="1"
+            title="Personal Informations"
+            icon="person"
+            :done="step > 1"
+          >
+            <q-scroll-area style="height: 600px; max-width: 800px">
+              <div class="text-h6">Personal Informartions</div>
+              <div class="q-pa-md">
+                <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">SPAS ID</span>
+                      <q-input
+                        ref="refspas"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.spasid"
+                        mask="A - #### - ## - #####"
+                        name="spasid"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">First Name</span>
+                      <q-input
+                        ref="reffname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.fname"
+                        name="fname"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Middle Name</span>
+                      <q-input
+                        ref="refmname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.mname"
+                        name="mname"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Last Name</span>
+                      <q-input
+                        ref="reflname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.lname"
+                        name="lname"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Suffix Name</span>
+                      <q-input
+                        ref="refsname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.sname"
+                        name="sname"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">SEX </span>
+                      <q-select
+                        :options="sexoptions"
+                        v-model="state.gender"
+                        emit-value
+                        name="gender"
+                        outlined
+                        dense
+                        hide-bottom-space
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Date of Birth</span>
+                      <q-input
+                        ref="refbirth"
+                        outlined
+                        dense
+                        type="date"
+                        hide-bottom-space
+                        v-model="state.birth"
+                        name="birth"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Place of Birth</span>
+                      <q-input
+                        ref="refpob"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.pob"
+                        name="pob"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Work Region</span>
+                      <q-input
+                        ref="refwregion"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.wregion"
+                        name="wregion"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">School Code</span>
+                      <q-input
+                        ref="refscCode"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.scCode"
+                        name="scCode"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-h6">Address</div>
+
+              <div class="q-pa-md">
+                <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Street</span>
+                      <q-input
+                        ref="refstreet"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.street"
+                        name="street"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Village</span>
+                      <q-input
+                        ref="refvillage"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.village"
+                        name="village"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Barangay</span>
+                      <q-input
+                        ref="refBrgy"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.barangay"
+                        name="barangay"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Municipality</span>
+                      <q-input
+                        ref="refmun"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.municipality"
+                        name="municipality"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Province</span>
+                      <q-input
+                        ref="refprov"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.province"
+                        name="province"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Region</span>
+                      <q-input
+                        ref="refreg"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.region"
+                        name="region"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">District</span>
+                      <q-input
+                        ref="refdist"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.district"
+                        name="district"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">ZipCode</span>
+                      <q-input
+                        ref="refzip"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.zip"
+                        name="zip"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Email</span>
+                      <q-input
+                        ref="refmail"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.mail"
+                        name="mail"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Contact No.</span>
+                      <q-input
+                        ref="refcontact"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.contact"
+                        name="contact"
+                        mask="(####) ### - ####"
+                        hint="(####) ### - ####"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <q-stepper-navigation>
+                <q-btn @click="step1" color="primary" label="Continue" />
+              </q-stepper-navigation>
+            </q-scroll-area>
+          </q-step>
+
+          <!-- Stepper 2 -->
+          <q-step
+            :name="2"
+            title="Account Information Deatils"
+            icon="manage_accounts"
+            :done="step > 2"
+          >
+            <div class="q-pa-md">
+              <div class="row row_width q-col-gutter-xs">
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">Internal ID</span>
+                    <q-input
+                      ref="refId"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="state.intid"
+                      name="intid"
+                      :rules="inputRules"
+                    />
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">UserName</span>
+                    <q-input
+                      ref="refUsername"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="state.usernames"
+                      name="usname"
+                      :rules="[checkUsernames, maxLength]"
+                      :debounce="1000"
+                      no-error-icon
+                    />
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">Password</span>
+                    <q-input
+                      ref="refPassword"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      :type="isPwds ? 'password' : 'text'"
+                      v-model="state.password"
+                      name="password"
+                      :rules="inputpassRules"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwds ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwds = !isPwds"
+                        />
+                      </template>
+                    </q-input>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">Confirm Password</span>
+                    <q-input
+                      ref="refConfPassword"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      :type="isPwd ? 'password' : 'text'"
+                      v-model="state.confirmpassword"
+                      name="confirmpassword"
+                      :rules="inputpassRules"
+                      :error="confirmpass"
+                      color="green"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">Account Type</span>
+                    <q-select
+                      ref="refActType"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      behavior="menu"
+                      emit-value
+                      map-options
+                      use-input
+                      input-debounce="0"
+                      v-model="state.acttype"
+                      name="acttype"
+                      :options="actoptions"
+                      @filter="filteracnt"
+                    >
+                    </q-select>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">Regions</span>
+                    <q-select
+                      ref="refRegion"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      behavior="menu"
+                      emit-value
+                      map-options
+                      use-input
+                      input-debounce="0"
+                      v-model="state.regions"
+                      name="regions"
+                      :options="regoptions"
+                      @filter="filterregion"
+                    >
+                    </q-select>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">School Code</span>
+                    <q-input
+                      ref="refSchoolCode"
+                      outlined
+                      dense
+                      hide-bottom-space
+                      type="number"
+                      v-model="state.code"
+                      name="code"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <q-stepper-navigation>
+              <q-btn color="primary" label="Submit" type="submit" />
+
+              <q-btn
+                flat
+                @click="step = 1"
+                color="primary"
+                label="Back"
+                class="q-ml-sm"
+              />
+            </q-stepper-navigation>
+          </q-step>
+        </q-stepper>
+      </form>
+    </q-card>
+  </q-dialog>
+
+  <!-- Update Functions -->
   <q-dialog v-model="showedit" persistent
     ><q-card class="rounded-borders-20" style="width: 700px; max-width: 80vw">
       <q-toolbar>
@@ -622,6 +1115,8 @@ const pagination = ref({
 });
 const showedit = ref(false);
 const tab = ref("scholar");
+const newScholar = ref(false);
+const step = ref(1);
 
 // Match Passwords
 const isPwd = ref(true);
@@ -865,6 +1360,10 @@ const readusers = () => {
 // Close Button
 const CloseEditBtn = () => {
   showedit.value = false;
+};
+
+const CloseBtn = () => {
+  newScholar.value = false;
 };
 
 // UPdate Scholar

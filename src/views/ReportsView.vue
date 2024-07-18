@@ -36,7 +36,7 @@
           <div class="q-pa-md q-gutter-sm q-display-flex q-justify-end">
             <div class="col-xs-12 col-sm-6 col-md-6">
               <div
-                class="fixed-right absolute-right fixed-top-right absolute-top-right"
+                class="fixed-right absolute-right fixed-top-right absolute-top-right hide-small"
               >
                 <Vue3Lottie
                   animationLink="https://lottie.host/0ad26d58-6934-435a-a467-4bad2176fbfe/UcnlcscUIL.json"
@@ -738,3 +738,11 @@ const allOptions = {
   maintainAspectRatio: false,
 };
 </script>
+
+<style scoped>
+@media screen and (max-width: 1000px) {
+  .hide-small {
+    display: none;
+  }
+}
+</style>

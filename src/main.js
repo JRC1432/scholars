@@ -35,10 +35,14 @@ var user = [];
 var rootDomain = "http://localhost/scholars";
 const myApp = createApp(App);
 
-const baseURL =
-  process.env.NODE_ENV === "development"
-    ? rootDomain + "/scholars_backend/"
-    : "/scholars_backend/";
+// const baseURL =
+//   process.env.NODE_ENV === "development"
+//     ? rootDomain + "/scholars_backend/"
+//     : "/scholars_backend/";
+const baseURL = import.meta.env.DEV
+  ? "http://localhost/scholars/scholars_backend/"
+  : "../scholars/scholars_backend/";
+
 const axios = axiosMain.create({
   baseURL,
   withCredentials: true,

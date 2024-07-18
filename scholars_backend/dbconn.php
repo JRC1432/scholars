@@ -1,7 +1,12 @@
 <?php
 
-$http_origin = $_SERVER['HTTP_ORIGIN'];
-header("Access-Control-Allow-Origin: $http_origin");
+
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+ 
+    $http_origin = $_SERVER['HTTP_ORIGIN'];
+    header("Access-Control-Allow-Origin: $http_origin");
+}
+ 
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Max-Age: 600");
  // cache for 10 minutes

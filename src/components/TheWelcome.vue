@@ -3,7 +3,7 @@
     <q-toolbar>
       <q-toolbar-title class="text-bold text-h5 q-pt-sm text-white text-center">
         <q-avatar size="xl" rounded class="q-mr-md">
-          <img src="http://localhost/scholars/public/seilogopng.png" />
+          <img src="../assets/seilogopng.png" />
         </q-avatar>
         <div style="line-height: 1" class="text-bold">
           Department of Science and Technology - Science Education Institute
@@ -14,7 +14,7 @@
       </q-toolbar-title>
     </q-toolbar>
 
-    <q-card class="login-card rounded-borders-20">
+    <q-card class="login-card rounded-borders-20 primary-container">
       <q-card-section>
         <div class="col-12 col-lg-4 col-md-4 q-px-sm">
           <div class="justify-center">
@@ -149,7 +149,7 @@ const LogSubmit = async () => {
 };
 </script>
 
-<style>
+<style scoped>
 .login-card {
   max-width: 400px;
   margin: 0 auto;
@@ -175,7 +175,7 @@ const LogSubmit = async () => {
 }
 
 .fullbody {
-  background: url("bg.jpg") no-repeat;
+  background: url("../assets/bg.jpg") no-repeat;
   background-size: cover;
 }
 </style>

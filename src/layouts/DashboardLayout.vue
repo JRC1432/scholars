@@ -42,7 +42,7 @@
           to="/reports"
         >
           <q-avatar size="28px" rounded>
-            <img src="http://localhost/scholars/public/seilogopng.png" />
+            <img src="../assets/seilogopng.png" />
           </q-avatar>
           <q-toolbar-title shrink class="text-weight-bold">
             DOST - SEI
