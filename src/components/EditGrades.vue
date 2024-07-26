@@ -476,4 +476,3 @@ const populateEditGrades = () => {
   });
 };
 </script>
-.

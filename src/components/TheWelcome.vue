@@ -149,11 +149,12 @@ const LogSubmit = async () => {
 };
 </script>
 
-<style scoped>
+<style>
 .login-card {
   max-width: 400px;
   margin: 0 auto;
   margin-top: 150px;
+  /* Glass Type Please set 1st to white background */
   /* background: rgba(255, 255, 255, 0.25) !important;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
   backdrop-filter: blur(4px) !important;

@@ -28,7 +28,7 @@
           </div>
           <div class="text-h7">
             <strong class="primary-text text-bold">Email:</strong>
-            <text class="text-weight-bold">{{}}</text>
+            <text class="text-weight-bold">{{ user.region }}</text>
           </div>
         </div>
         <div class="q-pa-md q-gutter-sm q-display-flex q-justify-end">

@@ -62,13 +62,15 @@ if(isset($_GET['updateuser'])){
         $upzipcode = $_POST["upzipcode"];
         $upmail = $_POST["upmail"];
         $upcontact = $_POST["upcontact"];
+        $upzipid = $_POST["upzipid"] ?? null;
+
         
         $stnt = $pdo->prepare("UPDATE staff_record SET staff_id = ?, first_name = ?, middle_name = ?, last_name = ?, suffix_name = ?, sex = ?,
         dob = ?, pob = ?, work_region = ?, school_code = ?, street = ?, village = ?, barangay = ?, municipality = ?, province = ?, region = ?,
-        district = ?, zipcode = ?, email = ?, contact_no = ?
+        district = ?, zipcode = ?, email = ?, contact_no = ?, zip_id = ?
         WHERE user_id = ?");
         $stnt->execute([$upstaffid,$upfname,$upmname,$uplname,$upsname,$upgender,$upbirth,$uppob,$upwregion,$upscCode,$upstreet,$upvillage,$upbarangay,$upmunicipality,
-        $upprovince,$upregion,$updistrict,$upzipcode,$upmail,$upcontact,$upid]);
+        $upprovince,$upregion,$updistrict,$upzipcode,$upmail,$upcontact,$upzipid,$upid]);
         
          if($stnt){
                 $result =  true;

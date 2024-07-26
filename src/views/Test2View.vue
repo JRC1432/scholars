@@ -1,390 +1,861 @@
 <template>
-  <q-card flat class="my-card surface-container rounded-borders-20">
-    <div class="q-pa-md q-gutter-sm">
-      <div class="text-bold text-h6 primary-text">Edit Grades</div>
-    </div>
+  <div class="q-pa-md">
+    <div class="col-xs-12 col-sm-6">
+      <div class="q-col-gutter-md row items-start">
+        <div class="col-xs-12 col-sm-12 col-md-9">
+          <q-banner class="tertiary-container rounded-borders-10 text-h1">
+            <div class="col-xs-12 col-sm-6">
+              <div class="q-col-gutter-md row items-start justify-between">
+                <div class="col-xs-12 col-sm-12 col-md-4">
+                  <div class="text-h6">
+                    Hello
+                    <strong class="primary-text text-bold">{{
+                      user.username
+                    }}</strong
+                    >!! 🎉
+                  </div>
 
-    <q-card-section>
-      <q-page class="q-pa-md">
-        <q-card class="q-pa-md rounded-borders-20">
-          <q-card-section>
-            <div class="col-12">
-              <div class="q-col-gutter-md row items-start">
-                <div class="col-xs-12 col-sm-3 col-md-6">
-                  <div class="text-h6">SY: {{}}, {{  }}</div>
-                  <div class="text-h6">School: {{}}, Course: {{}}</div>
-                  <div>
-                    <span class="text-h6">Term Required: </span>
-                    <q-radio v-model="termreq" val="YES" label="YES" />
-                    <q-radio v-model="termreq" val="NO" label="NO" />
-                    <div class="q-pa-xs q-gutter-sm">
-                      <q-btn
-                        color="positive"
-                        label="Verify Grades"
-                        icon="verified"
-                        rounded
-                      />
-                      <q-btn
-                        color="negative"
-                        label="Disallow Grades"
-                        icon="cancel"
-                        rounded
-                      />
-                      <q-btn
-                        color="warning"
-                        label="Print"
-                        icon="print"
-                        rounded
-                        @click="exportToCSV"
-                      />
-                    </div>
+                  <div class="text-body1 text-weight-medium">
+                    Welcome You Are Now Login To The System!!
+                  </div>
+
+                  <q-separator class="q-mt-md q-mb-xs" />
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold"
+                      >Employee ID:
+                    </strong>
+                    <text class="text-weight-bold">{{ user.internal_id }}</text>
+                  </div>
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold">Name: </strong>
+                    <text class="text-weight-bold">{{ user.username }}</text>
+                  </div>
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold">Region: </strong>
+                    <text class="text-weight-bold">{{ user.region }}</text>
+                  </div>
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold">Email:</strong>
+                    <text class="text-weight-bold">{{}}</text>
                   </div>
                 </div>
-                <div class="col-xs-12 col-sm-3 col-md-6">
-                  <div class="float-right">
-                    <span class="text-bold primary-text">Latest?</span>
-                    <q-toggle v-model="toggle" />
-                  </div>
-
-                  <div class="text-h6">Registration Form Verified by: {{}}</div>
-                  <div class="text-h6">Grades Verified by: {{}}</div>
-                  <div class="text-h6">Status (Start of Term): {{}}</div>
-
-                  <div class="q-gutter-sm row items-start">
-                    <div class="col-xs-12 col-sm-6 col-md-4">
-                      <div class="text-h6">Status (END of Term):</div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                      <q-select
-                        v-model="state.stat1"
-                        name="stat1"
-                        outlined
-                        dense
-                        hide-bottom-space
-                        emit-value
-                        map-options
-                        use-input
-                        input-debounce="0"
-                        :options="stat1options"
-                        @filter="filterstat1"
-                      />
-                    </div>
-                    <div class="col-xs-12 col-sm-3 col-md-3">
-                      <q-select
-                        v-model="state.stat2"
-                        name="stat2"
-                        outlined
-                        dense
-                        hide-bottom-space
-                        emit-value
-                        map-options
-                        use-input
-                        input-debounce="0"
-                        :options="stat2options"
-                        @filter="filterstat2"
-                      />
-                    </div>
+                <div
+                  class="col-xs-12 col-sm-6 col-md-4 row justify-end hide-small"
+                >
+                  <div class="absolute" style="top: 10px">
+                    <Vue3Lottie
+                      animationLink="https://lottie.host/0ad26d58-6934-435a-a467-4bad2176fbfe/UcnlcscUIL.json"
+                      :height="300"
+                      :width="300"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-          </q-card-section>
-
-          <q-separator inset />
-
-          <q-card-section>
-            <q-form @submit.prevent="addTodo">
-              <div class="col-12">
-                <div class="q-col-gutter-md row items-start">
-                  <div class="col-xs-12 col-sm-6 col-md-2">
-                    <span class="text-bold primary-text">SUBJECT CODE:</span>
-                    <q-input
-                      v-model="scode"
-                      filled
-                      :rules="[(val) => !!val || 'Subject code is required']"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-2">
-                    <span class="text-bold primary-text">ACADEMIC:</span>
-                    <q-checkbox
-                      v-model="academic"
-                      label="Include in computation?"
-                      filled
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-2">
-                    <span class="text-bold primary-text">UNITS:</span>
-                    <q-input
-                      v-model="units"
-                      filled
-                      :rules="[(val) => !!val || 'Unit is required']"
-                      mask="##.##"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-2">
-                    <span class="text-bold primary-text">GRADE:</span>
-                    <q-input
-                      v-model="grade"
-                      filled
-                      :rules="[(val) => !!val || 'Grade is required']"
-                      mask="#.##"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-2">
-                    <span class="text-bold primary-text">COMPLETION:</span>
-                    <q-input
-                      v-model="completion"
-                      filled
-                      :rules="[(val) => !!val || 'Completion is required']"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-2">
-                    <span class="text-bold primary-text">REMARKS:</span>
-                    <q-input
-                      v-model="remarks"
-                      filled
-                      :rules="[(val) => !!val || 'Remarks is required']"
-                    />
-                  </div>
-                </div>
-              </div>
-              <q-btn
-                type="submit"
-                label="Add Subject"
-                color="primary"
-                class="q-mt-md"
-                rounded
+          </q-banner>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3">
+          <q-banner class="tertiary-container rounded-borders-10 text-h1">
+            <div class="row justify-center items-center" style="height: 70px">
+              <q-icon name="school" size="xl" class="primary-text"></q-icon>
+            </div>
+            <div class="q-py-sm text-h4 text-bold primary-text text-center">
+              <vue3-autocounter
+                ref="counter"
+                :startAmount="0"
+                :endAmount="meritcounts + ra10612counts + ra7687counts"
+                :duration="3"
+                class="text-bold"
               />
-            </q-form>
-          </q-card-section>
+            </div>
+            <div class="text-center text-h5">Total Number of Scholars:</div>
+          </q-banner>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <q-card-section>
-            <q-table
-              :rows="todos"
-              :columns="columns"
-              row-key="id"
-              flat
-              bordered
-              separator="cell"
-            >
-              <template v-slot:body-cell-academic="props">
-                <q-td :props="props">
-                  <q-checkbox v-model="props.row.academic" disable />
-                </q-td>
-              </template>
-              <template v-slot:body-cell-action="props">
-                <q-td :props="props">
-                  <q-btn
-                    flat
-                    icon="delete"
-                    color="negative"
-                    @click="removeTodo(props.row.id)"
-                  />
-                </q-td>
-              </template>
-            </q-table>
-
-            <div class="q-pa-md">
-              <div class="col-12">
-                <div class="q-col-gutter-md row items-start">
-                  <div class="col-xs-12 col-sm-3 col-md-6">
-                    <q-input
-                      filled
-                      v-model="computedTotalUnits"
-                      label="Total Units:"
-                      readonly
+  <div class="q-pa-md">
+    <div class="col-xs-12 col-sm-6">
+      <div class="q-col-gutter-md row">
+        <div class="col-xs-12 col-sm-6 col-md-8">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <div class="row items-center no-wrap q-mb-lg">
+              <div class="col">
+                <div class="q-pa-sm">
+                  <div class="text-h6 text-bold q-mb-md row items-center">
+                    <IconChartBar
+                      class="primary-text q-mr-sm"
+                      :size="40"
+                      stroke-width="2"
                     />
-                  </div>
-                  <div class="col-xs-12 col-sm-3 col-md-6">
-                    <q-input
-                      filled
-                      v-model="computedGwa"
-                      label="General Weighted Average:"
-                      readonly
-                    />
+                    <span class="text-h6 text-bold primary-text"
+                      >Scholar Charts</span
+                    >
                   </div>
                 </div>
               </div>
             </div>
-          </q-card-section>
-          <q-card-actions align="around">
-            <q-btn rounded style="width: 40%" color="primary">SAVE</q-btn>
-            <q-btn rounded style="width: 40%" color="warning">RESET</q-btn>
-          </q-card-actions>
-        </q-card>
-      </q-page>
-    </q-card-section>
-  </q-card>
+            <q-card-section>
+              <div class="row">
+                <div class="col-12">
+                  <div class="row justify-center">
+                    <Line
+                      id="my-chart-id"
+                      :options="chartOptions"
+                      :data="chartData"
+                      style="height: 300px"
+                    />
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card-section>
+              <div class="text-h6 text-bold primary-text">All Data</div>
+            </q-card-section>
+            <q-card-section class="q-pa-md">
+              <div class="col-xs-12 col-sm-6">
+                <div class="q-col-gutter-md row">
+                  <div class="col-xs-12 col-sm-6 col-md-9">
+                    <Pie
+                      :data="allData"
+                      :options="allOptions"
+                      :height="333"
+                      :width="333"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="text-center justify-center content-center">
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          Good Standing:
+                        </text>
+                        <text>{{ allG_standing }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> LOA: </text>
+                        <text>{{ all_Loa }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          No Reports:
+                        </text>
+                        <text>{{ all_Reports }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Extension: </text>
+                        <text>{{ all_Extension }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Suspended: </text>
+                        <text>{{ all_Suspended }}</text>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-pa-md">
+    <div class="col-xs-12 col-sm-6">
+      <div class="q-col-gutter-md row">
+        <div class="col-xs-12 col-sm-12 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card class="surface-container no-shadow rounded-borders-10">
+              <div class="row">
+                <div class="col-2 q-pa-md">
+                  <div
+                    class="row justify-center items-center"
+                    style="height: 70px"
+                  >
+                    <q-icon
+                      name="workspace_premium"
+                      size="xl"
+                      class="primary-text"
+                    ></q-icon>
+                  </div>
+                </div>
+                <div class="col-10 surface-container rounded-borders-10">
+                  <div class="row items-center" style="height: 95px">
+                    <div class="q-ml-md">
+                      <div
+                        class="text-h4 text-bold primary-text"
+                        id="number_up"
+                      >
+                        <vue3-autocounter
+                          ref="counter"
+                          :startAmount="0"
+                          :endAmount="meritcounts"
+                          :duration="3"
+                          class="text-bold"
+                        />
+                      </div>
+                      <div id="number_up"></div>
+                      <div class="text-subtitle2">MERIT:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+
+            <q-card-section class="q-pa-md">
+              <div class="col-xs-12 col-sm-6">
+                <div class="q-col-gutter-md row">
+                  <div class="col-xs-12 col-sm-6 col-md-9">
+                    <Doughnut
+                      :data="data"
+                      :options="options"
+                      :height="195"
+                      :width="195"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="text-center justify-center content-center">
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          Good Standing:
+                        </text>
+                        <text>{{ allG_standing }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> LOA: </text>
+                        <text>{{ all_Loa }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          No Reports:
+                        </text>
+                        <text>{{ all_Reports }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Extension: </text>
+                        <text>{{ all_Extension }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Suspended: </text>
+                        <text>{{ all_Suspended }}</text>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card class="surface-container no-shadow rounded-borders-10">
+              <div class="row">
+                <div class="col-2 q-pa-md">
+                  <div
+                    class="row justify-center items-center"
+                    style="height: 70px"
+                  >
+                    <q-icon
+                      name="military_tech"
+                      size="xl"
+                      class="primary-text"
+                    ></q-icon>
+                  </div>
+                </div>
+                <div class="col-10 surface-container rounded-borders-10">
+                  <div class="row items-center" style="height: 95px">
+                    <div class="q-ml-md">
+                      <div class="text-h4 text-bold primary-text">
+                        <vue3-autocounter
+                          ref="counter"
+                          :startAmount="0"
+                          :endAmount="ra10612counts"
+                          :duration="3"
+                          class="text-bold"
+                        />
+                      </div>
+                      <div class="text-subtitle2">RA 10612:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+            <q-card-section class="q-pa-md">
+              <div class="col-xs-12 col-sm-6">
+                <div class="q-col-gutter-md row">
+                  <div class="col-xs-12 col-sm-6 col-md-9">
+                    <Doughnut
+                      :data="datas"
+                      :options="doptions"
+                      :height="195"
+                      :width="195"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="text-center justify-center content-center">
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          Good Standing:
+                        </text>
+                        <text>{{ allG_standing }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> LOA: </text>
+                        <text>{{ all_Loa }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          No Reports:
+                        </text>
+                        <text>{{ all_Reports }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Extension: </text>
+                        <text>{{ all_Extension }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Suspended: </text>
+                        <text>{{ all_Suspended }}</text>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card class="surface-container no-shadow rounded-borders-10">
+              <div class="row">
+                <div class="col-2 q-pa-md">
+                  <div
+                    class="row justify-center items-center"
+                    style="height: 70px"
+                  >
+                    <q-icon
+                      name="military_tech"
+                      size="xl"
+                      class="primary-text"
+                    ></q-icon>
+                  </div>
+                </div>
+                <div class="col-10 surface-container rounded-borders-10">
+                  <div class="row items-center" style="height: 95px">
+                    <div class="q-ml-md">
+                      <div class="text-h4 text-bold primary-text">
+                        <vue3-autocounter
+                          ref="counter"
+                          :startAmount="0"
+                          :endAmount="ra7687counts"
+                          :duration="3"
+                          class="text-bold"
+                        />
+                      </div>
+                      <div class="text-subtitle2">RA 7687:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+            <q-card-section class="q-pa-md">
+              <div class="col-xs-12 col-sm-6">
+                <div class="q-col-gutter-md row">
+                  <div class="col-xs-12 col-sm-6 col-md-9">
+                    <Doughnut
+                      :data="datar"
+                      :options="roptions"
+                      :height="195"
+                      :width="195"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="text-center justify-center content-center">
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          Good Standing:
+                        </text>
+                        <text>{{ allG_standing }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> LOA: </text>
+                        <text>{{ all_Loa }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold">
+                          No Reports:
+                        </text>
+                        <text>{{ all_Reports }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Extension: </text>
+                        <text>{{ all_Extension }}</text>
+                      </div>
+                      <div class="text-subtitle">
+                        <text class="primary-text text-bold"> Suspended: </text>
+                        <text>{{ all_Suspended }}</text>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <q-page-sticky position="bottom-right" :offset="[18, 18]">
+    <q-tooltip class="primary">Year Adjustment</q-tooltip>
+    <q-fab
+      icon="calendar_month"
+      direction="up"
+      class="primary-container"
+      vertical-actions-align="right"
+    >
+      <form id="" @submit.prevent.stop="populateyears">
+        <q-fab-action class="tertiary-container" padding="10px">
+          <div class="q-px-sm">
+            <span class="text-bold">Start Year</span>
+            <q-select
+              outlined
+              dense
+              behavior="menu"
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              v-model="state.frstYearSelect"
+              name="frstYearSelect"
+              :options="yrsoptions"
+              @filter="filteryrs"
+              @update:model-value="populateyears"
+              style="max-width: 80px"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+        </q-fab-action>
+        <q-fab-action class="tertiary-container" padding="10px">
+          <div class="q-px-sm">
+            <span class="text-bold">End Year</span>
+            <q-select
+              outlined
+              dense
+              behavior="menu"
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              v-model="state.yearselect"
+              name="yearselect"
+              :options="yrsoptions"
+              @filter="filteryrs"
+              @update:model-value="populateyears"
+              style="max-width: 80px"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+        </q-fab-action>
+      </form>
+    </q-fab>
+  </q-page-sticky>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, inject } from "vue";
-import { uid } from "quasar";
+import DashCounter from "../components/DashCounter.vue";
+import { ref, onMounted, reactive, inject, computed, watch } from "vue";
+import router from "../router";
+import { useQuasar } from "quasar";
+import { useRoute, useRouter } from "vue-router";
+import { Line, Doughnut, Pie } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { IconChartBar } from "@tabler/icons-vue";
 
+const user = inject("$user");
+const q$ = useQuasar();
+const $q = useQuasar();
 const axios = inject("$axios");
+const route = useRoute();
+
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+// Declared Variables
 
 const state = reactive({
-  term: "",
+  frstYearSelect: 2016,
+  yearselect: 2023,
 });
-const scode = ref("");
-const academic = ref(false);
-const units = ref("");
-const grade = ref("");
-const completion = ref("");
-const remarks = ref("");
-const termreq = ref("");
-const toggle = ref(false);
-const todos = ref([]);
 
-const addTodo = () => {
-  if (
-    scode.value &&
-    units.value &&
-    grade.value &&
-    completion.value &&
-    remarks.value
-  ) {
-    todos.value.push({
-      id: uid(),
-      scode: scode.value,
-      academic: academic.value,
-      units: parseFloat(units.value),
-      grade: parseFloat(grade.value),
-      completion: completion.value,
-      remarks: remarks.value,
+const meritcounts = ref([]);
+const ra10612counts = ref([]);
+const ra7687counts = ref([]);
+
+const allScholar = ref([]);
+const allYear = ref([]);
+
+// Merit Count
+const mgstanding = ref(0);
+const mloa = ref(0);
+const mnreport = ref(0);
+const mextension = ref(0);
+const msuspended = ref(0);
+
+// RA 10612
+
+const ra1gstanding = ref(0);
+const ra1LOA = ref(0);
+const ra1nreport = ref(0);
+const ra1extension = ref(0);
+const ra1suspended = ref(0);
+
+// RA 7687
+
+const ra7gstanding = ref(0);
+const ra7LOA = ref(0);
+const ra7nreport = ref(0);
+const ra7extension = ref(0);
+const ra7suspended = ref(0);
+
+const allG_standing = ref(0);
+const all_Loa = ref(0);
+const all_Reports = ref(0);
+const all_Extension = ref(0);
+const all_Suspended = ref(0);
+
+// BAck-End Code
+// Showing Years
+
+var yrsoptions2 = [];
+const yrsoptions = ref(yrsoptions2);
+
+onMounted(() => {
+  populateyrs();
+});
+
+const populateyrs = () => {
+  axios.get("/read.php?years").then((response) => {
+    yrsoptions2 = response.data;
+  });
+};
+
+const filteryrs = (val, update) => {
+  if (val === "") {
+    update(() => {
+      yrsoptions.value = yrsoptions2;
     });
-    scode.value = "";
-    academic.value = false;
-    units.value = "";
-    grade.value = "";
-    completion.value = "";
-    remarks.value = "";
+    return;
+  }
+
+  update(() => {
+    const needle = val.toString().toLowerCase();
+    yrsoptions.value = yrsoptions2.filter((option) => {
+      return option.label.toString().toLowerCase().includes(needle);
+    });
+  });
+};
+
+//Showing Years to Graphs
+
+onMounted(() => {
+  populateyears();
+});
+
+const populateyears = async () => {
+  var formData = new FormData();
+  formData.append("frstYearSelect", state.frstYearSelect);
+  formData.append("yearselect", state.yearselect);
+
+  try {
+    // Scholar Charts
+    const responses = await Promise.all([
+      axios.post("/read.php?LineDataScholar", formData),
+      axios.post("/read.php?meritCountStanding", formData),
+      axios.post("/read.php?meritCountLoa", formData),
+      axios.post("/read.php?meritCountNReport", formData),
+      axios.post("/read.php?meritCountOExtension", formData),
+      axios.post("/read.php?meritCountSuspended", formData),
+      axios.post("/read.php?ra1CountGStanding", formData),
+      axios.post("/read.php?ra1CountLOA", formData),
+      axios.post("/read.php?ra1CountNreport", formData),
+      axios.post("/read.php?ra1CountExtension", formData),
+      axios.post("/read.php?ra1CountSuspended", formData),
+      axios.post("/read.php?ra7CountGStanding", formData),
+      axios.post("/read.php?ra7CountLoa", formData),
+      axios.post("/read.php?ra7CountNreport", formData),
+      axios.post("/read.php?ra7CountExtension", formData),
+      axios.post("/read.php?ra7CountSuspended", formData),
+      axios.post("/read.php?merit", formData),
+      axios.post("/read.php?ra10612", formData),
+      axios.post("/read.php?ra7687", formData),
+    ]);
+
+    // Extract data from responses
+    const [
+      responseScholar,
+      responseMeritStanding,
+      responseMeritLoa,
+      responseMeritNReport,
+      responseMeritExtension,
+      responseMeritSuspended,
+      responseRa1GStanding,
+      responseRa1LOA,
+      responseRa1NReport,
+      responseRa1Extension,
+      responseRa1Suspended,
+      responseRa7GStanding,
+      responseRa7LOA,
+      responseRa7NReport,
+      responseRa7Extension,
+      responseRa7Suspended,
+      responsemeritcount,
+      responsera10612count,
+      responsera7687count,
+    ] = responses.map((response) => response.data);
+
+    // Assign values to variables
+    allYear.value = responseScholar.year;
+    allScholar.value = responseScholar.scholar;
+    mgstanding.value = responseMeritStanding.merit_g_standing;
+    mloa.value = responseMeritLoa.merit_loa;
+    mnreport.value = responseMeritNReport.merit_nreport;
+    mextension.value = responseMeritExtension.merit_extension;
+    msuspended.value = responseMeritSuspended.merit_suspended;
+    ra1gstanding.value = responseRa1GStanding.ra1_g_standing;
+    ra1LOA.value = responseRa1LOA.ra1_loa;
+    ra1nreport.value = responseRa1NReport.ra1_nreport;
+    ra1extension.value = responseRa1Extension.ra1_extension;
+    ra1suspended.value = responseRa1Suspended.ra1_suspended;
+    ra7gstanding.value = responseRa7GStanding.ra7_g_standing;
+    ra7LOA.value = responseRa7LOA.ra7_loa;
+    ra7nreport.value = responseRa7NReport.ra7_nreport;
+    ra7extension.value = responseRa7Extension.ra7_extension;
+    ra7suspended.value = responseRa7Suspended.ra7_suspended;
+    meritcounts.value = responsemeritcount.meritcount;
+    ra10612counts.value = responsera10612count.ra10612count;
+    ra7687counts.value = responsera7687count.ra7687count;
+
+    // Calculate allG_standing.value
+    allG_standing.value =
+      mgstanding.value + ra1gstanding.value + ra7gstanding.value;
+    // LOA
+    all_Loa.value = mloa.value + ra1LOA.value + ra7LOA.value;
+    all_Reports.value = mnreport.value + ra1nreport.value + ra7nreport.value;
+    all_Extension.value =
+      mextension.value + ra1extension.value + ra7extension.value;
+    all_Suspended.value =
+      msuspended.value + ra1suspended.value + ra7suspended.value;
+
+    console.log(all_Loa.value);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    // Handle errors here
   }
 };
 
-const removeTodo = (id) => {
-  const index = todos.value.findIndex((todo) => todo.id === id);
-  todos.value.splice(index, 1);
-};
+// Charts Configurations
 
-const columns = [
-  { name: "scode", label: "Subject Code", field: "scode", align: "left" },
-  { name: "academic", label: "Academic", field: "academic", align: "center" },
-  { name: "units", label: "Units", field: "units", align: "left" },
-  { name: "grade", label: "Grade", field: "grade", align: "left" },
-  {
-    name: "completion",
-    label: "Completion",
-    field: "completion",
-    align: "left",
+// ----- LINE GRAPH -----
+
+const chartData = computed(() => {
+  return {
+    labels: allYear.value,
+    datasets: [
+      {
+        label: "No. Of Scholars",
+        backgroundColor: "#01377D",
+        data: allScholar.value,
+        borderColor: "rgb(75, 192, 192)",
+      },
+    ],
+  };
+});
+
+const chartOptions = ref({
+  responsive: true,
+  maintainAspectRatio: false,
+  tooltip: {
+    enabled: true, // Show tooltips always
   },
-  { name: "remarks", label: "Remarks", field: "remarks", align: "left" },
-  { name: "action", label: "Action", field: "action", align: "center" },
-];
-
-const computedTotalUnits = computed(() => {
-  return todos.value
-    .filter((todo) => todo.academic)
-    .reduce((total, todo) => total + todo.units, 0)
-    .toFixed(2);
 });
 
-const computedGwa = computed(() => {
-  const academicTodos = todos.value.filter((todo) => todo.academic);
-  const totalUnits = academicTodos.reduce(
-    (total, todo) => total + todo.units,
-    0
-  );
-  const totalGradePoints = academicTodos.reduce(
-    (total, todo) => total + todo.units * todo.grade,
-    0
-  );
-  return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(2) : "0.00";
+// Pie Data for Merit
+
+const data = computed(() => {
+  return {
+    labels: ["Good Standing", "LOA", "No Report", "On Extension", "Suspended"],
+    datasets: [
+      {
+        backgroundColor: [
+          "#C3E8FF",
+          "#E6DEFF",
+          "#A099E2",
+          "#FFFBFF",
+          "#777094",
+        ],
+        data: [
+          mgstanding.value,
+          mloa.value,
+          mnreport.value,
+          mextension.value,
+          msuspended.value,
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
 });
 
-// Select Term
-var stat2options2 = [];
-const stat2options = ref(stat2options2);
+const options = {
+  responsive: true,
+  cutout: 50,
+  maintainAspectRatio: false,
+};
 
-onMounted(() => {
-  populatestat2();
+// Pie Data for RA 10612
+
+const datas = computed(() => {
+  return {
+    labels: ["Good Standing", "LOA", "No Report", "On Extension", "Suspended"],
+    datasets: [
+      {
+        backgroundColor: [
+          "#C3E8FF",
+          "#E6DEFF",
+          "#A099E2",
+          "#FFFBFF",
+          "#777094",
+        ],
+        data: [
+          ra1gstanding.value,
+          ra1LOA.value,
+          ra1nreport.value,
+          ra1extension.value,
+          ra1suspended.value,
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
 });
 
-const populatestat2 = () => {
-  axios.get("/read.php?readstat2").then((response) => {
-    stat2options2 = response.data;
-  });
+const doptions = {
+  responsive: true,
+  cutout: 50,
+  maintainAspectRatio: false,
 };
 
-const filterstat2 = (val, update) => {
-  if (val === "") {
-    update(() => {
-      stat2options.value = stat2options2;
-    });
-    return;
-  }
+// Pie Data for RA 10612
 
-  update(() => {
-    const needle = val.toLowerCase();
-    stat2options.value = stat2options2.filter((option) => {
-      return option.label.toLowerCase().includes(needle);
-    });
-  });
-};
-
-// Select Term
-var stat1options2 = [];
-const stat1options = ref(stat1options2);
-
-onMounted(() => {
-  populatestat1();
+const datar = computed(() => {
+  return {
+    labels: ["Good Standing", "LOA", "No Report", "On Extension", "Suspended"],
+    datasets: [
+      {
+        backgroundColor: [
+          "#C3E8FF",
+          "#E6DEFF",
+          "#A099E2",
+          "#FFFBFF",
+          "#777094",
+        ],
+        data: [
+          ra7gstanding.value,
+          ra7LOA.value,
+          ra7nreport.value,
+          ra7extension.value,
+          ra7suspended.value,
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
 });
 
-const populatestat1 = () => {
-  axios.get("/read.php?readstat1").then((response) => {
-    stat1options2 = response.data;
-  });
+const roptions = {
+  responsive: true,
+  cutout: 50,
+  maintainAspectRatio: false,
 };
 
-const filterstat1 = (val, update) => {
-  if (val === "") {
-    update(() => {
-      stat1options.value = stat1options2;
-    });
-    return;
-  }
+// Pie Data for All
 
-  update(() => {
-    const needle = val.toLowerCase();
-    stat1options.value = stat1options2.filter((option) => {
-      return option.label.toLowerCase().includes(needle);
-    });
-  });
-};
+const allData = computed(() => {
+  return {
+    labels: ["Good Standing", "LOA", "No Report", "On Extension", "Suspended"],
+    datasets: [
+      {
+        backgroundColor: [
+          "#C3E8FF",
+          "#E6DEFF",
+          "#A099E2",
+          "#FFFBFF",
+          "#777094",
+        ],
+        data: [
+          allG_standing.value,
+          all_Loa.value,
+          all_Reports.value,
+          all_Extension.value,
+          all_Suspended.value,
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
+});
 
-// Method to export table data to CSV
-const exportToCSV = () => {
-  const headers = columns.map((col) => col.label);
-  const rows = todos.value.map((todo) => [
-    todo.scode,
-    todo.academic ? "Yes" : "No",
-    todo.units,
-    todo.grade,
-    todo.completion,
-    todo.remarks,
-  ]);
+const allOptions = {
+  responsive: true,
 
-  let csvContent =
-    "data:text/csv;charset=utf-8," +
-    [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "grades.csv");
-  document.body.appendChild(link);
-
-  link.click();
-  document.body.removeChild(link);
+  maintainAspectRatio: false,
 };
 </script>
+
+<style scoped>
+@media screen and (max-width: 1000px) {
+  .hide-small {
+    display: none;
+  }
+}
+</style>

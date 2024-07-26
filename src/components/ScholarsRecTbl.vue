@@ -231,16 +231,37 @@
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <div class="q-px-sm">
-                      <span class="text-bold">Work Region</span>
+                      <span class="text-bold">Tribe</span>
                       <q-input
-                        ref="refwregion"
+                        ref="reftribe"
                         outlined
                         dense
                         hide-bottom-space
-                        v-model="state.wregion"
-                        name="wregion"
+                        v-model="state.tribe"
+                        name="tribe"
                         :rules="inputRules"
                       />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">School Region</span>
+                      <q-select
+                        ref="refscregions"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        behavior="menu"
+                        emit-value
+                        map-options
+                        use-input
+                        input-debounce="0"
+                        v-model="state.scregions"
+                        name="scregions"
+                        :options="regoptions"
+                        @filter="filterregion"
+                      >
+                      </q-select>
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
@@ -262,6 +283,36 @@
 
               <div class="q-pa-md">
                 <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Email</span>
+                      <q-input
+                        ref="refmail"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.mail"
+                        name="mail"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Contact No.</span>
+                      <q-input
+                        ref="refcontact"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.contact"
+                        name="contact"
+                        mask="(####) ### - ####"
+                        hint="(####) ### - ####"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
                   <div class="col-xs-12 col-sm-6 col-md-3">
                     <div class="q-px-sm">
                       <span class="text-bold">Street</span>
@@ -311,10 +362,10 @@
                         ref="refmun"
                         outlined
                         dense
+                        readonly
                         hide-bottom-space
                         v-model="state.municipality"
                         name="municipality"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -323,12 +374,12 @@
                       <span class="text-bold">Province</span>
                       <q-input
                         ref="refprov"
+                        readonly
                         outlined
                         dense
                         hide-bottom-space
                         v-model="state.province"
                         name="province"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -339,10 +390,10 @@
                         ref="refreg"
                         outlined
                         dense
+                        readonly
                         hide-bottom-space
                         v-model="state.region"
                         name="region"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -353,10 +404,10 @@
                         ref="refdist"
                         outlined
                         dense
+                        readonly
                         hide-bottom-space
                         v-model="state.district"
                         name="district"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -367,40 +418,10 @@
                         ref="refzip"
                         outlined
                         dense
+                        readonly
                         hide-bottom-space
                         v-model="state.zip"
                         name="zip"
-                        :rules="inputRules"
-                      />
-                    </div>
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-6">
-                    <div class="q-px-sm">
-                      <span class="text-bold">Email</span>
-                      <q-input
-                        ref="refmail"
-                        outlined
-                        dense
-                        hide-bottom-space
-                        v-model="state.mail"
-                        name="mail"
-                        :rules="inputRules"
-                      />
-                    </div>
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-6">
-                    <div class="q-px-sm">
-                      <span class="text-bold">Contact No.</span>
-                      <q-input
-                        ref="refcontact"
-                        outlined
-                        dense
-                        hide-bottom-space
-                        v-model="state.contact"
-                        name="contact"
-                        mask="(####) ### - ####"
-                        hint="(####) ### - ####"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -648,13 +669,13 @@
                     <span class="text-bold">School Code</span>
                     <q-input
                       ref="refUpSchoolCode"
+                      readonly
                       outlined
                       dense
                       hide-bottom-space
                       type="number"
                       v-model="state.upscode"
                       name="upscode"
-                      :rules="inputNumRules"
                     />
                   </div>
                 </div>
@@ -1386,15 +1407,14 @@ const UpdateScholar = () => {
   refUpConfPassword.value.validate();
   refUpActType.value.validate();
   refUpRegion.value.validate();
-  refUpSchoolCode.value.validate();
+
   if (
     refUpId.value.hasError ||
     refUpUsername.value.hasError ||
     refUpPassword.value.hasError ||
     refUpConfPassword.value.hasError ||
     refUpActType.value.hasError ||
-    refUpRegion.value.hasError ||
-    refUpSchoolCode.value.hasError
+    refUpRegion.value.hasError
   ) {
   } else {
     var formData = new FormData(document.getElementById("updateScholarForm"));

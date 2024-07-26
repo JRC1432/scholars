@@ -1,0 +1,3 @@
+Internal ID,Username,Password,Account Type,Regions,Staff_ID,First Name,Middle Name,Last Name,Suffix Name,SEX,Date of Birth (MM/DD/YYYY),Place of Birth,Work Region,School Code,Street,Village,Barangay,Municipality,Province,Region,District,ZipCode,Email,Contact No.
+Test1,Admin_test,Test123456,300,NCR,Staff_Test6,Test_User1,User1,Only1,I,M,5/5/1990,Tondo1,NCR,123,1st,Kalayaan,Tibay,Bacoor,Cavite,IV A,3,1111,test@gmail.com,9991234567
+Test2,User_test,Test12345,100,NCR,Staff_Test7,Test_User2,User2,Only2,II,F,5/5/1990,Tondo2,NCR,123,2nd,Kalayaan,Tibay,Bacoor,Cavite,IV A,4,1100,test@gmail.com,9991234567

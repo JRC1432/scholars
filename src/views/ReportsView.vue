@@ -1,242 +1,75 @@
 <template>
   <div class="q-pa-md">
-    <q-banner class="tertiary-container rounded-borders-10 text-h1">
-      <div class="col-xs-12 col-sm-6">
-        <div class="q-col-gutter-md row items-start">
-          <div class="col-xs-12 col-sm-6 col-md-6">
-            <div class="text-h6">
-              Hello
-              <strong class="primary-text text-bold">{{ user.username }}</strong
-              >!! 🎉
-            </div>
-
-            <div class="text-body1 text-weight-medium">
-              Welcome You Are Now Login To The System!!
-            </div>
-
-            <q-separator class="q-mt-md q-mb-xs" />
-            <div class="text-h7">
-              <strong class="primary-text text-bold">Employee ID: </strong>
-              <text class="text-weight-bold">{{ user.internal_id }}</text>
-            </div>
-            <div class="text-h7">
-              <strong class="primary-text text-bold">Name: </strong>
-              <text class="text-weight-bold">{{ user.username }}</text>
-            </div>
-            <div class="text-h7">
-              <strong class="primary-text text-bold">Region: </strong>
-              <text class="text-weight-bold">{{ user.region }}</text>
-            </div>
-            <div class="text-h7">
-              <strong class="primary-text text-bold">Email:</strong>
-              <text class="text-weight-bold">{{}}</text>
-            </div>
-          </div>
-
-          <div class="q-pa-md q-gutter-sm q-display-flex q-justify-end">
-            <div class="col-xs-12 col-sm-6 col-md-6">
-              <div
-                class="fixed-right absolute-right fixed-top-right absolute-top-right hide-small"
-              >
-                <Vue3Lottie
-                  animationLink="https://lottie.host/0ad26d58-6934-435a-a467-4bad2176fbfe/UcnlcscUIL.json"
-                  style="height: calc(30vh)"
-                  :height="500"
-                  :width="500"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </q-banner>
-  </div>
-  <div class="q-pa-md">
     <div class="col-xs-12 col-sm-6">
       <div class="q-col-gutter-md row items-start">
-        <div class="col-xs-12 col-sm-6 col-md-3">
-          <q-card class="surface-container no-shadow rounded-borders-10">
-            <div class="row">
-              <div class="col-2 q-pa-md">
-                <div
-                  class="row justify-center items-center"
-                  style="height: 70px"
-                >
-                  <q-icon name="school" size="xl" class="primary-text"></q-icon>
-                </div>
-              </div>
-              <div class="col-10 surface-container rounded-borders-10">
-                <div class="row items-center" style="height: 95px">
-                  <div class="q-ml-md">
-                    <div class="text-h4 text-bold primary-text">
-                      <vue3-autocounter
-                        ref="counter"
-                        :startAmount="0"
-                        :endAmount="meritcounts + ra10612counts + ra7687counts"
-                        :duration="3"
-                        class="text-bold"
-                      />
-                    </div>
-                    <div class="text-subtitle2">Total Number of Scholars:</div>
+        <div class="col-xs-12 col-sm-12 col-md-9">
+          <q-banner class="tertiary-container rounded-borders-10 text-h1">
+            <div class="col-xs-12 col-sm-6">
+              <div class="q-col-gutter-md row items-start justify-between">
+                <div class="col-xs-12 col-sm-12 col-md-4">
+                  <div class="text-h6">
+                    Hello
+                    <strong class="primary-text text-bold">{{
+                      user.username
+                    }}</strong
+                    >!! 🎉
                   </div>
-                </div>
-              </div>
-            </div>
-          </q-card>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-3">
-          <q-card class="surface-container no-shadow rounded-borders-10">
-            <div class="row">
-              <div class="col-2 q-pa-md">
-                <div
-                  class="row justify-center items-center"
-                  style="height: 70px"
-                >
-                  <q-icon
-                    name="workspace_premium"
-                    size="xl"
-                    class="primary-text"
-                  ></q-icon>
-                </div>
-              </div>
-              <div class="col-10 surface-container rounded-borders-10">
-                <div class="row items-center" style="height: 95px">
-                  <div class="q-ml-md">
-                    <div class="text-h4 text-bold primary-text" id="number_up">
-                      <vue3-autocounter
-                        ref="counter"
-                        :startAmount="0"
-                        :endAmount="meritcounts"
-                        :duration="3"
-                        class="text-bold"
-                      />
-                    </div>
-                    <div id="number_up"></div>
-                    <div class="text-subtitle2">MERIT:</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </q-card>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-3">
-          <q-card class="surface-container no-shadow rounded-borders-10">
-            <div class="row">
-              <div class="col-2 q-pa-md">
-                <div
-                  class="row justify-center items-center"
-                  style="height: 70px"
-                >
-                  <q-icon
-                    name="military_tech"
-                    size="xl"
-                    class="primary-text"
-                  ></q-icon>
-                </div>
-              </div>
-              <div class="col-10 surface-container rounded-borders-10">
-                <div class="row items-center" style="height: 95px">
-                  <div class="q-ml-md">
-                    <div class="text-h4 text-bold primary-text">
-                      <vue3-autocounter
-                        ref="counter"
-                        :startAmount="0"
-                        :endAmount="ra10612counts"
-                        :duration="3"
-                        class="text-bold"
-                      />
-                    </div>
-                    <div class="text-subtitle2">RA 10612:</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </q-card>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-3">
-          <q-card class="surface-container no-shadow rounded-borders-10">
-            <div class="row">
-              <div class="col-2 q-pa-md">
-                <div
-                  class="row justify-center items-center"
-                  style="height: 70px"
-                >
-                  <q-icon
-                    name="military_tech"
-                    size="xl"
-                    class="primary-text"
-                  ></q-icon>
-                </div>
-              </div>
-              <div class="col-10 surface-container rounded-borders-10">
-                <div class="row items-center" style="height: 95px">
-                  <div class="q-ml-md">
-                    <div class="text-h4 text-bold primary-text">
-                      <vue3-autocounter
-                        ref="counter"
-                        :startAmount="0"
-                        :endAmount="ra7687counts"
-                        :duration="3"
-                        class="text-bold"
-                      />
-                    </div>
-                    <div class="text-subtitle2">RA 7687:</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </q-card>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="q-pa-md">
-    <div class="col-xs-12 col-sm-6">
-      <div class="q-col-gutter-md row">
-        <div class="col-xs-12 col-sm-12 col-md-4">
-          <q-card class="my-card surface-container rounded-borders-10">
-            <q-card-section>
-              <div class="text-h6 text-bold primary-text">MERIT</div>
-            </q-card-section>
-            <q-card-section class="q-pa-md"
-              ><Doughnut
-                :data="data"
-                :options="options"
-                :height="195"
-                :width="195"
-            /></q-card-section>
-          </q-card>
+                  <div class="text-body1 text-weight-medium">
+                    Welcome You Are Now Login To The System!!
+                  </div>
+
+                  <q-separator class="q-mt-md q-mb-xs" />
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold"
+                      >Employee ID:
+                    </strong>
+                    <text class="text-weight-bold">{{ user.internal_id }}</text>
+                  </div>
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold">Name: </strong>
+                    <text class="text-weight-bold">{{ user.username }}</text>
+                  </div>
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold">Region: </strong>
+                    <text class="text-weight-bold">{{ user.region }}</text>
+                  </div>
+                  <div class="text-h7">
+                    <strong class="primary-text text-bold">Email: </strong>
+                    <text class="text-weight-bold">{{ userMails }}</text>
+                  </div>
+                </div>
+                <div
+                  class="col-xs-12 col-sm-6 col-md-4 row justify-end hide-small"
+                >
+                  <div class="absolute" style="top: 10px">
+                    <Vue3Lottie
+                      animationLink="https://lottie.host/0ad26d58-6934-435a-a467-4bad2176fbfe/UcnlcscUIL.json"
+                      :height="300"
+                      :width="300"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </q-banner>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-4">
-          <q-card class="my-card surface-container rounded-borders-10">
-            <q-card-section>
-              <div class="text-h6 text-bold primary-text">RA 10612</div>
-            </q-card-section>
-            <q-card-section class="q-pa-md">
-              <Doughnut
-                :data="datas"
-                :options="doptions"
-                :height="195"
-                :width="195"
+        <div class="col-xs-12 col-sm-12 col-md-3">
+          <q-banner class="surface-container rounded-borders-10 text-h1">
+            <div class="row justify-center items-center" style="height: 70px">
+              <q-icon name="school" size="xl" class="primary-text"></q-icon>
+            </div>
+            <div class="q-py-sm text-h4 text-bold primary-text text-center">
+              <vue3-autocounter
+                ref="counter"
+                :startAmount="0"
+                :endAmount="meritcounts + ra10612counts + ra7687counts"
+                :duration="3"
+                class="text-bold"
               />
-            </q-card-section>
-          </q-card>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-4">
-          <q-card class="my-card surface-container rounded-borders-10">
-            <q-card-section>
-              <div class="text-h6 text-bold primary-text">RA 7687</div>
-            </q-card-section>
-            <q-card-section class="q-pa-md">
-              <Doughnut
-                :data="datar"
-                :options="roptions"
-                :height="195"
-                :width="195"
-              />
-            </q-card-section>
-          </q-card>
+            </div>
+            <div class="text-center text-h5">Total Number of Scholars:</div>
+          </q-banner>
         </div>
       </div>
     </div>
@@ -271,7 +104,7 @@
                       id="my-chart-id"
                       :options="chartOptions"
                       :data="chartData"
-                      style="height: 300px"
+                      style="height: 348px"
                     />
                   </div>
                 </div>
@@ -288,9 +121,297 @@
               <Pie
                 :data="allData"
                 :options="allOptions"
-                :height="333"
-                :width="333"
+                :height="250"
+                :width="250"
               />
+            </q-card-section>
+            <q-card-section>
+              <q-markup-table class="no-shadow surface-container">
+                <thead>
+                  <tr>
+                    <th class="text-center primary-text text-bold">
+                      Good Standing
+                    </th>
+                    <th class="text-center primary-text text-bold">LOA</th>
+                    <th class="text-center primary-text text-bold">
+                      No Report
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      On Extension
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      Suspended
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center q-td--no-hover">
+                      {{ allG_standing }}
+                    </td>
+                    <td class="text-center q-td--no-hover">{{ all_Loa }}</td>
+                    <td class="text-center q-td--no-hover">
+                      {{ all_Reports }}
+                    </td>
+                    <td class="text-center q-td--no-hover">
+                      {{ all_Extension }}
+                    </td>
+                    <td class="text-center q-td--no-hover">
+                      {{ all_Suspended }}
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-pa-md">
+    <div class="col-xs-12 col-sm-6">
+      <div class="q-col-gutter-md row">
+        <div class="col-xs-12 col-sm-12 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card class="surface-container no-shadow rounded-borders-10">
+              <div class="row">
+                <div class="col-2 q-pa-md">
+                  <div
+                    class="row justify-center items-center"
+                    style="height: 70px"
+                  >
+                    <q-icon
+                      name="workspace_premium"
+                      size="xl"
+                      class="primary-text"
+                    ></q-icon>
+                  </div>
+                </div>
+                <div class="col-10 surface-container rounded-borders-10">
+                  <div class="row items-center" style="height: 95px">
+                    <div class="q-ml-md">
+                      <div
+                        class="text-h4 text-bold primary-text"
+                        id="number_up"
+                      >
+                        <vue3-autocounter
+                          ref="counter"
+                          :startAmount="0"
+                          :endAmount="meritcounts"
+                          :duration="3"
+                          class="text-bold"
+                        />
+                      </div>
+                      <div id="number_up"></div>
+                      <div class="text-subtitle2">MERIT:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+
+            <q-card-section class="q-pa-md">
+              <Doughnut
+                :data="data"
+                :options="options"
+                :height="195"
+                :width="195"
+              />
+            </q-card-section>
+            <q-card-section>
+              <q-markup-table class="no-shadow surface-container">
+                <thead>
+                  <tr>
+                    <th class="text-center primary-text text-bold">
+                      Good Standing
+                    </th>
+                    <th class="text-center primary-text text-bold">LOA</th>
+                    <th class="text-center primary-text text-bold">
+                      No Report
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      On Extension
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      Suspended
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center q-td--no-hover">{{ mgstanding }}</td>
+                    <td class="text-center q-td--no-hover">{{ mloa }}</td>
+                    <td class="text-center q-td--no-hover">{{ mnreport }}</td>
+                    <td class="text-center q-td--no-hover">{{ mextension }}</td>
+                    <td class="text-center q-td--no-hover">{{ msuspended }}</td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card class="surface-container no-shadow rounded-borders-10">
+              <div class="row">
+                <div class="col-2 q-pa-md">
+                  <div
+                    class="row justify-center items-center"
+                    style="height: 70px"
+                  >
+                    <q-icon
+                      name="military_tech"
+                      size="xl"
+                      class="primary-text"
+                    ></q-icon>
+                  </div>
+                </div>
+                <div class="col-10 surface-container rounded-borders-10">
+                  <div class="row items-center" style="height: 95px">
+                    <div class="q-ml-md">
+                      <div class="text-h4 text-bold primary-text">
+                        <vue3-autocounter
+                          ref="counter"
+                          :startAmount="0"
+                          :endAmount="ra10612counts"
+                          :duration="3"
+                          class="text-bold"
+                        />
+                      </div>
+                      <div class="text-subtitle2">RA 10612:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+            <q-card-section class="q-pa-md">
+              <Doughnut
+                :data="datas"
+                :options="doptions"
+                :height="195"
+                :width="195"
+              />
+            </q-card-section>
+
+            <q-card-section>
+              <q-markup-table class="no-shadow surface-container">
+                <thead>
+                  <tr>
+                    <th class="text-center primary-text text-bold">
+                      Good Standing
+                    </th>
+                    <th class="text-center primary-text text-bold">LOA</th>
+                    <th class="text-center primary-text text-bold">
+                      No Report
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      On Extension
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      Suspended
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra1gstanding }}
+                    </td>
+                    <td class="text-center q-td--no-hover">{{ ra1LOA }}</td>
+                    <td class="text-center q-td--no-hover">{{ ra1nreport }}</td>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra1extension }}
+                    </td>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra1suspended }}
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4">
+          <q-card class="my-card surface-container rounded-borders-10">
+            <q-card class="surface-container no-shadow rounded-borders-10">
+              <div class="row">
+                <div class="col-2 q-pa-md">
+                  <div
+                    class="row justify-center items-center"
+                    style="height: 70px"
+                  >
+                    <q-icon
+                      name="military_tech"
+                      size="xl"
+                      class="primary-text"
+                    ></q-icon>
+                  </div>
+                </div>
+                <div class="col-10 surface-container rounded-borders-10">
+                  <div class="row items-center" style="height: 95px">
+                    <div class="q-ml-md">
+                      <div class="text-h4 text-bold primary-text">
+                        <vue3-autocounter
+                          ref="counter"
+                          :startAmount="0"
+                          :endAmount="ra7687counts"
+                          :duration="3"
+                          class="text-bold"
+                        />
+                      </div>
+                      <div class="text-subtitle2">RA 7687:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+            <q-card-section class="q-pa-md">
+              <Doughnut
+                :data="datar"
+                :options="roptions"
+                :height="195"
+                :width="195"
+              />
+            </q-card-section>
+
+            <q-card-section>
+              <q-markup-table class="no-shadow surface-container">
+                <thead>
+                  <tr>
+                    <th class="text-center primary-text text-bold">
+                      Good Standing
+                    </th>
+                    <th class="text-center primary-text text-bold">LOA</th>
+                    <th class="text-center primary-text text-bold">
+                      No Report
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      On Extension
+                    </th>
+                    <th class="text-center primary-text text-bold">
+                      Suspended
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra7gstanding }}
+                    </td>
+                    <td class="text-center q-td--no-hover">{{ ra7LOA }}</td>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra7nreport }}
+                    </td>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra7extension }}
+                    </td>
+                    <td class="text-center q-td--no-hover">
+                      {{ ra7suspended }}
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
             </q-card-section>
           </q-card>
         </div>
@@ -614,11 +735,11 @@ const data = computed(() => {
     datasets: [
       {
         backgroundColor: [
-          "#C3E8FF",
-          "#E6DEFF",
-          "#A099E2",
-          "#FFFBFF",
-          "#777094",
+          "#4BC0C0",
+          "#B2C0E1",
+          "#E1C27F",
+          "#FFFFFF",
+          "#E2A1C9",
         ],
         data: [
           mgstanding.value,
@@ -647,11 +768,11 @@ const datas = computed(() => {
     datasets: [
       {
         backgroundColor: [
-          "#C3E8FF",
-          "#E6DEFF",
-          "#A099E2",
-          "#FFFBFF",
-          "#777094",
+          "#4BC0C0",
+          "#B2C0E1",
+          "#E1C27F",
+          "#FFFFFF",
+          "#E2A1C9",
         ],
         data: [
           ra1gstanding.value,
@@ -680,11 +801,11 @@ const datar = computed(() => {
     datasets: [
       {
         backgroundColor: [
-          "#C3E8FF",
-          "#E6DEFF",
-          "#A099E2",
-          "#FFFBFF",
-          "#777094",
+          "#4BC0C0",
+          "#B2C0E1",
+          "#E1C27F",
+          "#FFFFFF",
+          "#E2A1C9",
         ],
         data: [
           ra7gstanding.value,
@@ -713,11 +834,11 @@ const allData = computed(() => {
     datasets: [
       {
         backgroundColor: [
-          "#C3E8FF",
-          "#E6DEFF",
-          "#A099E2",
-          "#FFFBFF",
-          "#777094",
+          "#4BC0C0",
+          "#B2C0E1",
+          "#E1C27F",
+          "#FFFFFF",
+          "#E2A1C9",
         ],
         data: [
           allG_standing.value,
@@ -736,6 +857,24 @@ const allOptions = {
   responsive: true,
 
   maintainAspectRatio: false,
+};
+
+// Read Users Email
+const userMails = ref("");
+
+const userID = user.id;
+
+onMounted(() => {
+  populateUserMail();
+});
+
+const populateUserMail = () => {
+  console.log(userID);
+  var formData = new FormData();
+  formData.append("idMail", userID);
+  axios.post("/read.php?readUserMail", formData).then((response) => {
+    userMails.value = response.data.email;
+  });
 };
 </script>
 

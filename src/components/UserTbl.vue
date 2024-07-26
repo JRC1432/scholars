@@ -189,6 +189,7 @@
                     <div class="q-px-sm">
                       <span class="text-bold">SEX </span>
                       <q-select
+                        ref="refsex"
                         :options="sexoptions"
                         v-model="state.gender"
                         emit-value
@@ -196,6 +197,7 @@
                         outlined
                         dense
                         hide-bottom-space
+                        :rules="[myRule]"
                       />
                     </div>
                   </div>
@@ -231,15 +233,24 @@
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <div class="q-px-sm">
                       <span class="text-bold">Work Region</span>
-                      <q-input
+
+                      <q-select
                         ref="refwregion"
                         outlined
                         dense
                         hide-bottom-space
+                        behavior="menu"
+                        emit-value
+                        map-options
+                        use-input
+                        input-debounce="0"
                         v-model="state.wregion"
                         name="wregion"
-                        :rules="inputRules"
-                      />
+                        :options="regoptions"
+                        @filter="filterregion"
+                        :rules="[myRule]"
+                      >
+                      </q-select>
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
@@ -261,6 +272,38 @@
 
               <div class="q-pa-md">
                 <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Select Province:</span>
+
+                      <q-select
+                        ref="rfprovinceZip"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="provinceZip"
+                        name="provinceZip"
+                        emit-value
+                        map-options
+                        use-input
+                        input-debounce="0"
+                        :options="zipOption"
+                        @filter="filterZip"
+                        behavior="menu"
+                        @update:model-value="populateaddress"
+                        :rules="[myRule]"
+                      >
+                        <template v-slot:no-option>
+                          <q-item>
+                            <q-item-section class="text-grey">
+                              No results
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                      </q-select>
+                    </div>
+                  </div>
+
                   <div class="col-xs-12 col-sm-6 col-md-3">
                     <div class="q-px-sm">
                       <span class="text-bold">Street</span>
@@ -285,7 +328,6 @@
                         hide-bottom-space
                         v-model="state.village"
                         name="village"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -299,7 +341,6 @@
                         hide-bottom-space
                         v-model="state.barangay"
                         name="barangay"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -307,6 +348,7 @@
                     <div class="q-px-sm">
                       <span class="text-bold">Municipality</span>
                       <q-input
+                        readonly
                         ref="refmun"
                         outlined
                         dense
@@ -321,6 +363,7 @@
                     <div class="q-px-sm">
                       <span class="text-bold">Province</span>
                       <q-input
+                        readonly
                         ref="refprov"
                         outlined
                         dense
@@ -335,6 +378,7 @@
                     <div class="q-px-sm">
                       <span class="text-bold">Region</span>
                       <q-input
+                        readonly
                         ref="refreg"
                         outlined
                         dense
@@ -349,6 +393,7 @@
                     <div class="q-px-sm">
                       <span class="text-bold">District</span>
                       <q-input
+                        readonly
                         ref="refdist"
                         outlined
                         dense
@@ -363,16 +408,16 @@
                     <div class="q-px-sm">
                       <span class="text-bold">ZipCode</span>
                       <q-input
-                        ref="refzip"
+                        readonly
                         outlined
                         dense
                         hide-bottom-space
-                        v-model="state.zip"
-                        name="zip"
-                        :rules="inputRules"
+                        v-model="state.zipcode"
+                        name="zipcode"
                       />
                     </div>
                   </div>
+
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <div class="q-px-sm">
                       <span class="text-bold">Email</span>
@@ -383,7 +428,7 @@
                         hide-bottom-space
                         v-model="state.mail"
                         name="mail"
-                        :rules="inputRules"
+                        :rules="[emailRule]"
                       />
                     </div>
                   </div>
@@ -515,6 +560,7 @@
                       name="acttype"
                       :options="actoptions"
                       @filter="filteracnt"
+                      :rules="[myRule]"
                     >
                     </q-select>
                   </div>
@@ -536,22 +582,9 @@
                       name="regions"
                       :options="regoptions"
                       @filter="filterregion"
+                      :rules="[myRule]"
                     >
                     </q-select>
-                  </div>
-                </div>
-                <div class="col-xs-12 col-sm-12">
-                  <div class="q-px-sm">
-                    <span class="text-bold">School Code</span>
-                    <q-input
-                      ref="refSchoolCode"
-                      outlined
-                      dense
-                      hide-bottom-space
-                      type="number"
-                      v-model="state.code"
-                      name="code"
-                    />
                   </div>
                 </div>
               </div>
@@ -696,6 +729,7 @@
                       name="acttype"
                       :options="actoptions"
                       @filter="filteracnt"
+                      :rules="[myRule]"
                     >
                     </q-select>
                   </div>
@@ -704,17 +738,16 @@
                   <div class="q-px-sm">
                     <span class="text-bold">School Code</span>
                     <q-input
-                      ref="refUpSchoolCode"
+                      readonly
                       outlined
                       dense
                       hide-bottom-space
-                      type="number"
                       v-model="state.upcode"
-                      name="code"
-                      :rules="inputNumRules"
+                      name="upcode"
                     />
                   </div>
                 </div>
+
                 <div class="col-xs-12 col-sm-6 col-md-12">
                   <div class="q-px-sm">
                     <span class="text-bold">UserName</span>
@@ -797,6 +830,7 @@
                       name="regions"
                       :options="regoptions"
                       @filter="filterregion"
+                      :rules="[myRule]"
                     >
                     </q-select>
                   </div>
@@ -813,16 +847,19 @@
                   class="q-mb-sm"
                   style="width: 80%"
                 />
-
-                <q-btn
-                  rounded
-                  style="width: 80%"
-                  label="REMOVE THIS USER"
-                  color="negative"
-                  type="submit"
-                  class="q-mb-sm"
-                />
               </div>
+            </q-card-actions>
+          </form>
+          <form id="DelUserForm" @submit.prevent.stop="DelStaffInfo">
+            <q-card-actions class="row fit justify-center q-pt-xs">
+              <q-btn
+                rounded
+                style="width: 80%"
+                label="REMOVE THIS USER"
+                color="negative"
+                type="submit"
+                class="q-mb-sm"
+              />
             </q-card-actions>
           </form>
         </q-tab-panel>
@@ -913,6 +950,7 @@
                           outlined
                           dense
                           hide-bottom-space
+                          :rules="[myRule]"
                         />
                       </div>
                     </div>
@@ -948,15 +986,24 @@
                     <div class="col-xs-12 col-sm-6 col-md-6">
                       <div class="q-px-sm">
                         <span class="text-bold">Work Region</span>
-                        <q-input
+
+                        <q-select
                           ref="refUpwregion"
                           outlined
                           dense
                           hide-bottom-space
+                          behavior="menu"
+                          emit-value
+                          map-options
+                          use-input
+                          input-debounce="0"
                           v-model="state.upwregion"
                           name="upwregion"
-                          :rules="inputRules"
-                        />
+                          :options="regoptions"
+                          @filter="filterregion"
+                          :rules="[myRule]"
+                        >
+                        </q-select>
                       </div>
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-6">
@@ -979,6 +1026,38 @@
 
                 <div class="q-pa-md">
                   <div class="row row_width q-col-gutter-xs">
+                    <div class="col-xs-12">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Select Province:</span>
+
+                        <q-select
+                          ref="refUpzipcode"
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="upzipid"
+                          name="upzipid"
+                          emit-value
+                          map-options
+                          use-input
+                          input-debounce="0"
+                          label="Select Province"
+                          :options="zipOption"
+                          @filter="filterZip"
+                          behavior="menu"
+                          @update:model-value="populateUpAddress"
+                        >
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </div>
+                    </div>
+
                     <div class="col-xs-12 col-sm-6 col-md-3">
                       <div class="q-px-sm">
                         <span class="text-bold">Street</span>
@@ -1026,6 +1105,7 @@
                         <span class="text-bold">Municipality</span>
                         <q-input
                           ref="refUpmun"
+                          readonly
                           outlined
                           dense
                           hide-bottom-space
@@ -1040,6 +1120,7 @@
                         <span class="text-bold">Province</span>
                         <q-input
                           ref="refUpprov"
+                          readonly
                           outlined
                           dense
                           hide-bottom-space
@@ -1054,6 +1135,7 @@
                         <span class="text-bold">Region</span>
                         <q-input
                           ref="refUpreg"
+                          readonly
                           outlined
                           dense
                           hide-bottom-space
@@ -1068,6 +1150,7 @@
                         <span class="text-bold">District</span>
                         <q-input
                           ref="refUpdist"
+                          readonly
                           outlined
                           dense
                           hide-bottom-space
@@ -1081,16 +1164,16 @@
                       <div class="q-px-sm">
                         <span class="text-bold">ZipCode</span>
                         <q-input
-                          ref="refUpzipcode"
+                          readonly
                           outlined
                           dense
                           hide-bottom-space
                           v-model="state.upzipcode"
                           name="upzipcode"
-                          :rules="inputRules"
                         />
                       </div>
                     </div>
+
                     <div class="col-xs-12 col-sm-6 col-md-6">
                       <div class="q-px-sm">
                         <span class="text-bold">Email</span>
@@ -1101,7 +1184,7 @@
                           hide-bottom-space
                           v-model="state.upmail"
                           name="upmail"
-                          :rules="inputRules"
+                          :rules="[emailRule]"
                         />
                       </div>
                     </div>
@@ -1153,6 +1236,7 @@ import {
   IconUserMinus,
   IconUserPlus,
   IconFileTypeCsv,
+  IconNfcOff,
 } from "@tabler/icons-vue";
 import Swal from "sweetalert2";
 
@@ -1175,6 +1259,8 @@ const newUser = ref(false);
 const showedit = ref(false);
 const tab = ref("user");
 const step = ref(1);
+const provinceZip = ref(null);
+const upzipid = ref(null);
 
 // Items reference
 
@@ -1184,7 +1270,7 @@ const refActType = ref(null);
 const refPassword = ref(null);
 const refConfPassword = ref(null);
 const refRegion = ref(null);
-const refSchoolCode = ref(null);
+
 const refBulkUpload = ref(null);
 
 const refUpId = ref(null);
@@ -1193,13 +1279,13 @@ const refUpPassword = ref(null);
 const refUpConfPassword = ref(null);
 const refUpActType = ref(null);
 const refUpRegion = ref(null);
-const refUpSchoolCode = ref(null);
 
 const refstaff = ref(null);
 const reffname = ref(null);
 const refmname = ref(null);
 const reflname = ref(null);
 const refsname = ref(null);
+const refsex = ref(null);
 const refbirth = ref(null);
 const refpob = ref(null);
 const refwregion = ref(null);
@@ -1212,7 +1298,7 @@ const refmun = ref(null);
 const refprov = ref(null);
 const refreg = ref(null);
 const refdist = ref(null);
-const refzip = ref(null);
+
 const refmail = ref(null);
 const refcontact = ref(null);
 
@@ -1236,6 +1322,7 @@ const refUpdist = ref(null);
 const refUpzipcode = ref(null);
 const refUpmail = ref(null);
 const refUpcontact = ref(null);
+const rfprovinceZip = ref(null);
 
 // Match Passwords
 const isPwd = ref(true);
@@ -1261,6 +1348,13 @@ const inputpassRules = [
   (val) => val.length >= 6 || "Please use minimum of 6 characters",
 ];
 
+const myRule = (val) => {
+  if (val === null) {
+    return "You must make a selection!";
+  }
+  return true;
+};
+
 const fileRules = (val) => {
   if (val === null) {
     return "Please Select a File!";
@@ -1271,6 +1365,11 @@ const fileRules = (val) => {
 function maxLength(val) {
   return val.length >= 6 || "Please use maximum of 6 characters";
 }
+
+const emailRule = (val) => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(val) || "Please enter a valid email address";
+};
 
 // Validation for Usernames for Create
 
@@ -1323,7 +1422,6 @@ const state = reactive({
   confirmpassword: "",
   acttype: "",
   regions: "",
-  code: "",
 
   staffid: "",
   fname: "",
@@ -1343,7 +1441,7 @@ const state = reactive({
   province: "",
   region: "",
   district: "",
-  zip: "",
+  zipcode: "",
   mail: "",
   contact: "",
 
@@ -1374,6 +1472,7 @@ const state = reactive({
   upregion: "",
   updistrict: "",
   upzipcode: "",
+
   upmail: "",
   upcontact: "",
 });
@@ -1461,7 +1560,6 @@ const CloseBtn = () => {
   state.confirmpassword = "";
   state.acttype = "";
   state.regions = "";
-  state.code = "";
 };
 const CloseEditBtn = () => {
   showedit.value = false;
@@ -1627,16 +1725,16 @@ const step1 = () => {
   reffname.value.validate();
   reflname.value.validate();
   refbirth.value.validate();
+  refsex.value.validate();
   refpob.value.validate();
   refwregion.value.validate();
   refstreet.value.validate();
-  refvillage.value.validate();
-  refBrgy.value.validate();
+
   refmun.value.validate();
   refprov.value.validate();
   refreg.value.validate();
   refdist.value.validate();
-  refzip.value.validate();
+  rfprovinceZip.value.validate();
   refmail.value.validate();
   refcontact.value.validate();
   if (
@@ -1646,14 +1744,12 @@ const step1 = () => {
     refpob.value.hasError ||
     refwregion.value.hasError ||
     refstreet.value.hasError ||
-    refvillage.value.hasError ||
-    refBrgy.value.hasError ||
     refmun.value.hasError ||
     refprov.value.hasError ||
     refreg.value.hasError ||
     refdist.value.hasError ||
-    refzip.value.hasError ||
     refmail.value.hasError ||
+    rfprovinceZip.value.hasError ||
     refcontact.value.hasError
   ) {
   } else {
@@ -1667,15 +1763,13 @@ const CreateUser = () => {
   refPassword.value.validate();
   refConfPassword.value.validate();
   refRegion.value.validate();
-  refSchoolCode.value.validate();
 
   if (
     refUsername.value.hasError ||
     refActType.value.hasError ||
     refPassword.value.hasError ||
     refConfPassword.value.hasError ||
-    refRegion.value.hasError ||
-    refSchoolCode.value.hasError
+    refRegion.value.hasError
   ) {
   } else {
     var formData = new FormData(document.getElementById("UserForm"));
@@ -1700,7 +1794,8 @@ const CreateUser = () => {
     formData.append("province", state.province);
     formData.append("region", state.region);
     formData.append("district", state.district);
-    formData.append("zip", state.zip);
+    formData.append("zip", provinceZip.value);
+    formData.append("zipcode", state.zipcode);
     formData.append("mail", state.mail);
     formData.append("contact", state.contact);
 
@@ -1712,7 +1807,7 @@ const CreateUser = () => {
         state.confirmpassword = "";
         state.acttype = "";
         state.regions = "";
-        state.code = "";
+
         newUser.value = false;
         showalert();
         readusers();
@@ -1761,8 +1856,9 @@ const showUpdateUser = (props) => {
   state.upintid = props.row.internal_id;
   state.upusernames = props.row.username;
   state.upacttype = props.row.account_type;
-  state.upregions = props.row.region;
-  state.upcode = props.row.school_code;
+  state.upregions = props.row.uregion;
+  state.upcode = props.row.uscode;
+
   state.id = props.row.id;
 
   state.upstaffid = props.row.staff_id;
@@ -1774,16 +1870,18 @@ const showUpdateUser = (props) => {
   state.upbirth = props.row.dob;
   state.uppob = props.row.pob;
   state.upwregion = props.row.work_region;
-  state.upscCode = props.row.school_code;
+  state.upscCode = props.row.srscode;
 
   state.upstreet = props.row.street;
   state.upvillage = props.row.village;
   state.upbarangay = props.row.barangay;
   state.upmunicipality = props.row.municipality;
   state.upprovince = props.row.province;
-  state.upregion = props.row.region;
+  state.upregion = props.row.srregion;
   state.updistrict = props.row.district;
+  // upzipid.value = props.row.zip_id;
   state.upzipcode = props.row.zipcode;
+
   state.upmail = props.row.email;
   state.upcontact = props.row.contact_no;
 };
@@ -1795,15 +1893,14 @@ const UpdateUser = () => {
   refUpConfPassword.value.validate();
   refUpActType.value.validate();
   refUpRegion.value.validate();
-  refUpSchoolCode.value.validate();
+
   if (
     refUpId.value.hasError ||
     refUpUsername.value.hasError ||
     refUpPassword.value.hasError ||
     refUpConfPassword.value.hasError ||
     refUpActType.value.hasError ||
-    refUpRegion.value.hasError ||
-    refUpSchoolCode.value.hasError
+    refUpRegion.value.hasError
   ) {
   } else {
     var formData = new FormData(document.getElementById("updateUserForm"));
@@ -1813,7 +1910,7 @@ const UpdateUser = () => {
     formData.append("uppassword", state.uppassword);
     formData.append("upacttype", state.upacttype);
     formData.append("upregions", state.upregions);
-    formData.append("upcode", state.upcode);
+
     formData.append("id", state.id);
 
     axios.post("/update.php?updateuser", formData).then(function (response) {
@@ -1847,7 +1944,7 @@ const UpdateStaffInfo = () => {
   refUpprov.value.validate();
   refUpreg.value.validate();
   refUpdist.value.validate();
-  refUpzipcode.value.validate();
+
   refUpmail.value.validate();
   refUpcontact.value.validate();
   if (
@@ -1865,7 +1962,6 @@ const UpdateStaffInfo = () => {
     refUpprov.value.hasError ||
     refUpreg.value.hasError ||
     refUpdist.value.hasError ||
-    refUpzipcode.value.hasError ||
     refUpmail.value.hasError ||
     refUpcontact.value.hasError
   ) {
@@ -1873,26 +1969,6 @@ const UpdateStaffInfo = () => {
     var formData = new FormData(document.getElementById("UpdateUserInfoForm"));
 
     formData.append("id", state.id);
-    formData.append("upstaffid", state.upstaffid);
-    formData.append("upfname", state.upfname);
-    formData.append("upmname", state.upmname);
-    formData.append("uplname", state.uplname);
-    formData.append("upsname", state.upsname);
-    formData.append("upgender", state.upgender);
-    formData.append("upbirth", state.upbirth);
-    formData.append("upwregion", state.upwregion);
-    formData.append("upscCode", state.upscCode);
-
-    formData.append("upstreet", state.upstreet);
-    formData.append("upvillage", state.upvillage);
-    formData.append("upbarangay", state.upbarangay);
-    formData.append("upmunicipality", state.upmunicipality);
-    formData.append("upprovince", state.upprovince);
-    formData.append("upregion", state.upregion);
-    formData.append("updistrict", state.updistrict);
-    formData.append("upzipcode", state.upzipcode);
-    formData.append("upmail", state.upmail);
-    formData.append("upcontact", state.upcontact);
 
     axios
       .post("/update.php?updateuserInfo", formData)
@@ -1910,6 +1986,113 @@ const UpdateStaffInfo = () => {
         }
       });
   }
+};
+
+// Remove User Info
+
+const DelStaffInfo = () => {
+  showedit.value = false;
+  var formData = new FormData(document.getElementById("DelUserForm"));
+  formData.append("id", state.id);
+  console.log(state.id);
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axios.post("/delete.php?delUserInfo", formData).then(function (response) {
+        if (response.data == true) {
+          readusers();
+          Swal.fire({
+            title: "Deleted!",
+            text: "The user has been removed.",
+            icon: "success",
+          });
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "User not updated",
+          });
+        }
+      });
+    }
+  });
+};
+
+// Showing Province
+var zipOption2 = [];
+const zipOption = ref(zipOption2);
+
+onMounted(() => {
+  populateZip();
+});
+
+const populateZip = () => {
+  axios.get("/read.php?address").then((response) => {
+    zipOption2 = response.data;
+  });
+};
+
+const filterZip = (val, update) => {
+  if (val === "") {
+    update(() => {
+      zipOption.value = zipOption2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    zipOption.value = zipOption2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
+// Showing Adress Data
+
+onMounted(() => {
+  populateaddress();
+});
+
+const populateaddress = () => {
+  var formData = new FormData();
+  formData.append("province", provinceZip.value);
+
+  axios.post("/read.php?addressid", formData).then(function (response) {
+    state.district = response.data.zdis;
+    state.region = response.data.zreg;
+    state.municipality = response.data.zmun;
+    state.province = response.data.zpro;
+    state.zipcode = response.data.zzip;
+  });
+};
+
+// Showing Adress Data On update
+
+onMounted(() => {
+  populateUpAddress();
+});
+
+const populateUpAddress = () => {
+  var formData = new FormData();
+
+  formData.append("province", upzipid.value);
+
+  axios.post("/read.php?addressid", formData).then(function (response) {
+    state.updistrict = response.data.zdis;
+    state.upregion = response.data.zreg;
+    state.upmunicipality = response.data.zmun;
+    state.upprovince = response.data.zpro;
+    state.upzipcode = response.data.zzip;
+  });
 };
 </script>
 <style scoped>

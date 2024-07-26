@@ -63,9 +63,16 @@ if(isset($_GET['readuser'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT *
+        $stnt = $pdo->prepare("SELECT s.staff_id, s.first_name, s.middle_name, s.last_name, s.suffix_name,
+s.sex, s.dob, s.pob, s.work_region, s.school_code as srscode, s.street,
+s.village, s.barangay, s.municipality, s.province, s.region as srregion,
+s.district, s.zipcode, s.email, s.contact_no, s.zip_id, u.id, u.username, u.internal_id,
+u.account_type, u.region as uregion, u.school_code as uscode, z.zzid,
+z.zreg, z.zpro, z.zmun, z.zbar, z.zzip, z.zdis, z.zpov
+
         FROM staff_record as s
         LEFT OUTER JOIN users AS u ON s.user_id = u.id
+		LEFT OUTER JOIN esch_shared.zipi as z ON s.zipcode = z.zzid
         WHERE u.status = 'active' 
         ORDER BY 
         id DESC;
@@ -1982,6 +1989,109 @@ GROUP BY
 ");
         $params = array($id);
         $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+    // Read Staff Records
+
+    if(isset($_GET['readUserMail'])){
+        $data = array();
+        $id = $_POST["idMail"];
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT email FROM staff_record WHERE user_id  = ?");
+            $params = array($id);
+            $stnt->execute($params);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+
+
+        // Read Address
+
+if(isset($_GET['address'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM esch_shared.zipi ORDER BY zpro");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['zzip'] . " - " . $row['zbar'] . " - " . $row['zmun'] . " - " . $row['zpro'] . " - " . $row["zreg"],
+    
+                "value" => $row['zzid']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    // Read Address Id
+
+if(isset($_GET['addressid'])){
+
+    $data = array();
+    $addressids = $_POST["province"];
+    
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT e.zzid, e.zreg, e.zpro, e.zmun, e.zbar, e.zzip, e.zdis, e.zpov, CASE WHEN e.zreg = 'NCR' THEN '16' ELSE e.zreg end as new_region FROM esch_shared.zipi e WHERE zzid = ?");
+        $stnt->execute([$addressids]);
+    
+    
     
     }catch (Exception $ex){
         die("Failed to run query". $ex);

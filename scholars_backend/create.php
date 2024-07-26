@@ -15,7 +15,6 @@ if(isset($_GET['createuser'])){
     $usname = $_POST["usname"];
     $acttype = $_POST["acttype"];
     $regions = $_POST["regions"];
-    $code = $_POST["code"];
     $passwords = $_POST["password"];
     $passwordsHash = sha1("digi".$passwords."digi");
     
@@ -40,15 +39,19 @@ if(isset($_GET['createuser'])){
 
 
     $street = $_POST["street"];
+    $strstreet = strtoupper($street);
     $village = $_POST["village"];
+    $strvillage = strtoupper($village);
     $barangay = $_POST["barangay"];
+    $strbarangay = strtoupper($barangay);
     $municipality = $_POST["municipality"];
     $province = $_POST["province"];
     $region = $_POST["region"];
     $district = $_POST["district"];
-    $zip = $_POST["zip"];
+    $zip = $_POST["zipcode"];
     $mail = $_POST["mail"];
     $contact = $_POST["contact"];
+    $zipid = $_POST['zip'];
 
 
     // $addby = $_POST["creator"];
@@ -57,8 +60,8 @@ if(isset($_GET['createuser'])){
 
     $pdo->beginTransaction();
     $stnt = $pdo->prepare("INSERT INTO users(username,internal_id,password,account_type,region,school_code,date_added) VALUES (?,?,?,?,?,?,?) RETURNING id");
-    $stntp = $pdo->prepare("INSERT INTO staff_record(staff_id,user_id,first_name,middle_name,last_name,suffix_name,sex,dob,pob,work_region,school_code,street,village,barangay,municipality,province,region,district,zipcode,email,contact_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $params = array($usname,$intid,$passwordsHash,$acttype,$regions,$code,$date);
+    $stntp = $pdo->prepare("INSERT INTO staff_record(staff_id,user_id,first_name,middle_name,last_name,suffix_name,sex,dob,pob,work_region,school_code,street,village,barangay,municipality,province,region,district,zipcode,email,contact_no,zip_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $params = array($usname,$intid,$passwordsHash,$acttype,$regions,$scCode,$date);
     $stnt -> execute($params);
 
     if($stnt){
@@ -78,7 +81,7 @@ if(isset($_GET['createuser'])){
     }
 
 
-    $sparams = array($staffid,$sid,$strfname,$strmname,$strlname,$strsname,$gender,$birth,$pob,$wregion,$scCode,$street,$village,$barangay,$municipality,$province,$region,$district,$zip,$mail,$contact);
+    $sparams = array($staffid,$sid,$strfname,$strmname,$strlname,$strsname,$gender,$birth,$pob,$wregion,$scCode,$strstreet,$strvillage,$strbarangay,$municipality,$province,$region,$district,$zip,$mail,$contact,$zipid);
     $stntp -> execute($sparams);
     if($stntp){
         $errors[] =  true;
@@ -158,11 +161,12 @@ if(!$b) {       //edited for accuracy
     }
     
     $password_sha1 = sha1($emapData[2]);
+    $scode = $emapData[14];
 
     $pdo->beginTransaction();
     $stnt = $pdo->prepare("INSERT INTO users(internal_id,username,password,account_type,region,school_code,date_added) VALUES (?,?,?,?,?,?,?) RETURNING ID");
     $stntp = $pdo->prepare("INSERT INTO staff_record(staff_id,user_id,first_name,middle_name,last_name,suffix_name,sex,dob,pob,work_region,school_code,street,village,barangay,municipality,province,region,district,zipcode,email,contact_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $params = array($emapData[0],$emapData[1],$password_sha1,$emapData[3],$emapData[4],$emapData[5],$dates);
+    $params = array($emapData[0],$emapData[1],$password_sha1,$emapData[3],$emapData[4],$scode,$dates);
 
 
 
@@ -186,8 +190,8 @@ if(!$b) {       //edited for accuracy
     }
 
 
-    $sparams = array($emapData[6],$sid,$emapData[7],$emapData[8],$emapData[9],$emapData[10],$emapData[11],$emapData[12],$emapData[13],
-    $emapData[14],$emapData[15],$emapData[16],$emapData[17],$emapData[18],$emapData[19],$emapData[20],$emapData[21],$emapData[22],$emapData[23],$emapData[24],$emapData[25]);
+    $sparams = array($emapData[5],$sid,$emapData[6],$emapData[7],$emapData[8],$emapData[9],$emapData[10],$emapData[11],$emapData[12],
+    $emapData[13],$emapData[14],$emapData[15],$emapData[16],$emapData[17],$emapData[18],$emapData[19],$emapData[20],$emapData[21],$emapData[22],$emapData[23],$emapData[24]);
     $stntp -> execute($sparams);
     if($stntp){
         $errors[] =  true;
