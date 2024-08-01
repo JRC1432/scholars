@@ -1517,6 +1517,63 @@
       </q-tab-panels>
     </q-card>
   </q-dialog>
+
+  <!-- Batch Upload -->
+
+  <q-dialog v-model="batchUpload" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconFileTypeCsv :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">CSV</span> Scholars
+          Batch Upload</q-toolbar-title
+        >
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <q-form id="batchuploadForm" @submit.prevent.stop="batchUp">
+          <q-card class="my-card rounded-borders-20">
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Upload Your File Here</div>
+              <div class="text-subtitle2">Only CSV Documents are Allowed</div>
+            </q-card-section>
+            <div class="q-pa-md">
+              <q-file
+                ref="refBulkUpload"
+                filled
+                v-model="batchUploadScholars"
+                name="batchUploadScholars"
+                label="*CSV FILES ONLY"
+                color="primary"
+                clearable
+                counter
+                :rules="[fileRules]"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="attach_file" />
+                </template>
+              </q-file>
+            </div>
+          </q-card>
+          <br />
+          <div class="row justify-center">
+            <q-btn
+              rounded
+              type="submit"
+              label="Upload"
+              color="primary"
+              style="width: 80%"
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+
+      <q-separator />
+    </q-card>
+  </q-dialog>
 </template>
 <script setup>
 import { ref, onMounted, reactive, inject, computed } from "vue";
@@ -1548,6 +1605,8 @@ const showedit = ref(false);
 const tab = ref("scholar");
 const newScholar = ref(false);
 const step = ref(1);
+const batchUpload = ref(false);
+const batchUploadScholars = ref(null);
 
 // Match Passwords
 const isPwd = ref(true);
@@ -1603,6 +1662,13 @@ function maxLength(val) {
 const myRule = (val) => {
   if (val === null || val === undefined || val === "") {
     return "You must make a selection!";
+  }
+  return true;
+};
+
+const fileRules = (val) => {
+  if (val === null) {
+    return "Please Select a File!";
   }
   return true;
 };
@@ -1729,13 +1795,42 @@ const showalert = () => {
   });
 };
 
+const batchUplAlert = () => {
+  let timerInterval;
+  Swal.fire({
+    title: "Creating Multiple New Scholars!",
+    html: "I will close in <b></b> milliseconds.",
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+      const timer = Swal.getPopup().querySelector("b");
+      timerInterval = setInterval(() => {
+        timer.textContent = `${Swal.getTimerLeft()}`;
+      }, 100);
+    },
+    willClose: () => {
+      clearInterval(timerInterval);
+    },
+  }).then((result) => {
+    /* Read more about handling dismissals below */
+    if (result.dismiss === Swal.DismissReason.timer) {
+      console.log("I was closed by the timer");
+      Swal.fire("Saved!", "", "success");
+    }
+  });
+};
+
 // Items reference
+
 const curadd = ref(false);
 const upcuradd = ref(false);
 const provinceZip = ref(null);
 const upprovinceZip = ref(null);
 const provinceZip2 = ref(null);
 const upprovinceZip2 = ref(null);
+
+const refBulkUpload = ref(null);
 
 const refId = ref(null);
 const refUsername = ref(null);
@@ -2515,6 +2610,37 @@ const populateupaddress2 = () => {
     state.upprovince2 = response.data.zpro;
     state.upzip2 = response.data.zzip;
   });
+};
+
+// Batch Upload code
+
+const batchUp = () => {
+  refBulkUpload.value.validate();
+
+  if (refBulkUpload.value.hasError) {
+    // Error Here
+  } else {
+    var formData = new FormData(document.getElementById("batchuploadForm"));
+
+    formData.append("usercreator", user.username);
+    formData.append("authid", user.id);
+
+    axios
+      .post("/create.php?batchUploadScholar", formData)
+      .then(function (response) {
+        if (response.data == true) {
+          batchUpload.value = false;
+          batchUplAlert();
+          readusers();
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "Failed to upload user lists.",
+          });
+        }
+      });
+  }
 };
 </script>
 

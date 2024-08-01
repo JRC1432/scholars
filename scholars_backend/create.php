@@ -367,6 +367,149 @@ $spasid_no_spaces = str_replace(' ', '', $spasid);
 
 
 
+// Bulk Upload Scholars
+
+
+
+if(isset($_GET['batchUploadScholar'])){
+
+
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Ymdhi");
+
+    $dates = date("Y-m-d h:i:s a");
+    $uname = $_POST["usercreator"];
+    $authid = $_POST["authid"];
+    // $passwords = $_POST["password"];
+    // $passwordsHash = sha1("digi".$passwords."digi");
+
+
+
+// Bulk Upload
+    $bathcFile = $_FILES['batchUploadScholars']['name'];
+    $path = 'batch/';
+    $allowed_extensions = array('csv');
+    $extension = pathinfo($bathcFile, PATHINFO_EXTENSION);
+    if(in_array(strtolower($extension),$allowed_extensions) ) {
+
+        if(!file_exists($path)){
+
+            mkdir($path, 0775, true);
+        }
+
+        $temp_file = $_FILES['batchUploadScholars']['tmp_name'];
+
+
+            $newpath = $path.$authid.$uname.$date.".".$extension;
+
+            if(move_uploaded_file($temp_file,$newpath)){
+                echo "";
+            } else{
+                $newpath = "No_Files";
+                    // echo "failed";
+            }
+        
+
+    }else{
+        $newpath = "No_Files";
+        // echo "Failed";
+    } 
+
+$b = false;
+    $file = fopen($newpath, "r");
+    while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE)
+    {
+if(!$b) {       //edited for accuracy
+       $b = true;
+       continue;
+    }
+    
+    $password_sha1 = sha1($emapData[2]);
+    $scode = $emapData[15];
+    $spasid = $emapData[5];
+
+    $fullname = $emapData[8] . ',' .  $emapData[6] . ' ' . $emapData[7] . ' ' . $emapData[9];
+
+    $curradd = ($emapData[26] === 'YES' || $emapData[26] === 'yes') ? 'true' : 'false';
+
+    $street = $emapData[27] ?? '';
+    $village = $emapData[28] ?? '';
+    $barangay = $emapData[29] ?? '';
+    $municipality = $emapData[30] ?? '';
+    $province = $emapData[31] ?? '';
+    $region = $emapData[32] ?? '';
+    $district = $emapData[33] ?? '';
+    $zipcodes = isset($emapData[34]) && is_numeric($emapData[34]) ? intval($emapData[34]) : 0;
+
+
+    $pdo->beginTransaction();
+    $stnt = $pdo->prepare("INSERT INTO users(internal_id,username,password,account_type,region,school_code,date_added) VALUES (?,?,?,?,?,?,?) RETURNING ID");
+    $stntp = $pdo->prepare("INSERT INTO scholars_record(spas_id,user_id,first_name,middle_name,last_name,suffix_name,full_name,sex,dob,pob,tribe,school_region,school_code,
+    street,village,barangay,municipality,province,region,district,zipcode,email,contact_no,diff_curr_add) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $stnta = $pdo->prepare("INSERT INTO curr_add(spas_id,street,village,barangay,municipality,province,region,district,zipcode) VALUES (?,?,?,?,?,?,?,?,?)");
+
+    $params = array($emapData[0],$emapData[1],$password_sha1,$emapData[3],$emapData[4],$scode,$dates);
+
+    $stnt -> execute($params);
+
+
+    if($stnt){
+    $errors[] =  true;
+    } else{
+
+    $errors[] = false;
+    }
+
+    $sid = "";
+    try{
+
+        $result = $stnt->fetch();
+        $sid = $result["id"];
+    }catch(Exception $e){
+        echo $e;
+    }
+
+
+    $sparams = array($emapData[5],$sid,$emapData[6],$emapData[7],$emapData[8],$emapData[9],$fullname,$emapData[10],$emapData[11],$emapData[12],
+    $emapData[13],$emapData[14],$emapData[15],$emapData[16],$emapData[17],$emapData[18],$emapData[19],$emapData[20],$emapData[21],$emapData[22],$emapData[23],$emapData[24],
+    $emapData[25],$curradd);
+    $stntp -> execute($sparams);
+    if($stntp){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
+
+    $aparams = array($spasid,$street,$village,$barangay,$municipality,$province,$region,$district,$zipcodes);
+    $stnta -> execute($aparams);
+    if($stnta){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
+
+    if(in_array(false, $errors)){
+        $status = "false";
+        $pdo->rollback();
+       } else{
+       $status = "true";
+       $pdo->commit();
+       }
+       
+       }
+   echo $status;
+
+
+} 
+
+
+
+
+
 
 
 
