@@ -507,6 +507,7 @@
                       v-model="state.password"
                       name="password"
                       :rules="inputpassRules"
+                      @input="validatePassword"
                     >
                       <template v-slot:append>
                         <q-icon
@@ -516,6 +517,10 @@
                         />
                       </template>
                     </q-input>
+                    <PasswordMeter
+                      @score="onScore"
+                      :password="state.password"
+                    />
                   </div>
                 </div>
                 <div class="col-xs-12 col-sm-12">
@@ -776,6 +781,7 @@
                       v-model="state.uppassword"
                       name="password"
                       :rules="inputpassRules"
+                      @input="validatePassword"
                     >
                       <template v-slot:append>
                         <q-icon
@@ -785,6 +791,10 @@
                         />
                       </template>
                     </q-input>
+                    <PasswordMeter
+                      @score="onScore"
+                      :password="state.uppassword"
+                    />
                   </div>
                 </div>
                 <div class="col-xs-12 col-sm-12">
@@ -827,7 +837,7 @@
                       use-input
                       input-debounce="0"
                       v-model="state.upregions"
-                      name="regions"
+                      name="upregions"
                       :options="regoptions"
                       @filter="filterregion"
                       :rules="[myRule]"
@@ -1239,6 +1249,7 @@ import {
   IconNfcOff,
 } from "@tabler/icons-vue";
 import Swal from "sweetalert2";
+import PasswordMeter from "vue-simple-password-meter";
 
 const user = inject("$user");
 const q$ = useQuasar();
@@ -1343,13 +1354,37 @@ const inputNumRules = [
   (val) => (val && val.length > 0) || "Please type numbers only",
 ];
 
+// Function to validate password
+
+// Validation rules
+const errorMessage = ref("");
 const inputpassRules = [
-  (val) => !!val || "Field is required",
-  (val) => val.length >= 6 || "Please use minimum of 6 characters",
+  (val) => (val && val.length > 0) || "Please type something",
+  (val) => val.length >= 8 || "Password must be at least 8 characters long",
+  (val) => score.value > 0 || "Use a better password",
 ];
 
+const validatePassword = () => {
+  for (const rule of inputpassRules) {
+    const result = rule(state.password);
+    if (result !== true) {
+      errorMessage.value = result;
+      return;
+    }
+  }
+  errorMessage.value = "";
+};
+
+const score = ref(null);
+
+const onScore = (payload) => {
+  console.log(payload.score); // from 0 to 4
+  console.log(payload.strength); // one of : 'risky', 'guessable', 'weak', 'safe' , 'secure'
+  score.value = payload.score;
+};
+
 const myRule = (val) => {
-  if (val === null) {
+  if (val === null || val === undefined || val === "") {
     return "You must make a selection!";
   }
   return true;
@@ -1786,7 +1821,6 @@ const CreateUser = () => {
     formData.append("wregion", state.wregion);
     formData.append("scCode", state.scCode);
 
-    // Account Information Append
     formData.append("street", state.street);
     formData.append("village", state.village);
     formData.append("barangay", state.barangay);
@@ -2098,5 +2132,22 @@ const populateUpAddress = () => {
 <style scoped>
 .custom-table tbody tr td {
   cursor: pointer; /* Change cursor design on hover */
+}
+
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  max-width: 400px;
+  margin: 40px auto;
+}
+
+input {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 </style>

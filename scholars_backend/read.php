@@ -1844,11 +1844,14 @@ if(isset($_GET['readScholarRec'])){
 		s.suffix_name, s.full_name, s.sex, s.dob, s.pob, s.tribe,
 		s.street, s.village, s.barangay, s.municipality, s.province,
 		s.region, s.district, s.zipcode, s.diff_curr_add, s.email,
-		s.contact_no, s.school_region, s.school_code, u.id, u.username,
+		s.contact_no, s.school_region, s.school_code, s.zip_id, u.id, u.username,
 		u.internal_id, u.account_type, u.region as uregion, u.school_code as uschoolcode,
-        u.status
+        u.status, a.street as astreet, a.village as avillage, a.barangay as abarangay,
+        a.municipality as amunicipality, a.province as aprovince, a.region as aregion,
+        a.district as adistrict, a.zipcode as azipcode
         FROM scholars_record as s
         LEFT OUTER JOIN users AS u ON s.user_id = u.id
+        LEFT OUTER JOIN curr_add AS a ON s.spas_id = a.spas_id
         WHERE u.status = 'active' 
         ORDER BY 
         id DESC;
@@ -2110,6 +2113,85 @@ if(isset($_GET['addressid'])){
     $pdo = null;
     
     }
+
+
+
+    // SPAS ID Checker
+
+if(isset($_GET['checkSpas'])){
+
+    $data = array();
+    $checkSpas = $_POST['checkSpasid'];
+    $spasid_no_spaces = str_replace(' ', '', $checkSpas);
+    
+    
+    
+    
+        $stnt = $pdo->prepare("SELECT spas_id FROM scholars_record  WHERE spas_id = ?");
+        $stnt->execute([$spasid_no_spaces]);
+        $count = $stnt->fetchColumn();
+    
+        if($count > 0){
+            $result =  false;
+        } else{
+            
+            $result = true;
+        }
+    
+        echo json_encode($result);
+    
+
+    }
+
+
+    // Email Checker
+
+if(isset($_GET['checkMail'])){
+
+    $data = array();
+    $checkmail = $_POST['mail'];
+   
+    
+        $stnt = $pdo->prepare("SELECT email FROM scholars_record  WHERE email = ?");
+        $stnt->execute([$checkmail]);
+        $count = $stnt->fetchColumn();
+    
+        if($count > 0){
+            $result =  false;
+        } else{
+            
+            $result = true;
+        }
+    
+        echo json_encode($result);
+    
+
+    }
+
+
+    // Contact Checker
+
+// if(isset($_GET['checkContact'])){
+
+//     $data = array();
+//     $checkcontacts = $_POST['contact'];
+   
+    
+//         $stnt = $pdo->prepare("SELECT contact_no FROM scholars_record WHERE contact_no = ? ");
+//         $stnt->execute([$checkcontacts]);
+//         $count = $stnt->fetchColumn();
+    
+//         if($count > 0){
+//             $result =  false;
+//         } else{
+            
+//             $result = true;
+//         }
+    
+//         echo json_encode($result);
+    
+
+//     }
 
 
 

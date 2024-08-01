@@ -96,7 +96,7 @@
 
         <q-btn flat round dense icon="close" @click="CloseBtn" />
       </q-toolbar>
-      <form id="UserForm" @submit.prevent.stop="CreateUser">
+      <form id="ScholarForm" @submit.prevent.stop="CreateScholars">
         <q-stepper
           class="rounded-borders-20"
           v-model="step"
@@ -126,9 +126,9 @@
                         dense
                         hide-bottom-space
                         v-model="state.spasid"
-                        mask="A - #### - ## - #####"
+                        mask="A - #### - #S - #####"
                         name="spasid"
-                        :rules="inputRules"
+                        :rules="combinedRules"
                       />
                     </div>
                   </div>
@@ -190,6 +190,7 @@
                     <div class="q-px-sm">
                       <span class="text-bold">SEX </span>
                       <q-select
+                        ref="refgender"
                         :options="sexoptions"
                         v-model="state.gender"
                         emit-value
@@ -197,6 +198,7 @@
                         outlined
                         dense
                         hide-bottom-space
+                        :rules="[myRule]"
                       />
                     </div>
                   </div>
@@ -260,6 +262,7 @@
                         name="scregions"
                         :options="regoptions"
                         @filter="filterregion"
+                        :rules="[myRule]"
                       >
                       </q-select>
                     </div>
@@ -274,6 +277,7 @@
                         hide-bottom-space
                         v-model="state.scCode"
                         name="scCode"
+                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -313,6 +317,38 @@
                       />
                     </div>
                   </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Select Province:</span>
+
+                      <q-select
+                        ref="rfprovinceZip"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="provinceZip"
+                        name="provinceZip"
+                        emit-value
+                        map-options
+                        use-input
+                        input-debounce="0"
+                        :options="zipOption"
+                        @filter="filterZip"
+                        behavior="menu"
+                        @update:model-value="populateaddress"
+                        :rules="[myRule]"
+                      >
+                        <template v-slot:no-option>
+                          <q-item>
+                            <q-item-section class="text-grey">
+                              No results
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                      </q-select>
+                    </div>
+                  </div>
+
                   <div class="col-xs-12 col-sm-6 col-md-3">
                     <div class="q-px-sm">
                       <span class="text-bold">Street</span>
@@ -337,7 +373,6 @@
                         hide-bottom-space
                         v-model="state.village"
                         name="village"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -351,7 +386,6 @@
                         hide-bottom-space
                         v-model="state.barangay"
                         name="barangay"
-                        :rules="inputRules"
                       />
                     </div>
                   </div>
@@ -427,6 +461,168 @@
                   </div>
                 </div>
               </div>
+
+              <div class="q-px-sm text-bold">
+                <span class="text-bold">Use different Current Address?</span>
+                <q-toggle
+                  v-model="curadd"
+                  checked-icon="check"
+                  color="green"
+                  unchecked-icon="clear"
+                  @click="tog"
+                  name="diffcur"
+                />
+              </div>
+
+              <q-card-section v-if="curadd">
+                <div class="q-pa-xs">
+                  <div class="row row_width q-col-gutter-xs">
+                    <div class="col-xs-12">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Select Province:</span>
+
+                        <q-select
+                          ref="rfprovinceZip2"
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="provinceZip2"
+                          name="provinceZip2"
+                          emit-value
+                          map-options
+                          use-input
+                          input-debounce="0"
+                          :options="zipOption"
+                          @filter="filterZip"
+                          behavior="menu"
+                          @update:model-value="populateaddress2"
+                          :rules="[myRule]"
+                        >
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Street</span>
+                        <q-input
+                          ref="refstreet2"
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="state.street2"
+                          name="street2"
+                          :rules="inputRules"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Village</span>
+                        <q-input
+                          ref="refvillage2"
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="state.village2"
+                          name="village2"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Barangay</span>
+                        <q-input
+                          ref="refBrgy2"
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="state.barangay2"
+                          name="barangay2"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Municipality</span>
+                        <q-input
+                          ref="refmun2"
+                          outlined
+                          dense
+                          readonly
+                          hide-bottom-space
+                          v-model="state.municipality2"
+                          name="municipality2"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Province</span>
+                        <q-input
+                          ref="refprov2"
+                          readonly
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="state.province2"
+                          name="province2"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Region</span>
+                        <q-input
+                          ref="refreg2"
+                          outlined
+                          dense
+                          readonly
+                          hide-bottom-space
+                          v-model="state.region2"
+                          name="region2"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">District</span>
+                        <q-input
+                          ref="refdist2"
+                          outlined
+                          dense
+                          readonly
+                          hide-bottom-space
+                          v-model="state.district2"
+                          name="district2"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                      <div class="q-px-sm">
+                        <span class="text-bold">ZipCode</span>
+                        <q-input
+                          ref="refzip2"
+                          outlined
+                          dense
+                          readonly
+                          hide-bottom-space
+                          v-model="state.zip2"
+                          name="zip2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+
               <q-stepper-navigation>
                 <q-btn @click="step1" color="primary" label="Continue" />
               </q-stepper-navigation>
@@ -465,8 +661,8 @@
                       dense
                       hide-bottom-space
                       v-model="state.usernames"
-                      name="usname"
-                      :rules="[checkUsernames, maxLength]"
+                      name="usernames"
+                      :rules="[checkUsername, maxLength]"
                       :debounce="1000"
                       no-error-icon
                     />
@@ -484,6 +680,7 @@
                       v-model="state.password"
                       name="password"
                       :rules="inputpassRules"
+                      @input="validatePassword"
                     >
                       <template v-slot:append>
                         <q-icon
@@ -493,6 +690,10 @@
                         />
                       </template>
                     </q-input>
+                    <PasswordMeter
+                      @score="onScore"
+                      :password="state.password"
+                    />
                   </div>
                 </div>
                 <div class="col-xs-12 col-sm-12">
@@ -537,6 +738,7 @@
                       name="acttype"
                       :options="actoptions"
                       @filter="filteracnt"
+                      :rules="[myRule]"
                     >
                     </q-select>
                   </div>
@@ -558,22 +760,9 @@
                       name="regions"
                       :options="regoptions"
                       @filter="filterregion"
+                      :rules="[myRule]"
                     >
                     </q-select>
-                  </div>
-                </div>
-                <div class="col-xs-12 col-sm-12">
-                  <div class="q-px-sm">
-                    <span class="text-bold">School Code</span>
-                    <q-input
-                      ref="refSchoolCode"
-                      outlined
-                      dense
-                      hide-bottom-space
-                      type="number"
-                      v-model="state.code"
-                      name="code"
-                    />
                   </div>
                 </div>
               </div>
@@ -602,7 +791,7 @@
         <IconUserEdit :size="30" stroke-width="2" />
 
         <q-toolbar-title
-          ><span class="text-weight-bold" color="primary">EDIT</span> Scholar
+          ><span class="text-weight-bold" color="primary">UPDATE</span> Scholar
           Profile</q-toolbar-title
         >
 
@@ -710,7 +899,7 @@
                       hide-bottom-space
                       v-model="state.upusernames"
                       name="upusernames"
-                      :rules="[checkUsername, maxLength]"
+                      :rules="[maxLength]"
                       :debounce="1000"
                       no-error-icon
                     />
@@ -737,6 +926,10 @@
                         />
                       </template>
                     </q-input>
+                    <PasswordMeter
+                      @score="onScore"
+                      :password="state.uppassword"
+                    />
                   </div>
                 </div>
                 <div class="col-xs-12 col-sm-12">
@@ -790,171 +983,419 @@
           </form>
         </q-tab-panel>
 
+        <!-- Updates HERE!!!! -->
+
         <q-tab-panel name="personal">
-          <!-- <form
+          <form
             id="UpdateScholarInfoForm"
             @submit.prevent.stop="UpdateScholarInfo"
           >
-            <div class="text-h6">Personal Informartions</div>
-            <q-card-section class="q-pt-none">
-              <q-scroll-area style="height: 600px; max-width: 800px">
-                <div class="q-pa-md">
-                  <div class="row row_width q-col-gutter-xs">
-                    <div class="col-xs-12">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Staff ID</span>
-                        <q-input
-                          ref="refUpstaff"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upstaffid"
-                          name="upstaffid"
-                          :rules="inputRules"
-                        />
-                      </div>
+            <q-scroll-area style="height: 600px; max-width: 800px">
+              <div class="text-h6">Personal Informartions</div>
+              <div class="q-pa-md">
+                <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">SPAS ID</span>
+                      <q-input
+                        ref="refupspasid"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upspasid"
+                        mask="A - #### - #S - #####"
+                        name="upspasid"
+                        :rules="combinedRules"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">First Name</span>
-                        <q-input
-                          ref="refUpfname"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upfname"
-                          name="upfname"
-                          :rules="inputRules"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">First Name</span>
+                      <q-input
+                        ref="refupfname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upfname"
+                        name="upfname"
+                        :rules="inputRules"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Middle Name</span>
-                        <q-input
-                          ref="refUpmname"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upmname"
-                          name="upmname"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Middle Name</span>
+                      <q-input
+                        ref="refupmname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upmname"
+                        name="upmname"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Last Name</span>
-                        <q-input
-                          ref="refUplname"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.uplname"
-                          name="uplname"
-                          :rules="inputRules"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Last Name</span>
+                      <q-input
+                        ref="refuplname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.uplname"
+                        name="uplname"
+                        :rules="inputRules"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Suffix Name</span>
-                        <q-input
-                          ref="refUpsname"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upsname"
-                          name="upsname"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Suffix Name</span>
+                      <q-input
+                        ref="refupsname"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upsname"
+                        name="upsname"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">SEX </span>
-                        <q-select
-                          emit-value
-                          :options="sexoptions"
-                          v-model="state.upgender"
-                          name="upgender"
-                          outlined
-                          dense
-                          hide-bottom-space
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">SEX </span>
+                      <q-select
+                        ref="refupgender"
+                        :options="sexoptions"
+                        v-model="state.upgender"
+                        emit-value
+                        name="upgender"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        :rules="[myRule]"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Date of Birth</span>
-                        <q-input
-                          ref="refUpbirth"
-                          outlined
-                          dense
-                          type="date"
-                          hide-bottom-space
-                          v-model="state.upbirth"
-                          name="upbirth"
-                          :rules="inputRules"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Date of Birth</span>
+                      <q-input
+                        ref="refupbirth"
+                        outlined
+                        dense
+                        type="date"
+                        hide-bottom-space
+                        v-model="state.upbirth"
+                        name="upbirth"
+                        :rules="inputRules"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Place of Birth</span>
-                        <q-input
-                          ref="refUppob"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.uppob"
-                          name="uppob"
-                          :rules="inputRules"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Place of Birth</span>
+                      <q-input
+                        ref="refuppob"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.uppob"
+                        name="uppob"
+                        :rules="inputRules"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Work Region</span>
-                        <q-input
-                          ref="refUpwregion"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upwregion"
-                          name="upwregion"
-                          :rules="inputRules"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Tribe</span>
+                      <q-input
+                        ref="refuptribe"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.uptribe"
+                        name="uptribe"
+                        :rules="inputRules"
+                      />
                     </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">School Code</span>
-                        <q-input
-                          ref="refUpscCode"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upscCode"
-                          name="upscCode"
-                          :rules="inputRules"
-                        />
-                      </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">School Region</span>
+                      <q-select
+                        ref="refupscregions"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        behavior="menu"
+                        emit-value
+                        map-options
+                        use-input
+                        input-debounce="0"
+                        v-model="state.upscregions"
+                        name="upscregions"
+                        :options="regoptions"
+                        @filter="filterregion"
+                        :rules="[myRule]"
+                      >
+                      </q-select>
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">School Code</span>
+                      <q-input
+                        ref="refupscCode"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upscCode"
+                        name="upscCode"
+                        :rules="inputRules"
+                      />
                     </div>
                   </div>
                 </div>
-                <div class="text-h6">Address</div>
+              </div>
+              <div class="text-h6">Address</div>
 
-                <div class="q-pa-md">
+              <div class="q-pa-md">
+                <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Email</span>
+                      <q-input
+                        ref="refupmail"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upmail"
+                        name="upmail"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Contact No.</span>
+                      <q-input
+                        ref="refupcontact"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upcontact"
+                        name="upcontact"
+                        mask="(####) ### - ####"
+                        hint="(####) ### - ####"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Select Province:</span>
+
+                      <q-select
+                        ref="rfupprovinceZip"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="upprovinceZip"
+                        name="upprovinceZip"
+                        emit-value
+                        map-options
+                        use-input
+                        input-debounce="0"
+                        :options="zipOption"
+                        @filter="filterZip"
+                        behavior="menu"
+                        @update:model-value="populateupaddress"
+                        :rules="[myRule]"
+                      >
+                        <template v-slot:no-option>
+                          <q-item>
+                            <q-item-section class="text-grey">
+                              No results
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                      </q-select>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Street</span>
+                      <q-input
+                        ref="refupstreet"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upstreet"
+                        name="upstreet"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Village</span>
+                      <q-input
+                        ref="refupvillage"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upvillage"
+                        name="upvillage"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Barangay</span>
+                      <q-input
+                        ref="refupBrgy"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upbarangay"
+                        name="upbarangay"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Municipality</span>
+                      <q-input
+                        ref="refupmun"
+                        outlined
+                        dense
+                        readonly
+                        hide-bottom-space
+                        v-model="state.upmunicipality"
+                        name="upmunicipality"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Province</span>
+                      <q-input
+                        ref="refupprov"
+                        readonly
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="state.upprovince"
+                        name="upprovince"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Region</span>
+                      <q-input
+                        ref="refupreg"
+                        outlined
+                        dense
+                        readonly
+                        hide-bottom-space
+                        v-model="state.upregion"
+                        name="upregion"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">District</span>
+                      <q-input
+                        ref="refupdist"
+                        outlined
+                        dense
+                        readonly
+                        hide-bottom-space
+                        v-model="state.updistrict"
+                        name="updistrict"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="q-px-sm">
+                      <span class="text-bold">ZipCode</span>
+                      <q-input
+                        ref="refupzip"
+                        outlined
+                        dense
+                        readonly
+                        hide-bottom-space
+                        v-model="state.upzip"
+                        name="upzip"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="q-px-sm text-bold">
+                <span class="text-bold">Use different Current Address?</span>
+                <q-toggle
+                  v-model="upcuradd"
+                  checked-icon="check"
+                  color="green"
+                  unchecked-icon="clear"
+                  name="upcuradd"
+                  @click="uptog"
+                />
+              </div>
+
+              <q-card-section v-if="upcuradd">
+                <div class="q-pa-xs">
                   <div class="row row_width q-col-gutter-xs">
+                    <div class="col-xs-12">
+                      <div class="q-px-sm">
+                        <span class="text-bold">Select Province:</span>
+
+                        <q-select
+                          ref="rfupprovinceZip2"
+                          outlined
+                          dense
+                          hide-bottom-space
+                          v-model="upprovinceZip2"
+                          name="upprovinceZip2"
+                          emit-value
+                          map-options
+                          use-input
+                          input-debounce="0"
+                          :options="zipOption"
+                          @filter="filterZip"
+                          behavior="menu"
+                          @update:model-value="populateupaddress2"
+                          :rules="[myRule]"
+                        >
+                          <template v-slot:no-option>
+                            <q-item>
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </div>
+                    </div>
+
                     <div class="col-xs-12 col-sm-6 col-md-3">
                       <div class="q-px-sm">
                         <span class="text-bold">Street</span>
                         <q-input
-                          ref="refUpstreet"
+                          ref="refupstreet2"
                           outlined
                           dense
                           hide-bottom-space
-                          v-model="state.upstreet"
-                          name="upstreet"
+                          v-model="state.upstreet2"
+                          name="upstreet2"
                           :rules="inputRules"
                         />
                       </div>
@@ -963,13 +1404,12 @@
                       <div class="q-px-sm">
                         <span class="text-bold">Village</span>
                         <q-input
-                          ref="refUpvillage"
+                          ref="refupvillage2"
                           outlined
                           dense
                           hide-bottom-space
-                          v-model="state.upvillage"
-                          name="upvillage"
-                          :rules="inputRules"
+                          v-model="state.upvillage2"
+                          name="upvillage2"
                         />
                       </div>
                     </div>
@@ -977,13 +1417,12 @@
                       <div class="q-px-sm">
                         <span class="text-bold">Barangay</span>
                         <q-input
-                          ref="refUpBrgy"
+                          ref="refupBrgy2"
                           outlined
                           dense
                           hide-bottom-space
-                          v-model="state.upbarangay"
-                          name="upbarangay"
-                          :rules="inputRules"
+                          v-model="state.upbarangay2"
+                          name="upbarangay2"
                         />
                       </div>
                     </div>
@@ -991,13 +1430,13 @@
                       <div class="q-px-sm">
                         <span class="text-bold">Municipality</span>
                         <q-input
-                          ref="refUpmun"
+                          ref="refupmun2"
                           outlined
                           dense
+                          readonly
                           hide-bottom-space
-                          v-model="state.upmunicipality"
-                          name="upmunicipality"
-                          :rules="inputRules"
+                          v-model="state.upmunicipality2"
+                          name="upmunicipality2"
                         />
                       </div>
                     </div>
@@ -1005,13 +1444,13 @@
                       <div class="q-px-sm">
                         <span class="text-bold">Province</span>
                         <q-input
-                          ref="refUpprov"
+                          ref="refupprov2"
+                          readonly
                           outlined
                           dense
                           hide-bottom-space
-                          v-model="state.upprovince"
-                          name="upprovince"
-                          :rules="inputRules"
+                          v-model="state.upprovince2"
+                          name="upprovince2"
                         />
                       </div>
                     </div>
@@ -1019,13 +1458,13 @@
                       <div class="q-px-sm">
                         <span class="text-bold">Region</span>
                         <q-input
-                          ref="refUpreg"
+                          ref="refupreg2"
                           outlined
                           dense
+                          readonly
                           hide-bottom-space
-                          v-model="state.upregion"
-                          name="upregion"
-                          :rules="inputRules"
+                          v-model="state.upregion2"
+                          name="upregion2"
                         />
                       </div>
                     </div>
@@ -1033,13 +1472,13 @@
                       <div class="q-px-sm">
                         <span class="text-bold">District</span>
                         <q-input
-                          ref="refUpdist"
+                          ref="refupdist2"
                           outlined
                           dense
+                          readonly
                           hide-bottom-space
-                          v-model="state.updistrict"
-                          name="updistrict"
-                          :rules="inputRules"
+                          v-model="state.updistrict2"
+                          name="updistrict2"
                         />
                       </div>
                     </div>
@@ -1047,50 +1486,20 @@
                       <div class="q-px-sm">
                         <span class="text-bold">ZipCode</span>
                         <q-input
-                          ref="refUpzipcode"
+                          ref="refupzip2"
                           outlined
                           dense
+                          readonly
                           hide-bottom-space
-                          v-model="state.upzipcode"
-                          name="upzipcode"
-                          :rules="inputRules"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Email</span>
-                        <q-input
-                          ref="refUpmail"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upmail"
-                          name="upmail"
-                          :rules="inputRules"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                      <div class="q-px-sm">
-                        <span class="text-bold">Contact No.</span>
-                        <q-input
-                          ref="refUpcontact"
-                          outlined
-                          dense
-                          hide-bottom-space
-                          v-model="state.upcontact"
-                          name="upcontact"
-                          mask="(####) ### - ####"
-                          hint="(####) ### - ####"
-                          :rules="inputRules"
+                          v-model="state.upzip2"
+                          name="upzip2"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-              </q-scroll-area>
-            </q-card-section>
+              </q-card-section>
+            </q-scroll-area>
             <q-card-actions>
               <div class="row fit justify-center">
                 <q-btn
@@ -1103,7 +1512,7 @@
                 />
               </div>
             </q-card-actions>
-          </form> -->
+          </form>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -1121,6 +1530,7 @@ import {
   IconFileTypeCsv,
 } from "@tabler/icons-vue";
 import Swal from "sweetalert2";
+import PasswordMeter from "vue-simple-password-meter";
 
 const user = inject("$user");
 const q$ = useQuasar();
@@ -1158,27 +1568,104 @@ const inputNumRules = [
   (val) => (val && val.length > 0) || "Please type numbers only",
 ];
 
+// Validation rules
+const errorMessage = ref("");
 const inputpassRules = [
-  (val) => !!val || "Field is required",
-  (val) => val.length >= 6 || "Please use minimum of 6 characters",
+  (val) => (val && val.length > 0) || "Please type something",
+  (val) => val.length >= 8 || "Password must be at least 8 characters long",
+  (val) => score.value > 0 || "Use a better password",
 ];
+
+// Function to validate password
+const validatePassword = () => {
+  for (const rule of inputpassRules) {
+    const result = rule(state.password);
+    if (result !== true) {
+      errorMessage.value = result;
+      return;
+    }
+  }
+  errorMessage.value = "";
+};
+
+const score = ref(null);
+
+const onScore = (payload) => {
+  console.log(payload.score); // from 0 to 4
+  console.log(payload.strength); // one of : 'risky', 'guessable', 'weak', 'safe' , 'secure'
+  score.value = payload.score;
+};
 
 function maxLength(val) {
   return val.length >= 6 || "Please use maximum of 6 characters";
 }
 
-// Username Checker,
-// const checkUsername = async (value) => {
-//   const formData = new FormData(document.getElementById("updateUserForm"));
-//   formData.append("usernames", state.upusernames);
+const myRule = (val) => {
+  if (val === null || val === undefined || val === "") {
+    return "You must make a selection!";
+  }
+  return true;
+};
+
+// Username Validations
+
+const checkUsername = async (value) => {
+  const formData = new FormData(document.getElementById("ScholarForm"));
+  formData.append("usernames", state.usernames);
+  try {
+    const response = await axios.post("/read.php?checkUser", formData);
+    if (response.data === true) {
+      // Do something if username is available
+    } else {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("This username is already been taken!!!");
+        }, 1500);
+      });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error("Error:", error);
+  }
+};
+
+// SPAS ID Validations
+
+const checkSpasid = async (value) => {
+  const formData = new FormData(document.getElementById("ScholarForm"));
+  formData.append("checkSpasid", state.spasid);
+  try {
+    const response = await axios.post("/read.php?checkSpas", formData);
+    if (response.data === true) {
+      // Do something if username is available
+    } else {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("This SPAS ID is already been taken!!!");
+        }, 1500);
+      });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error("Error:", error);
+  }
+};
+
+const combinedRules = [checkSpasid, ...inputRules];
+
+// Email Validations
+
+// const checkMails = async (value) => {
+//   const formData = new FormData(document.getElementById("ScholarForm"));
+//   formData.append("mail", state.mail);
 //   try {
-//     const response = await axios.post("/read.php?checkUser", formData);
+//     const response = await axios.post("/read.php?checkMail", formData);
 //     if (response.data === true) {
 //       // Do something if username is available
 //     } else {
 //       return new Promise((resolve) => {
 //         setTimeout(() => {
-//           resolve("This username is already been taken!!!");
+//           resolve("This E-mail is already been taken!!!");
 //         }, 1500);
 //       });
 //     }
@@ -1188,7 +1675,107 @@ function maxLength(val) {
 //   }
 // };
 
+// const combinedMails = [checkMails, ...inputRules];
+
+// Contact Validations
+
+// const cheknum = async (value) => {
+//   const formData = new FormData(document.getElementById("ScholarForm"));
+//   formData.append("contact", state.contact);
+//   try {
+//     const response = await axios.post("/read.php?checkContact", formData);
+//     if (response.data === true) {
+//       // Do something if username is available
+//     } else {
+//       return new Promise((resolve) => {
+//         setTimeout(() => {
+//           resolve("This phone number is already been taken!!!");
+//         }, 1500);
+//       });
+//     }
+//   } catch (error) {
+//     // Handle any errors
+//     console.error("Error:", error);
+//   }
+// };
+
+// const combinedNum = [cheknum, ...inputRules];
+
+// Sweet Alerts
+
+const showalert = () => {
+  let timerInterval;
+  Swal.fire({
+    title: "Creating New Scholar!",
+    html: "I will close in <b></b> milliseconds.",
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+      const timer = Swal.getPopup().querySelector("b");
+      timerInterval = setInterval(() => {
+        timer.textContent = `${Swal.getTimerLeft()}`;
+      }, 100);
+    },
+    willClose: () => {
+      clearInterval(timerInterval);
+    },
+  }).then((result) => {
+    /* Read more about handling dismissals below */
+    if (result.dismiss === Swal.DismissReason.timer) {
+      console.log("I was closed by the timer");
+      Swal.fire("Saved!", "", "success");
+    }
+  });
+};
+
 // Items reference
+const curadd = ref(false);
+const upcuradd = ref(false);
+const provinceZip = ref(null);
+const upprovinceZip = ref(null);
+const provinceZip2 = ref(null);
+const upprovinceZip2 = ref(null);
+
+const refId = ref(null);
+const refUsername = ref(null);
+const refPassword = ref(null);
+const refConfPassword = ref(null);
+const refActType = ref(null);
+const refRegion = ref(null);
+
+const refspas = ref(null);
+const reffname = ref(null);
+const refmname = ref(null);
+const reflname = ref(null);
+const refsname = ref(null);
+const refbirth = ref(null);
+const refgender = ref(null);
+const refpob = ref(null);
+const reftribe = ref(null);
+const refscregions = ref(null);
+const refscCode = ref(null);
+const refmail = ref(null);
+const refcontact = ref(null);
+const rfprovinceZip = ref(null);
+const refstreet = ref(null);
+const refvillage = ref(null);
+const refBrgy = ref(null);
+const refmun = ref(null);
+const refprov = ref(null);
+const refreg = ref(null);
+const refdist = ref(null);
+const refzip = ref(null);
+
+const rfprovinceZip2 = ref(null);
+const refstreet2 = ref(null);
+const refvillage2 = ref(null);
+const refBrgy2 = ref(null);
+const refmun2 = ref(null);
+const refprov2 = ref(null);
+const refreg2 = ref(null);
+const refdist2 = ref(null);
+const refzip2 = ref(null);
 
 const refUpId = ref(null);
 const refUpUsername = ref(null);
@@ -1198,8 +1785,80 @@ const refUpActType = ref(null);
 const refUpRegion = ref(null);
 const refUpSchoolCode = ref(null);
 
+const refupspasid = ref(null);
+const refupfname = ref(null);
+const refupmname = ref(null);
+const refuplname = ref(null);
+const refupsname = ref(null);
+const refupgender = ref(null);
+const refupbirth = ref(null);
+const refuppob = ref(null);
+const refuptribe = ref(null);
+const refupscregions = ref(null);
+const refupscCode = ref(null);
+const refupmail = ref(null);
+const refupcontact = ref(null);
+const rfupprovinceZip = ref(null);
+const refupstreet = ref(null);
+const refupvillage = ref(null);
+const refupBrgy = ref(null);
+const refupmun = ref(null);
+const refupprov = ref(null);
+const refupreg = ref(null);
+const refupdist = ref(null);
+const refupzip = ref(null);
+
+const rfupprovinceZip2 = ref(null);
+const refupstreet2 = ref(null);
+const refupvillage2 = ref(null);
+const refupBrgy2 = ref(null);
+const refupmun2 = ref(null);
+const refupprov2 = ref(null);
+const refupreg2 = ref(null);
+const refupdist2 = ref(null);
+const refupzip2 = ref(null);
+
 // @state v-model
 const state = reactive({
+  id: "",
+  intid: "",
+  usernames: "",
+  password: "",
+  confirmpassword: "",
+  acttype: "",
+  regions: "",
+
+  spasid: "",
+  fname: "",
+  mname: "",
+  lname: "",
+  sname: "",
+  gender: "",
+  birth: "",
+  pob: "",
+  tribe: "",
+  scregions: "",
+  scCode: "",
+  mail: "",
+  contact: "",
+  street: "",
+  village: "",
+  barangay: "",
+  municipality: "",
+  province: "",
+  region: "",
+  district: "",
+  zip: "",
+
+  street2: "",
+  village2: "",
+  barangay2: "",
+  municipality2: "",
+  province2: "",
+  region2: "",
+  district2: "",
+  zip2: "",
+
   upintid: "",
   upusernames: "",
   uppassword: "",
@@ -1207,13 +1866,44 @@ const state = reactive({
   upacttype: "",
   upregions: "",
   upscode: "",
+
+  upspasid: "",
+  upfname: "",
+  upmname: "",
+  uplname: "",
+  upsname: "",
+  upgender: "",
+  upbirth: "",
+  uppob: "",
+  uptribe: "",
+  upscregions: "",
+  upscCode: "",
+  upmail: "",
+  upcontact: "",
+  upstreet: "",
+  upvillage: "",
+  upbarangay: "",
+  upmunicipality: "",
+  upprovince: "",
+  upregion: "",
+  updistrict: "",
+  upzip: "",
+
+  upstreet2: "",
+  upvillage2: "",
+  upbarangay2: "",
+  upmunicipality2: "",
+  upprovince2: "",
+  upregion2: "",
+  updistrict2: "",
+  upzip2: "",
 });
 
 // SWAL
 const upUserAlert = () => {
   let timerInterval;
   Swal.fire({
-    title: "Updating User Profile!",
+    title: "Updating Scholar Information!",
     html: "I will close in <b></b> milliseconds.",
     timer: 2000,
     timerProgressBar: true,
@@ -1306,6 +1996,12 @@ const columns = [
   },
 ];
 
+// SELECT OPTIONS
+const sexoptions = computed(() => [
+  { label: "Male", value: "M", color: "primary" },
+  { label: "Female", value: "F", color: "primary" },
+]);
+
 // Select Account Type
 var actoptions2 = [];
 const actoptions = ref(actoptions2);
@@ -1367,6 +2063,36 @@ const filterregion = (val, update) => {
   });
 };
 
+// Showing Province
+var zipOption2 = [];
+const zipOption = ref(zipOption2);
+
+onMounted(() => {
+  populateZip();
+});
+
+const populateZip = () => {
+  axios.get("/read.php?address").then((response) => {
+    zipOption2 = response.data;
+  });
+};
+
+const filterZip = (val, update) => {
+  if (val === "") {
+    update(() => {
+      zipOption.value = zipOption2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    zipOption.value = zipOption2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
 // Read Users
 
 onMounted(() => {
@@ -1387,6 +2113,167 @@ const CloseBtn = () => {
   newScholar.value = false;
 };
 
+const tog = () => {
+  if (curadd.value === false) {
+    provinceZip2.value = "";
+    state.street2 = "";
+    state.village2 = "";
+    state.barangay2 = "";
+    state.municipality2 = "";
+    state.province2 = "";
+    state.region2 = "";
+    state.district2 = "";
+    state.zip2 = 0;
+  }
+};
+
+const uptog = () => {
+  if (curadd.value === false) {
+    upprovinceZip2.value = "";
+    state.upstreet2 = "";
+    state.upvillage2 = "";
+    state.upbarangay2 = "";
+    state.upmunicipality2 = "";
+    state.upprovince2 = "";
+    state.upregion2 = "";
+    state.updistrict2 = "";
+    state.upzip2 = 0;
+  }
+};
+
+// Create New Scholar
+
+const step1 = () => {
+  // Validate all references if they exist
+  const refs = [
+    refspas,
+    reffname,
+    reflname,
+    refgender,
+    refbirth,
+    refpob,
+    reftribe,
+    refscregions,
+    refscCode,
+    refmail,
+    refcontact,
+    rfprovinceZip,
+    refstreet,
+    rfprovinceZip2,
+    refstreet2,
+  ];
+
+  // Iterate over each reference and validate if not null
+  refs.forEach((ref) => {
+    if (ref?.value) {
+      ref.value.validate();
+    }
+  });
+
+  // Check for errors, making sure refs are not null
+  const hasError = refs.some((ref) => ref?.value?.hasError);
+
+  if (hasError) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all required fields.",
+    });
+  } else if (
+    curadd.value === true &&
+    (refvillage2?.value?.hasError || rfprovinceZip2?.value?.hasError)
+  ) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all required fields.",
+    });
+  } else {
+    step.value = 2;
+  }
+};
+
+const CreateScholars = () => {
+  const refs = [
+    refId,
+    refUsername,
+    refPassword,
+    refConfPassword,
+    refActType,
+    refRegion,
+  ];
+
+  refs.forEach((ref) => {
+    if (ref?.value) {
+      ref.value.validate();
+    }
+  });
+
+  const hasError = refs.some((ref) => ref?.value?.hasError);
+
+  if (hasError) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all required fields.",
+    });
+  } else {
+    var formData = new FormData(document.getElementById("ScholarForm"));
+
+    // Personal Information Append
+    formData.append("spasid", state.spasid);
+    formData.append("fname", state.fname);
+    formData.append("mname", state.mname);
+    formData.append("lname", state.lname);
+    formData.append("sname", state.sname);
+    formData.append("gender", state.gender);
+    formData.append("birth", state.birth);
+    formData.append("pob", state.pob);
+    formData.append("tribe", state.tribe);
+    formData.append("scregions", state.scregions);
+    formData.append("scCode", state.scCode);
+
+    formData.append("mail", state.mail);
+    formData.append("contact", state.contact);
+
+    formData.append("zipid", provinceZip.value);
+    formData.append("street", state.street);
+    formData.append("village", state.village);
+    formData.append("barangay", state.barangay);
+    formData.append("municipality", state.municipality);
+    formData.append("province", state.province);
+    formData.append("region", state.region);
+    formData.append("district", state.district);
+    formData.append("zip", state.zip);
+
+    formData.append("diffcur", curadd.value);
+
+    formData.append("zipid2", provinceZip2.value);
+    formData.append("street2", state.street2);
+    formData.append("village2", state.village2);
+    formData.append("barangay2", state.barangay2);
+    formData.append("municipality2", state.municipality2);
+    formData.append("province2", state.province2);
+    formData.append("region2", state.region2);
+    formData.append("district2", state.district2);
+    formData.append("zip2", state.zip2);
+
+    axios.post("/create.php?createScholar", formData).then(function (response) {
+      if (response.data == true) {
+        newScholar.value = false;
+        showalert();
+        readusers();
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to create new user",
+        });
+      }
+    });
+  }
+};
+
 // UPdate Scholar
 
 const showUpdateScholar = (props) => {
@@ -1397,6 +2284,42 @@ const showUpdateScholar = (props) => {
   state.upregions = props.row.uregion;
   state.upscode = props.row.uschoolcode;
   state.id = props.row.id;
+
+  state.upspasid = props.row.spas_id;
+  state.upfname = props.row.first_name;
+  state.upmname = props.row.middle_name;
+  state.uplname = props.row.last_name;
+  state.upsname = props.row.suffix_name;
+  state.upgender = props.row.sex;
+  state.upbirth = props.row.dob;
+  state.uppob = props.row.pob;
+  state.uptribe = props.row.tribe;
+  state.upscregions = props.row.school_region;
+  state.upscCode = props.row.school_code;
+  state.upmail = props.row.email;
+  state.upcontact = props.row.contact_no;
+  state.upstreet = props.row.street;
+  state.upvillage = props.row.village;
+  state.upbarangay = props.row.barangay;
+  state.upmunicipality = props.row.municipality;
+  state.upprovince = props.row.province;
+  state.upregion = props.row.region;
+  state.updistrict = props.row.district;
+  state.upzip = props.row.zipcode;
+
+  state.upstreet2 = props.row.astreet;
+  state.upvillage2 = props.row.avillage;
+  state.upbarangay2 = props.row.abarangay;
+  state.upmunicipality2 = props.row.amunicipality;
+  state.upprovince2 = props.row.aprovince;
+  state.upregion2 = props.row.aregion;
+  state.updistrict2 = props.row.adistrict;
+  state.upzip2 = props.row.azipcode;
+
+  // upprovinceZip.value = props.row.zip_id;
+
+  upcuradd.value = props.row.diff_curr_add;
+
   console.log(state.id);
 };
 
@@ -1436,10 +2359,184 @@ const UpdateScholar = () => {
     });
   }
 };
+
+const UpdateScholarInfo = () => {
+  const refs = [
+    refupfname,
+    refuplname,
+    refupgender,
+    refupbirth,
+    refuppob,
+    refuptribe,
+    refupscregions,
+    refupscCode,
+    refupmail,
+    refupcontact,
+    refupstreet,
+    refupstreet2,
+  ];
+
+  // Iterate over each reference and validate if not null
+  refs.forEach((ref) => {
+    if (ref?.value) {
+      ref.value.validate();
+    }
+  });
+
+  // Check for errors, making sure refs are not null
+  const hasError = refs.some((ref) => ref?.value?.hasError);
+
+  if (hasError) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all required fields.",
+    });
+  } else if (
+    upcuradd.value === true &&
+    (refupstreet2?.value?.hasError || rfupprovinceZip2?.value?.hasError)
+  ) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all required fields.",
+    });
+  } else {
+    // alert("Test Complete");
+
+    var formData = new FormData(
+      document.getElementById("UpdateScholarInfoForm")
+    );
+
+    formData.append("id", state.id);
+    formData.append("upcuradd", upcuradd.value);
+
+    axios
+      .post("/update.php?updateScholarInfo", formData)
+      .then(function (response) {
+        if (response.data == true) {
+          upUserAlert();
+          showedit.value = false;
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "User not updated",
+          });
+        }
+      });
+
+    axios
+      .post("/update.php?updateScholarAddr", formData)
+      .then(function (response) {
+        if (response.data == true) {
+          readusers();
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "User not updated",
+          });
+        }
+      });
+  }
+};
+
+// Showing Adress Data
+
+onMounted(() => {
+  populateaddress();
+});
+
+const populateaddress = () => {
+  var formData = new FormData();
+  formData.append("province", provinceZip.value);
+
+  axios.post("/read.php?addressid", formData).then(function (response) {
+    state.district = response.data.zdis;
+    state.region = response.data.zreg;
+    state.municipality = response.data.zmun;
+    state.province = response.data.zpro;
+    state.zip = response.data.zzip;
+  });
+};
+
+onMounted(() => {
+  populateupaddress();
+});
+
+const populateupaddress = () => {
+  var formData = new FormData();
+  formData.append("province", upprovinceZip.value);
+  console.log(upprovinceZip.value);
+
+  axios.post("/read.php?addressid", formData).then(function (response) {
+    state.updistrict = response.data.zdis;
+    state.upregion = response.data.zreg;
+    state.upmunicipality = response.data.zmun;
+    state.upprovince = response.data.zpro;
+    state.upzip = response.data.zzip;
+  });
+};
+
+// Showing Adress Data 2
+
+onMounted(() => {
+  populateaddress2();
+});
+
+const populateaddress2 = () => {
+  var formData = new FormData();
+
+  formData.append("province", provinceZip2.value);
+
+  axios.post("/read.php?addressid", formData).then(function (response) {
+    state.district2 = response.data.zdis;
+    state.region2 = response.data.zreg;
+    state.municipality2 = response.data.zmun;
+    state.province2 = response.data.zpro;
+    state.zip2 = response.data.zzip;
+  });
+};
+
+onMounted(() => {
+  populateupaddress2();
+});
+
+const populateupaddress2 = () => {
+  var formData = new FormData();
+
+  formData.append("province", upprovinceZip2.value);
+
+  axios.post("/read.php?addressid", formData).then(function (response) {
+    state.updistrict2 = response.data.zdis;
+    state.upregion2 = response.data.zreg;
+    state.upmunicipality2 = response.data.zmun;
+    state.upprovince2 = response.data.zpro;
+    state.upzip2 = response.data.zzip;
+  });
+};
 </script>
 
 <style scoped>
 .custom-table tbody tr td {
   cursor: pointer; /* Change cursor design on hover */
+}
+
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  max-width: 400px;
+  margin: 40px auto;
+}
+
+input {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 </style>
