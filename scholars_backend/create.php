@@ -215,6 +215,7 @@ if(!$b) {       //edited for accuracy
 
 } 
 
+// Create Scholar
 
 
 if(isset($_GET['createScholar'])){
@@ -244,7 +245,7 @@ $spasid_no_spaces = str_replace(' ', '', $spasid);
     $strlname = strtoupper($lname);
     $sname = $_POST["sname"];
     $strsname = strtoupper($sname);
-    $fullname = $strlname . ',' .  $strfname . ' ' . $strmname . ' ' . $strsname;
+    $fullname = $strlname . ', ' .  $strfname . ' ' . $strmname . ' ' . $strsname;
     $strfullname = strtoupper($fullname);
 
 
@@ -428,7 +429,7 @@ if(!$b) {       //edited for accuracy
     $scode = $emapData[15];
     $spasid = $emapData[5];
 
-    $fullname = $emapData[8] . ',' .  $emapData[6] . ' ' . $emapData[7] . ' ' . $emapData[9];
+    $fullname = $emapData[8] . ', ' .  $emapData[6] . ' ' . $emapData[7] . ' ' . $emapData[9];
 
     $curradd = ($emapData[26] === 'YES' || $emapData[26] === 'yes') ? 'true' : 'false';
 

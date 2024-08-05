@@ -142,71 +142,69 @@ const readScholarsEligible = () => {
   });
 };
 
+//CSV
+
 // CSV Export
 
-const fetchData = async (queryParams) => {
+// State
+const queryData = ref([]);
+
+// Fetch Data Function
+const fetchData = async () => {
   try {
-    const response = await axios.get(`/read.php?exportCSV&${queryParams}`);
-
-    if (response.status !== 200) {
-      throw new Error("Network response was not ok");
-    }
-
-    return response.data;
+    const response = await axios.get("read.php?exportCSV");
+    queryData.value = response.data;
   } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error;
+    console.error(error);
   }
 };
 
+// Convert Data to CSV Function
 const convertToCSV = (data) => {
-  try {
-    if (!Array.isArray(data) || data.length === 0) {
-      throw new Error("Data is not in the expected format");
-    }
+  if (data.length === 0) return "";
 
-    // Example: convert data to CSV format
-    let csvContent = "";
-    if (Array.isArray(data[0])) {
-      // If data is an array of arrays
-      csvContent =
-        "data:text/csv;charset=utf-8," +
-        data.map((row) => row.join(",")).join("\n");
-    } else if (typeof data[0] === "object") {
-      // If data is an array of objects
-      const header = Object.keys(data[0]);
-      csvContent =
-        "data:text/csv;charset=utf-8," +
-        header.join(",") +
-        "\n" +
-        data
-          .map((row) => header.map((field) => row[field]).join(","))
-          .join("\n");
-    }
+  // Ensure all keys are accounted for in case of missing fields in some objects
+  const headers = [...new Set(data.flatMap((obj) => Object.keys(obj)))].join(
+    ","
+  );
 
-    return encodeURI(csvContent);
-  } catch (error) {
-    console.error("Error converting data to CSV:", error);
-    throw error;
-  }
+  const rows = data
+    .map((row) =>
+      headers
+        .split(",")
+        .map((header) => {
+          let value = row[header];
+          // Handle nested objects or arrays if needed
+          if (typeof value === "object" && value !== null) {
+            value = JSON.stringify(value);
+          }
+          return `"${
+            value !== undefined ? String(value).replace(/"/g, '""') : ""
+          }"`;
+        })
+        .join(",")
+    )
+    .join("\n");
+
+  return `${headers}\n${rows}`;
 };
 
-const downloadCSV = async () => {
-  const queryParams = "someQueryParameters"; // Modify based on your needs
-  try {
-    const data = await fetchData(queryParams);
-    const csvContent = convertToCSV(data);
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "data.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error("Error downloading CSV:", error);
-    // Handle error as needed
-  }
+// Download CSV Function
+const downloadCSV = () => {
+  const csvData = convertToCSV(queryData.value);
+  const blob = new Blob([csvData], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "data.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
+
+// Fetch data on component mount
+onMounted(fetchData);
 
 // Show Monitor
 

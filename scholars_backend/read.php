@@ -414,7 +414,7 @@ if(isset($_GET['readScholarInfoID'])){
         c.contract_status, s.sy_insured, s.batch_insured, c.deferment_status
         FROM scholarship_info AS s
         LEFT OUTER JOIN contract_status_details AS c ON s.spas_id = c.spas_id
-        WHERE s.spas_id = ?");
+        WHERE s.primary_spas_id = ?");
         $params = array($id);
         $stnt->execute($params);
     
@@ -543,7 +543,7 @@ if(isset($_GET['statRecID'])){
     LEFT OUTER JOIN 
         standing_history AS h ON s.spas_id = h.spas_id
     WHERE 
-        s.spas_id = ?
+        s.primary_spas_id = ?
     GROUP BY 
         s.spas_id, s.program, s.sub_program, s.category
     ORDER BY 
@@ -1771,9 +1771,9 @@ if(isset($_GET['readEligible'])){
             scholars_record.full_name,
             scholarship_info.program,
             scholarship_info.sub_program,
-            colleges.name,
+            colleges.name as school,
             colleges.region,
-            courses.name,
+            courses.name as course,
             courses.discipline,
             progress_status_history.progress_status,
             standing_history.standing, 

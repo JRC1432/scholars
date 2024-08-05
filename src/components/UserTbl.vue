@@ -676,7 +676,7 @@
         <IconUserEdit :size="30" stroke-width="2" />
 
         <q-toolbar-title
-          ><span class="text-weight-bold" color="primary">EDIT</span> Staff
+          ><span class="text-weight-bold" color="primary">UPDATE</span> Staff
           Profile</q-toolbar-title
         >
 

@@ -297,7 +297,7 @@
                         hide-bottom-space
                         v-model="state.mail"
                         name="mail"
-                        :rules="inputRules"
+                        :rules="[emailRule]"
                       />
                     </div>
                   </div>
@@ -1174,7 +1174,7 @@
                         hide-bottom-space
                         v-model="state.upmail"
                         name="upmail"
-                        :rules="inputRules"
+                        :rules="[emailRule]"
                       />
                     </div>
                   </div>
@@ -1671,6 +1671,11 @@ const fileRules = (val) => {
     return "Please Select a File!";
   }
   return true;
+};
+
+const emailRule = (val) => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(val) || "Please enter a valid email address";
 };
 
 // Username Validations

@@ -126,6 +126,7 @@ if(isset($_GET['updateuser'])){
             $upmname = $_POST["upmname"];
             $uplname = $_POST["uplname"];
             $upsname = $_POST["upsname"];
+            $fullname = $uplname . ', ' .  $upfname . ' ' . $upmname . ' ' . $upsname;
             $upgender = $_POST["upgender"];
             $upbirth = $_POST["upbirth"];
             $uppob = $_POST["uppob"];
@@ -148,11 +149,11 @@ if(isset($_GET['updateuser'])){
             $upprovinceZip = $_POST["upprovinceZip"] ?? null;
                 
                 
-                $stnt = $pdo->prepare("UPDATE scholars_record SET spas_id = ?, first_name = ?, middle_name = ?, last_name = ?, suffix_name = ?, sex = ?,
+                $stnt = $pdo->prepare("UPDATE scholars_record SET spas_id = ?, first_name = ?, middle_name = ?, last_name = ?, suffix_name = ?, full_name = ?, sex = ?,
                 dob = ?, pob = ?, tribe = ?, street = ?, village = ?, barangay = ?, municipality = ?, province = ?, region = ?, district = ?, zipcode = ?,
                 diff_curr_add = ?, email = ?, contact_no = ?, school_region = ?, school_code = ?, zip_id = ?
                 WHERE user_id = ?");
-                $stnt->execute([$spasid_no_spaces,$upfname,$upmname,$uplname,$upsname,$upgender,$upbirth,$uppob,$uptribe,$upstreet,$upvillage,$upbarangay,$upmunicipality,
+                $stnt->execute([$spasid_no_spaces,$upfname,$upmname,$uplname,$upsname,$fullname,$upgender,$upbirth,$uppob,$uptribe,$upstreet,$upvillage,$upbarangay,$upmunicipality,
                 $upprovince,$upregion,$updistrict,$upzip,$upcuradd,$upmail,$upcontact,$upscregions,$upscCode,$upprovinceZip,$upid]);
                 
                  if($stnt){
