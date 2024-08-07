@@ -411,9 +411,11 @@ if(isset($_GET['readScholarInfoID'])){
     {
     
         $stnt = $pdo->prepare("SELECT s.spas_id, s.yr_awarded, s.program, s.sub_program, s.category, c.duration, s.remarks,
-        c.contract_status, s.sy_insured, s.batch_insured, c.deferment_status
+        r.reply_slip, c.contract_status, s.sy_insured, s.batch_insured, c.deferment_status
         FROM scholarship_info AS s
         LEFT OUTER JOIN contract_status_details AS c ON s.spas_id = c.spas_id
+        LEFT OUTER JOIN reply_slip_details AS r ON s.spas_id = r.spas_id
+
         WHERE s.primary_spas_id = ?");
         $params = array($id);
         $stnt->execute($params);
@@ -445,21 +447,21 @@ if(isset($_GET['readSCID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT 
-        c.contract_status, c.avail_award, c.other_schp, c.duration,
-        c.etg, c.etg_month, c.created_by, c.updated_by, c.verified_by, 
-        t.term_type, t.sy, c.term_id, t.term_id, 
-        p.name as course, s.name as schools, c.deferment_status, t.term
-    FROM 
-        contract_status_details AS c
-    LEFT OUTER JOIN 
-        term_record AS t ON t.term_id = c.term_id
-    LEFT OUTER JOIN 
-        course_record AS r ON  c.spas_id = r.spas_id
-    LEFT OUTER JOIN 
-        courses AS p ON r.course_code = p.id::text
-    LEFT OUTER JOIN 
-        colleges AS s ON r.school_code = s.id::text  WHERE c.spas_id = ?");
+        $stnt = $pdo->prepare("SELECT c.contract_status, c.avail_award, c.other_schp,
+c.contract_loc, c.duration, c.etg_month, c.etg, c.deferment_status,
+s.name as schools, p.name as course, t.sy, t.term_type, t.term, c.reason,
+c.created_by, c.updated_by, c.verified_by, d.with_deferment_form,
+d.reason as defer_reason, d.sy_deferred, d.term_type as defer_type, d.term_deferred
+FROM contract_status_details AS c
+
+LEFT OUTER JOIN course_record AS r ON c.spas_id = r.spas_id
+LEFT OUTER JOIN colleges AS s ON r.school_code = s.id::text
+LEFT OUTER JOIN courses AS p ON r.course_code = p.id::text
+LEFT OUTER JOIN term_record AS t ON c.term_id = t.term_id
+LEFT OUTER JOIN deferment_details AS d ON c.spas_id = d.spas_id
+		
+		
+WHERE c.spas_id = ?");
         $params = array($id);
         $stnt->execute($params);
     
@@ -480,6 +482,56 @@ if(isset($_GET['readSCID'])){
     $pdo = null;
     
     }
+
+
+
+    // Read Reply Slip
+
+if(isset($_GET['readReplyId'])){
+    $data = array();
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM reply_slip_details WHERE spas_id = ?");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     
@@ -2192,6 +2244,111 @@ if(isset($_GET['checkMail'])){
     
 
 //     }
+
+
+
+// Read Replies
+
+if(isset($_GET['reply'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM lu_reply_status ORDER BY id");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['name'],
+    
+                "value" => $row['name']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+    // Read Contract Status
+
+    if(isset($_GET['contractStatus'])){
+        $data = array();
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT * FROM lu_contract_status ORDER BY id");
+            $stnt->execute();
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['name'],
+        
+                    "value" => $row['name']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+        // Read RTG Month
+
+    if(isset($_GET['etgMonth'])){
+        $data = array();
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT * FROM lu_months ORDER BY id");
+            $stnt->execute();
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['name'],
+        
+                    "value" => $row['name']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+    
 
 
 

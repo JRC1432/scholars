@@ -126,7 +126,7 @@
                         dense
                         hide-bottom-space
                         v-model="state.spasid"
-                        mask="A - #### - #S - #####"
+                        mask="A - #### - NN - #####"
                         name="spasid"
                         :rules="combinedRules"
                       />
@@ -969,15 +969,6 @@
                   class="q-mb-sm"
                   style="width: 80%"
                 />
-
-                <q-btn
-                  rounded
-                  style="width: 80%"
-                  label="REMOVE THIS USER"
-                  color="negative"
-                  type="submit"
-                  class="q-mb-sm"
-                />
               </div>
             </q-card-actions>
           </form>
@@ -1003,7 +994,7 @@
                         dense
                         hide-bottom-space
                         v-model="state.upspasid"
-                        mask="A - #### - #S - #####"
+                        mask="A - #### - NN - #####"
                         name="upspasid"
                         :rules="combinedRules"
                       />

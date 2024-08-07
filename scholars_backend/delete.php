@@ -3,6 +3,8 @@
 require("dbconn.php");
 
 
+// Delete User
+
 
 if(isset($_GET['delUserInfo'])){
 
@@ -24,6 +26,29 @@ if(isset($_GET['delUserInfo'])){
         echo json_encode($result);
     
     }
+
+
+    // Delete Reply SLip
+
+    if(isset($_GET['delReplySlip'])){
+
+    
+        $delSpasid = $_POST["delSpasid"];
+        
+        
+        $stnt = $pdo->prepare("DELETE FROM reply_slip_details WHERE spas_id = ?");
+        $stnt->execute([$delSpasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
 
 
 

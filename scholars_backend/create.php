@@ -505,7 +505,51 @@ if(!$b) {       //edited for accuracy
    echo $status;
 
 
-} 
+}
+
+
+// Add Reply Slip
+
+
+
+if(isset($_GET['createReplySlip'])){
+
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Y-m-d h:i:s a");
+    $uploaded_by = $_POST["user"];
+
+    $spasid = $_POST["spasid"];
+    $reply = $_POST["reply"];
+    $daterep = $_POST["daterep"];
+    $reply_reason = $_POST["reply_reason"];
+    $reply_reason2 = strtoupper($reply_reason);
+    $verified = true;
+
+
+    $stnt = $pdo->prepare("INSERT INTO reply_slip_details(spas_id,reply_slip,date_reply,reason,created_by,updated_by,verified_flag,verified_by) VALUES 
+    (?,?,?,?,?,?,?,?)");
+    $params = array($spasid,$reply,$daterep,$reply_reason2,$uploaded_by,$uploaded_by,$verified,$uploaded_by);
+    $stnt -> execute($params);
+
+    if($stnt){
+        $result =  true;
+    } else{
+
+        $result = false;
+    }
+
+    echo json_encode($result);
+
+
+}
+
+
+
+
+
+
+
+
 
 
 

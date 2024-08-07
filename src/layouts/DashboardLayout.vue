@@ -48,6 +48,11 @@
             DOST - SEI
           </q-toolbar-title>
         </q-btn>
+
+        <div class="text-center text-caption">
+          Undergraduate Scholarship Information System
+          <q-badge align="top">V.2.0</q-badge>
+        </div>
         <q-list padding>
           <!-- Users Item -->
           <q-expansion-item label="User Management" icon="groups">

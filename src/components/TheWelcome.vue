@@ -8,8 +8,9 @@
         <div style="line-height: 1" class="text-bold">
           Department of Science and Technology - Science Education Institute
           <span class="text-subtitle1" style="display: block"
-            >Undergraduate Scholarship Information System V2.0</span
-          >
+            >Undergraduate Scholarship Information System
+            <q-badge align="top">V2.0</q-badge>
+          </span>
         </div>
       </q-toolbar-title>
     </q-toolbar>

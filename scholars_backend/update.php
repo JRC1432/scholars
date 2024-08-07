@@ -204,6 +204,62 @@ if(isset($_GET['updateuser'])){
                     
                     }
 
+
+
+
+
+
+                    // Update Reply Slip
+
+if(isset($_GET['updateReplySlip'])){
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Y-m-d h:i:s a");
+
+    $updatedby = $_POST["user"];
+
+    $upspasid = $_POST["upspasid"];
+
+    $upreply = $_POST["upreply"];
+    $updaterep = $_POST["updaterep"];
+    $upreply_reason = $_POST["upreply_reason"];
+    $upspasid = $_POST["upspasid"];
+
+    
+    
+    
+    $stnt = $pdo->prepare("UPDATE reply_slip_details SET reply_slip = ?, date_reply = ?, reason = ?, updated_at = ?, updated_by = ?, verified_by = ?
+    WHERE spas_id = ?");
+    $stnt->execute([$upreply,$updaterep,$upreply_reason,$date,$updatedby,$updatedby,$upspasid]);
+    
+     if($stnt){
+            $result =  true;
+        } else{
+            
+            $result = false;
+        }
+    
+        echo json_encode($result);
+    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
 
 ?>
