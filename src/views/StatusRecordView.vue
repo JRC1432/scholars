@@ -173,10 +173,10 @@ const columns = [
 // Read Status Records
 const id = ref();
 onMounted(() => {
-  readStatRec();
+  populateAll();
 });
 
-const readStatRec = () => {
+const populateAll = () => {
   id.value = route.params.id;
   var formData = new FormData();
   formData.append("id", id.value);

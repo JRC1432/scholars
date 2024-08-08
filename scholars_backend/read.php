@@ -543,11 +543,14 @@ if(isset($_GET['readUndergradID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT r.spas_id, p.name as course, p.discipline, s.name as schools, r.sy_start, r.term_type, r.term_start, r.latest_flag
-        FROM course_record AS r
-        LEFT OUTER JOIN courses AS p ON p.id::text = r.course_code
-        LEFT OUTER JOIN colleges AS s ON s.id::text = r.school_code
-        WHERE r.spas_id = ?");
+        $stnt = $pdo->prepare("SELECT sc.spas_id, p.name as course, p.discipline, s.name as schools, r.sy_start, r.term_type, r.term_start, r.latest_flag
+        FROM scholarship_info AS sc
+		LEFT OUTER JOIN course_record AS r ON sc.spas_id = r.spas_id
+		LEFT OUTER JOIN courses AS p ON r.course_code = p.id::text
+		LEFT OUTER JOIN colleges AS s ON r.school_code = s.id::text
+		WHERE sc.primary_spas_id = ?
+		
+		");
         $params = array($id);
         $stnt->execute($params);
     
@@ -2348,6 +2351,112 @@ if(isset($_GET['reply'])){
         $pdo = null;
         
         }
+
+
+        // SPASID LISTS
+
+    if(isset($_GET['spasid'])){
+        $data = array();
+        $pspasid = $_POST['id'];
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT spas_id FROM scholarship_info WHERE primary_spas_id = ?");
+            $stnt->execute([$pspasid]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['spas_id'],
+        
+                    "value" => $row['spas_id']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // Read School
+
+if(isset($_GET['school'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT name FROM colleges ORDER BY id");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['name'],
+    
+                "value" => $row['name']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+    // Read Course
+
+if(isset($_GET['courses'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT name FROM courses ORDER BY id");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['name'],
+    
+                "value" => $row['name']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
     
 
 

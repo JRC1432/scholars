@@ -572,7 +572,12 @@
               label="Save"
               type="submit"
             />
-            <q-btn outline style="color: goldenrod" label="Reset" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Reset"
+              @click="resetBtnrep"
+            />
           </div>
         </q-card-actions>
       </form>
@@ -647,7 +652,12 @@
               label="update"
               type="submit"
             />
-            <q-btn outline style="color: goldenrod" label="Reset" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Reset"
+              @click="resetBtn"
+            />
           </div>
         </q-card-actions>
       </form>
@@ -1226,38 +1236,49 @@ const columns = [
 // SELECT Reply
 
 const replyoptions = ref();
+const cntrctStatusoptions = ref();
+const etgOptions = ref();
+var regoptions2 = [];
+const regoptions = ref(regoptions2);
+
+const id = ref();
+
 onMounted(() => {
-  populatereply();
+  populateAll();
 });
 
-const populatereply = () => {
+const populateAll = () => {
+  id.value = route.params.id;
+  var formData = new FormData();
+  formData.append("id", id.value);
+
+  // Read Scholars
+
+  axios.post("/read.php?readScholarInfoID", formData).then((response) => {
+    rows.value = response.data;
+  });
+
+  // Select Replies
   axios.get("/read.php?reply").then((response) => {
     replyoptions.value = response.data;
   });
-};
 
-// SELECT COntract Status
+  // SELECT COntract Status
 
-const cntrctStatusoptions = ref();
-onMounted(() => {
-  populateStatus();
-});
-
-const populateStatus = () => {
   axios.get("/read.php?contractStatus").then((response) => {
     cntrctStatusoptions.value = response.data;
   });
-};
 
-// SELECT ETG Month
-const etgOptions = ref();
-onMounted(() => {
-  populateETG();
-});
+  // SELECT ETG Month
 
-const populateETG = () => {
   axios.get("/read.php?etgMonth").then((response) => {
     etgOptions.value = response.data;
+  });
+
+  // Select Regions
+
+  axios.get("/read.php?region").then((response) => {
+    regoptions2 = response.data;
   });
 };
 
@@ -1268,20 +1289,7 @@ const awardOptions = [
   { label: "TL", value: "TL", color: "primary" },
 ];
 
-// Select Regions
-var regoptions2 = [];
-const regoptions = ref(regoptions2);
-
-onMounted(() => {
-  populatereg();
-});
-
-const populatereg = () => {
-  axios.get("/read.php?region").then((response) => {
-    regoptions2 = response.data;
-  });
-};
-
+// Filter Regions
 const filterregion = (val, update) => {
   if (val === "") {
     update(() => {
@@ -1295,22 +1303,6 @@ const filterregion = (val, update) => {
     regoptions.value = regoptions2.filter((option) => {
       return option.label.toLowerCase().includes(needle);
     });
-  });
-};
-
-// Read Scholars
-const id = ref();
-
-onMounted(() => {
-  readscholarinfo();
-});
-
-const readscholarinfo = () => {
-  id.value = route.params.id;
-  var formData = new FormData();
-  formData.append("id", id.value);
-  axios.post("/read.php?readScholarInfoID", formData).then((response) => {
-    rows.value = response.data;
   });
 };
 
@@ -1455,7 +1447,7 @@ const CreateReply = () => {
           state.reply_reason = "";
           showalertReply();
           addReplies.value = false;
-          readscholarinfo();
+          populateAll();
         } else {
           $q.notify({
             color: "red",
@@ -1498,7 +1490,7 @@ const UpdateReplyNow = () => {
         if (response.data == true) {
           updateAlertReply();
           updateReplies.value = false;
-          readscholarinfo();
+          populateAll();
         } else {
           $q.notify({
             color: "red",
@@ -1533,7 +1525,7 @@ const Removereply = () => {
         .post("/delete.php?delReplySlip", formData)
         .then(function (response) {
           if (response.data == true) {
-            readscholarinfo();
+            populateAll();
             Swal.fire({
               title: "Deleted!",
               text: "The reply slip has been removed.",
@@ -1549,6 +1541,22 @@ const Removereply = () => {
         });
     }
   });
+};
+
+const resetBtn = () => {
+  refupreply.value.resetValidation();
+  refupdaterep.value.resetValidation();
+  state.upreply = null;
+  state.updaterep = null;
+  state.upreply_reason = null;
+};
+
+const resetBtnrep = () => {
+  state.reply = null;
+  state.daterep = null;
+  state.reply_reason = null;
+  refreply.value.resetValidation();
+  refdaterep.value.resetValidation();
 };
 
 // Update the contract

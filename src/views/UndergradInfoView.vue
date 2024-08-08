@@ -31,9 +31,23 @@
             </q-input>
           </template>
 
+          <template v-slot:top-left>
+            <q-btn
+              style="color: goldenrod"
+              outline
+              rounded
+              icon="add"
+              @click="newUndergrad"
+              >New Undergraduate Record</q-btn
+            >
+          </template>
+
           <template v-slot:body="props">
-            <q-tr :prop="props"
-              ><q-td key="course" :props="props">
+            <q-tr :prop="props">
+              <q-td key="spas_id" :props="props">
+                {{ props.row.spas_id }}
+              </q-td>
+              <q-td key="course" :props="props">
                 {{ props.row.course }}
               </q-td>
               <q-td key="discipline" :props="props">
@@ -88,7 +102,10 @@
 
               <q-td key="latest_flag" :props="props">
                 <template v-if="props.row.latest_flag === 1"> Yes </template>
-                <template v-else> No </template>
+                <template v-else-if="props.row.latest_flag === 0">
+                  No
+                </template>
+                <template v-else> -- </template>
               </q-td>
             </q-tr>
           </template>
@@ -96,6 +113,143 @@
       </div>
     </q-card>
   </div>
+
+  <q-dialog v-model="showUndegrad" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <form id="UpReplyForm" @submit.prevent.stop="UpdateReplyNow">
+        <q-toolbar>
+          <IconClipboardText :size="30" stroke-width="2" />
+
+          <q-toolbar-title
+            ><span class="text-weight-bold" color="primary">NEW</span>
+            UNDERGRADUATE RECORDS
+          </q-toolbar-title>
+
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+
+        <q-card-section>
+          <div class="q-px-sm">
+            <span class="text-bold">SPAS ID:</span>
+            <q-select
+              ref="refspasid"
+              :options="spasoptions"
+              v-model="state.spasid"
+              emit-value
+              name="spasid"
+              outlined
+              dense
+              hide-bottom-space
+              :rules="[myRule]"
+            />
+          </div>
+          <div class="q-px-sm">
+            <span class="text-bold">School</span>
+
+            <q-select
+              ref="refschool"
+              outlined
+              dense
+              hide-bottom-space
+              behavior="menu"
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              v-model="state.school"
+              name="school"
+              :options="schooloptions"
+              @filter="filterschool"
+              :rules="[myRule]"
+            >
+            </q-select>
+          </div>
+          <div class="q-px-sm">
+            <span class="text-bold">Courses</span>
+
+            <q-select
+              ref="refcourses"
+              outlined
+              dense
+              hide-bottom-space
+              behavior="menu"
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              v-model="state.courses"
+              name="courses"
+              :options="courseoptions"
+              @filter="filtercourse"
+              :rules="[myRule]"
+            >
+            </q-select>
+          </div>
+          <div class="q-px-sm">
+            <span class="text-bold">School Year</span>
+
+            <q-select
+              ref="refsy"
+              outlined
+              dense
+              hide-bottom-space
+              behavior="menu"
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              v-model="state.sy"
+              name="sy"
+              :options="syoptions"
+              @filter="filtersy"
+              :rules="[myRule]"
+            >
+            </q-select>
+          </div>
+          <div class="q-px-sm">
+            <span class="text-bold">Term Type</span>
+            <q-select
+              ref="reftermtype"
+              :options="termTypeOptions"
+              v-model="state.termtype"
+              emit-value
+              name="termtype"
+              outlined
+              dense
+              hide-bottom-space
+              :rules="[myRule]"
+            />
+          </div>
+          <div class="q-px-sm">
+            <span class="text-bold">Term</span>
+            <q-select
+              ref="refterm"
+              :options="termoptions"
+              v-model="state.term"
+              emit-value
+              name="term"
+              outlined
+              dense
+              hide-bottom-space
+              :rules="[myRule]"
+            />
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Save"
+              type="submit"
+            />
+            <q-btn outline style="color: goldenrod" label="Reset" />
+          </div>
+        </q-card-actions>
+      </form>
+    </q-card>
+  </q-dialog>
 </template>
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
@@ -103,7 +257,7 @@ import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
-import { IconScript } from "@tabler/icons-vue";
+import { IconScript, IconClipboardText } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
 
@@ -121,7 +275,30 @@ const pagination = ref({
   rowsPerPage: 10,
 });
 
+const showUndegrad = ref(false);
+
+// Validations
+
+const myRule = (val) => {
+  if (val === null || val === undefined || val === "") {
+    return "You must make a selection!";
+  }
+  return true;
+};
+
+const state = reactive({
+  spasid: "",
+});
+
 const columns = [
+  {
+    name: "spas_id",
+    required: true,
+    label: "SPAS ID",
+    align: "left",
+    field: "spas_id",
+    sortable: true,
+  },
   {
     name: "course",
     required: true,
@@ -180,17 +357,89 @@ const columns = [
 ];
 
 // Read UnderGrad
-const id = ref();
+
+const spasoptions = ref();
+const spasid = ref();
+var schooloptions2 = [];
+const schooloptions = ref(schooloptions2);
+var courseoptions2 = [];
+const courseoptions = ref(courseoptions2);
+
 onMounted(() => {
-  readundergradinfo();
+  populateAll();
 });
 
-const readundergradinfo = () => {
-  id.value = route.params.id;
+const populateAll = () => {
+  spasid.value = route.params.id;
   var formData = new FormData();
-  formData.append("id", id.value);
+  formData.append("id", spasid.value);
+
+  // Read Undergrad Records
   axios.post("/read.php?readUndergradID", formData).then((response) => {
     rows.value = response.data;
   });
+
+  // Select SPASID
+  axios.post("/read.php?spasid", formData).then((response) => {
+    spasoptions.value = response.data;
+  });
+
+  // Select School
+
+  axios.get("/read.php?school").then((response) => {
+    schooloptions2 = response.data;
+  });
+
+  // Select Courses
+  axios.get("/read.php?courses").then((response) => {
+    courseoptions2 = response.data;
+  });
+};
+
+// Filters
+// School Filters
+const filterschool = (val, update) => {
+  if (val === "") {
+    update(() => {
+      schooloptions.value = schooloptions2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    schooloptions.value = schooloptions2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
+// Course Filters
+
+const filtercourse = (val, update) => {
+  if (val === "") {
+    update(() => {
+      courseoptions.value = courseoptions2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    courseoptions.value = courseoptions2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
+// TermType
+const termTypeOptions = [
+  { label: "Semestral", value: "Semestral", color: "primary" },
+  { label: "Trimestral", value: "Trimestral", color: "primary" },
+  { label: "Quarterly", value: "Quarterly", color: "primary" },
+];
+
+const newUndergrad = () => {
+  showUndegrad.value = true;
 };
 </script>

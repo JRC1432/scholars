@@ -1629,29 +1629,41 @@ const showalert = () => {
 };
 
 const batchUplAlert = () => {
-  let timerInterval;
-  Swal.fire({
-    title: "Creating Multiple New Users!",
-    html: "I will close in <b></b> milliseconds.",
-    timer: 2000,
-    timerProgressBar: true,
-    didOpen: () => {
-      Swal.showLoading();
-      const timer = Swal.getPopup().querySelector("b");
-      timerInterval = setInterval(() => {
-        timer.textContent = `${Swal.getTimerLeft()}`;
-      }, 100);
-    },
-    willClose: () => {
-      clearInterval(timerInterval);
-    },
-  }).then((result) => {
-    /* Read more about handling dismissals below */
-    if (result.dismiss === Swal.DismissReason.timer) {
-      console.log("I was closed by the timer");
-      Swal.fire("Saved!", "", "success");
-    }
+  const notif = $q.notify({
+    group: false, // required to be updatable
+    timeout: 0, // we want to be in control when it gets dismissed
+    spinner: true,
+    message: "Uploading file...",
+    caption: "0%",
   });
+
+  // we simulate some progress here...
+  let percentage = 0;
+  const interval = setInterval(() => {
+    percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+    // we update the dialog
+    notif({
+      caption: `${percentage}%`,
+    });
+
+    // if we are done...
+    if (percentage === 100) {
+      notif({
+        icon: "done", // we add an icon
+        spinner: false, // we reset the spinner setting so the icon can be displayed
+        message: "Uploading done!",
+        timeout: 2500, // we will timeout it in 2.5s
+      });
+      $q.notify({
+        type: "positive",
+        message: "The file has been uploaded successfully.",
+        position: "top-right",
+      });
+      readusers();
+      clearInterval(interval);
+    }
+  }, 500);
 };
 
 const upUserAlert = () => {
@@ -1873,7 +1885,6 @@ const batchUp = () => {
       if (response.data == true) {
         batchUpload.value = false;
         batchUplAlert();
-        readusers();
       } else {
         $q.notify({
           color: "red",
