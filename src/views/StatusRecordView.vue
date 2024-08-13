@@ -14,7 +14,7 @@
           row-key="name"
           :filter="filter"
           v-model:pagination="pagination"
-          class="no-border custom-table surface-container"
+          class="no-border surface-container"
         >
           <template v-slot:top-right>
             <q-input
@@ -31,9 +31,14 @@
           </template>
 
           <template v-slot:body="props">
-            <q-tr :prop="props" @click="showSpas(props)">
+            <q-tr :prop="props">
               <q-td key="spas_id" :props="props">
-                <q-badge color="light-green-4" :label="props.value">
+                <q-badge
+                  @click="showSpas(props)"
+                  color="light-green-4"
+                  :label="props.value"
+                  class="pointer-class"
+                >
                   {{ props.row.spas_id }}
                 </q-badge>
               </q-td>
@@ -59,36 +64,37 @@
             </q-tr>
           </template>
         </q-table>
-
-        <!-- Scholar History Details  -->
-
-        <q-dialog v-model="showSpasDetail" persistent full-width>
-          <q-card class="rounded-borders-20">
-            <q-toolbar>
-              <IconHistory :size="30" stroke-width="2" />
-
-              <q-toolbar-title
-                ><span class="text-weight-bold" color="primary">VIEW</span>
-                HISTORY
-              </q-toolbar-title>
-
-              <q-btn flat round dense icon="close" v-close-popup />
-            </q-toolbar>
-
-            <q-card-section>
-              <HistoryTbl />
-            </q-card-section>
-
-            <q-separator />
-          </q-card>
-        </q-dialog>
       </div>
     </q-card>
   </div>
+
+  <!-- Scholar History Details  -->
+
+  <q-dialog v-model="showSpasDetail" persistent full-width>
+    <q-card class="rounded-borders-20">
+      <q-toolbar>
+        <IconHistory :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">VIEW</span>
+          HISTORY
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <HistoryTbl :spasid="spasid" />
+      </q-card-section>
+
+      <q-separator />
+    </q-card>
+  </q-dialog>
 </template>
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
 import HistoryTbl from "../components/HistoryTbl.vue";
+import TestMode from "../components/TestMode.vue";
 import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
@@ -185,13 +191,20 @@ const populateAll = () => {
   });
 };
 
-const showSpas = () => {
+const spasid = ref("test");
+const showSpas = (props) => {
+  // console.log(props.row);
   showSpasDetail.value = true;
+  spasid.value = props.row;
 };
 </script>
 
 <style scoped>
 .custom-table tbody tr td {
   cursor: pointer; /* Change cursor design on hover */
+}
+
+.pointer-class {
+  cursor: pointer; /* Changes the cursor to a pointer (hand) */
 }
 </style>

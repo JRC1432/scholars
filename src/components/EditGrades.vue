@@ -184,11 +184,42 @@
               bordered
               separator="cell"
             >
-              <template v-slot:body-cell-academic="props">
+              <template v-slot:body-cell-scode="props">
                 <q-td :props="props">
-                  <q-checkbox v-model="props.row.academic" disable />
+                  <q-input v-model="props.row.scode" />
                 </q-td>
               </template>
+
+              <template v-slot:body-cell-academic="props">
+                <q-td :props="props">
+                  <q-checkbox v-model="props.row.academic" />
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-units="props">
+                <q-td :props="props">
+                  <q-input v-model="props.row.units" mask="##.##" />
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-grade="props">
+                <q-td :props="props">
+                  <q-input v-model="props.row.grade" mask="#.##" />
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-completion="props">
+                <q-td :props="props">
+                  <q-input v-model="props.row.completion" />
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-remarks="props">
+                <q-td :props="props">
+                  <q-input v-model="props.row.remarks" />
+                </q-td>
+              </template>
+
               <template v-slot:body-cell-action="props">
                 <q-td :props="props">
                   <q-btn
@@ -231,8 +262,9 @@
               style="width: 40%"
               color="warning"
               @click="resetTodos"
-              >RESET</q-btn
             >
+              RESET
+            </q-btn>
           </q-card-actions>
         </q-card>
       </q-page>
@@ -269,7 +301,53 @@ const completion = ref("");
 const remarks = ref("");
 
 const toggle = ref("");
-const todos = ref([]);
+const todos = ref([
+  {
+    id: uid(),
+    scode: "",
+    academic: false,
+    units: "",
+    grade: "",
+    completion: "",
+    remarks: "",
+  },
+  {
+    id: uid(),
+    scode: "",
+    academic: false,
+    units: "",
+    grade: "",
+    completion: "",
+    remarks: "",
+  },
+  {
+    id: uid(),
+    scode: "",
+    academic: false,
+    units: "",
+    grade: "",
+    completion: "",
+    remarks: "",
+  },
+  {
+    id: uid(),
+    scode: "",
+    academic: false,
+    units: "",
+    grade: "",
+    completion: "",
+    remarks: "",
+  },
+  {
+    id: uid(),
+    scode: "",
+    academic: false,
+    units: "",
+    grade: "",
+    completion: "",
+    remarks: "",
+  },
+]);
 
 const term_required = ref(0);
 
@@ -315,13 +393,53 @@ const removeTodo = (id) => {
 };
 
 const resetTodos = () => {
-  todos.value = [];
-  scode.value = "";
-  academic.value = "";
-  units.value = "";
-  grade.value = "";
-  completion.value = "";
-  remarks.value = "";
+  todos.value = [
+    {
+      id: uid(),
+      scode: "",
+      academic: false,
+      units: "",
+      grade: "",
+      completion: "",
+      remarks: "",
+    },
+    {
+      id: uid(),
+      scode: "",
+      academic: false,
+      units: "",
+      grade: "",
+      completion: "",
+      remarks: "",
+    },
+    {
+      id: uid(),
+      scode: "",
+      academic: false,
+      units: "",
+      grade: "",
+      completion: "",
+      remarks: "",
+    },
+    {
+      id: uid(),
+      scode: "",
+      academic: false,
+      units: "",
+      grade: "",
+      completion: "",
+      remarks: "",
+    },
+    {
+      id: uid(),
+      scode: "",
+      academic: false,
+      units: "",
+      grade: "",
+      completion: "",
+      remarks: "",
+    },
+  ];
 };
 
 const columns = [
@@ -342,18 +460,19 @@ const columns = [
 const computedTotalUnits = computed(() => {
   return todos.value
     .filter((todo) => todo.academic)
-    .reduce((total, todo) => total + todo.units, 0)
+    .reduce((total, todo) => total + parseFloat(todo.units || 0), 0)
     .toFixed(2);
 });
 
 const computedGwa = computed(() => {
   const academicTodos = todos.value.filter((todo) => todo.academic);
   const totalUnits = academicTodos.reduce(
-    (total, todo) => total + todo.units,
+    (total, todo) => total + parseFloat(todo.units || 0),
     0
   );
   const totalGradePoints = academicTodos.reduce(
-    (total, todo) => total + todo.units * todo.grade,
+    (total, todo) =>
+      total + parseFloat(todo.units || 0) * parseFloat(todo.grade || 0),
     0
   );
   return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(2) : "0.00";

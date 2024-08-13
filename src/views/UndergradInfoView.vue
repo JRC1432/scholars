@@ -161,6 +161,7 @@
               :options="schooloptions"
               @filter="filterschool"
               :rules="[myRule]"
+              clearable
             >
             </q-select>
           </div>
@@ -182,6 +183,7 @@
               :options="courseoptions"
               @filter="filtercourse"
               :rules="[myRule]"
+              clearable
             >
             </q-select>
           </div>
@@ -203,6 +205,8 @@
               :options="syoptions"
               @filter="filtersy"
               :rules="[myRule]"
+              mask="#### - ####"
+              clearable
             >
             </q-select>
           </div>
@@ -364,6 +368,8 @@ var schooloptions2 = [];
 const schooloptions = ref(schooloptions2);
 var courseoptions2 = [];
 const courseoptions = ref(courseoptions2);
+var syoptions2 = [];
+const syoptions = ref(syoptions2);
 
 onMounted(() => {
   populateAll();
@@ -393,6 +399,11 @@ const populateAll = () => {
   // Select Courses
   axios.get("/read.php?courses").then((response) => {
     courseoptions2 = response.data;
+  });
+
+  // Select School Year
+  axios.get("/read.php?school_years").then((response) => {
+    syoptions2 = response.data;
   });
 };
 
@@ -427,6 +438,24 @@ const filtercourse = (val, update) => {
   update(() => {
     const needle = val.toLowerCase();
     courseoptions.value = courseoptions2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
+// School Year Filters
+
+const filtersy = (val, update) => {
+  if (val === "") {
+    update(() => {
+      syoptions.value = syoptions2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    syoptions.value = syoptions2.filter((option) => {
       return option.label.toLowerCase().includes(needle);
     });
   });

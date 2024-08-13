@@ -263,6 +263,7 @@
                         :options="regoptions"
                         @filter="filterregion"
                         :rules="[myRule]"
+                        clearable
                       >
                       </q-select>
                     </div>
@@ -337,6 +338,7 @@
                         behavior="menu"
                         @update:model-value="populateaddress"
                         :rules="[myRule]"
+                        clearable
                       >
                         <template v-slot:no-option>
                           <q-item>
@@ -497,6 +499,7 @@
                           behavior="menu"
                           @update:model-value="populateaddress2"
                           :rules="[myRule]"
+                          clearable
                         >
                           <template v-slot:no-option>
                             <q-item>
@@ -739,6 +742,7 @@
                       :options="actoptions"
                       @filter="filteracnt"
                       :rules="[myRule]"
+                      clearable
                     >
                     </q-select>
                   </div>
@@ -761,6 +765,7 @@
                       :options="regoptions"
                       @filter="filterregion"
                       :rules="[myRule]"
+                      clearable
                     >
                     </q-select>
                   </div>

@@ -444,7 +444,8 @@
               :options="yrsoptions"
               @filter="filteryrs"
               @update:model-value="populateyears"
-              style="max-width: 80px"
+              style="max-width: 120px"
+              clearable
             >
               <template v-slot:no-option>
                 <q-item>
@@ -472,7 +473,8 @@
               :options="yrsoptions"
               @filter="filteryrs"
               @update:model-value="populateyears"
-              style="max-width: 80px"
+              style="max-width: 120px"
+              clearable
             >
               <template v-slot:no-option>
                 <q-item>

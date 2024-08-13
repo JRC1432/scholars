@@ -744,6 +744,7 @@
               :options="regoptions"
               @filter="filterregion"
               :rules="[myRule]"
+              clearable
             >
             </q-select>
           </div>

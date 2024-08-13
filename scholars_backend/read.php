@@ -635,20 +635,39 @@ if(isset($_GET['historyRecID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT t.sy, se.name, CONCAT(s.name, ', ', c.name) AS schoolcourse, p1.progress_status as pstart, h1.standing as sstanding, p2.progress_status as pend,
-        h2.standing as send
-        FROM term_record as t
-        
-        LEFT OUTER JOIN course_record as r ON r.term_id = t.term_id
-        LEFT OUTER JOIN courses as c ON c.id::text = r.course_code
-        LEFT OUTER JOIN colleges as s ON s.id::text = r.school_code
-        LEFT OUTER JOIN progress_status_history as p1 ON p1.id = t.progress_status_start
-        LEFT OUTER JOIN progress_status_history as p2 ON p2.id = t.progress_status_end
-        LEFT OUTER JOIN standing_history as h1 ON h1.id = t.standing_start
-        LEFT OUTER JOIN standing_history as h2 ON h2.id	= t.standing_end
-        LEFT OUTER JOIN semestral as se ON se.id = t.term
+        $stnt = $pdo->prepare("SELECT 
+    t.sy, 
+    se.name,
+    CONCAT(s.name, ', ', c.name) AS schoolcourse, 
+    p1.progress_status AS pstart,
+    p2.progress_status AS pend,
+    s1.standing AS sstanding,
+    s2.standing AS send
 
-        WHERE t.spas_id = ?
+FROM 
+    term_record t
+LEFT JOIN 
+    course_record cr ON t.course_id = cr.id
+LEFT JOIN 
+    courses c ON cr.course_code = c.id::text
+LEFT JOIN 
+    colleges s ON cr.school_code = s.id::text
+LEFT JOIN 
+    progress_status_history p1 ON t.progress_status_start = p1.id
+LEFT JOIN 
+    progress_status_history p2 ON t.progress_status_end = p2.id
+LEFT JOIN 
+    standing_history s1 ON t.standing_start = s1.id
+LEFT JOIN 
+    standing_history s2 ON t.standing_end = s2.id
+LEFT JOIN 
+	semestral as se ON t.term = se.id
+WHERE 
+    t.spas_id = ?
+ORDER BY 
+    cr.id ASC, 
+    t.term_id ASC;
+
     
         ");
         $params = array($id);
@@ -724,19 +743,19 @@ if(isset($_GET['viewStartStatID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT r.spas_id, p.spas_id, r.sy_start, s.name, p.start_end, p.progress_status, r.created_by,
-        r.updated_by, r.verified_by, 
-        to_char(p.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
-        to_char(p.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
-        
-        FROM course_record as r
-        
-        LEFT OUTER JOIN progress_status_history as p ON p.spas_id = r.spas_id
-        LEFT OUTER JOIN semestral as s ON s.id = r.term_start
-		
-		WHERE r.spas_id = ? 
-		AND p.start_end = 1
-		AND p.progress_status = ?;
+        $stnt = $pdo->prepare("SELECT p.sy, s.name, p.start_end, p.progress_status,
+p.created_by, p.updated_by, p.verified_by,
+to_char(p.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
+to_char(p.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
+
+
+FROM progress_status_history as p
+
+LEFT JOIN semestral as s ON p.term = s.id
+
+WHERE p.spas_id = ?
+AND p.start_end = 1
+AND p.progress_status = ?
 
     
         ");
@@ -773,21 +792,19 @@ if(isset($_GET['viewEndID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT r.spas_id, p.spas_id, r.sy_start, s.name, p.start_end, p.progress_status, r.created_by,
-        r.updated_by, r.verified_by,
-        to_char(p.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
-        to_char(p.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
-        
-        FROM course_record as r
-        
-        LEFT OUTER JOIN progress_status_history as p ON p.spas_id = r.spas_id
-        LEFT OUTER JOIN semestral as s ON s.id = r.term_start
-		
-		WHERE r.spas_id = ? 
-		AND p.start_end = 2
-		AND p.progress_status = ?;
+        $stnt = $pdo->prepare("SELECT p.sy, s.name, p.start_end, p.progress_status,
+p.created_by, p.updated_by, p.verified_by,
+to_char(p.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
+to_char(p.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 
-    
+
+FROM progress_status_history as p
+
+LEFT JOIN semestral as s ON p.term = s.id
+
+WHERE p.spas_id = ?
+AND p.start_end = 2
+AND p.progress_status = ?
         ");
         $params = array($id,$progress);
         $stnt->execute($params);
@@ -821,25 +838,23 @@ if(isset($_GET['viewSTRTStandID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT r.spas_id, p.spas_id, r.sy_start, s.name, p.start_end, sh.standing, msl.list_name, p.progress_status, r.created_by,
-        r.updated_by, r.verified_by, 
-        to_char(p.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
-        to_char(p.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
-        
-        FROM course_record as r
-        
-        LEFT OUTER JOIN progress_status_history as p ON p.spas_id = r.spas_id
-        LEFT OUTER JOIN semestral as s ON s.id = r.term_start
-		LEFT OUTER JOIN standing_history as sh ON sh.term_id = r.term_id
-		LEFT OUTER JOIN monitored_scholars as ms ON ms.spas_id = r.spas_id
-		LEFT OUTER JOIN monitored_scholars_list_generation_history as msl ON msl.id = ms.list_id
-		
-		WHERE r.spas_id = ? 
-		AND p.start_end = 1
-        AND p.progress_status = ?;
+        $stnt = $pdo->prepare("SELECT sh.sy, s.name, sh.start_end,
+sh.standing, ms.list_name, sh.created_by, sh.updated_by, 
+sh.verified_by, 
+to_char(sh.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
+to_char(sh.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 
-    
-        ");
+FROM standing_history as sh
+
+LEFT JOIN semestral as s ON sh.term = s.id
+LEFT JOIN monitored_scholars as m ON sh.spas_id = m.spas_id
+LEFT JOIN monitored_scholars_list_generation_history as ms ON m.list_id = ms.id
+
+
+WHERE sh.spas_id = ?
+AND sh.standing = ?
+AND sh.start_end = 1
+");
         $params = array($id,$progress);
         $stnt->execute($params);
     
@@ -872,22 +887,22 @@ if(isset($_GET['viewENDStandID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT r.spas_id, p.spas_id, r.sy_start, s.name, p.start_end, sh.standing, msl.list_name, p.progress_status, r.created_by,
-        r.updated_by, r.verified_by, 
-        to_char(p.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
-        to_char(p.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
-        
-        FROM course_record as r
-        
-        LEFT OUTER JOIN progress_status_history as p ON p.spas_id = r.spas_id
-        LEFT OUTER JOIN semestral as s ON s.id = r.term_start
-		LEFT OUTER JOIN standing_history as sh ON sh.term_id = r.term_id
-		LEFT OUTER JOIN monitored_scholars as ms ON ms.spas_id = r.spas_id
-		LEFT OUTER JOIN monitored_scholars_list_generation_history as msl ON msl.id = ms.list_id
-		
-		WHERE r.spas_id = ? 
-		AND p.start_end = 2
-        AND p.progress_status = ?;
+        $stnt = $pdo->prepare("SELECT sh.sy, s.name, sh.start_end,
+sh.standing, ms.list_name, sh.created_by, sh.updated_by, 
+sh.verified_by, 
+to_char(sh.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
+to_char(sh.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
+
+FROM standing_history as sh
+
+LEFT JOIN semestral as s ON sh.term = s.id
+LEFT JOIN monitored_scholars as m ON sh.spas_id = m.spas_id
+LEFT JOIN monitored_scholars_list_generation_history as ms ON m.list_id = ms.id
+
+
+WHERE sh.spas_id = ?
+AND sh.standing = ?
+AND sh.start_end = 2
 
     
         ");
@@ -2447,6 +2462,180 @@ if(isset($_GET['courses'])){
                 "label" => $row['name'],
     
                 "value" => $row['name']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+    // Read Term Record
+
+    if(isset($_GET['termRec'])){
+        $data = array();
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT * FROM lu_months ORDER BY id");
+            $stnt->execute();
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['name'],
+        
+                    "value" => $row['name']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+        // Read Term Record
+
+    if(isset($_GET['readTermRec'])){
+        $data = array();
+        $spasid = $_POST['id'];
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT t.term_id, t.sy, s.name 
+            FROM term_record as t 
+            LEFT JOIN semestral as s ON t.term = s.id
+            WHERE 
+            t.spas_id = ?");
+            $stnt->execute([$spasid]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['sy'] . " ". $row['name'],
+        
+                    "value" => $row['term_id']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+
+        // Read Term Record
+
+    if(isset($_GET['readAddSC'])){
+        $data = array();
+        $spasid = $_POST['id'];
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT t.sy, se.name, cr.spas_id, CONCAT(s.name, ', ', c.name) AS schoolcourse
+
+FROM 
+    term_record t
+	
+LEFT JOIN 
+    course_record cr ON t.course_id = cr.id
+LEFT JOIN 
+    courses c ON cr.course_code = c.id::text
+LEFT JOIN 
+    colleges s ON cr.school_code = s.id::text
+LEFT JOIN 
+	semestral as se ON t.term = se.id
+	
+	
+WHERE t.spas_id = ?");
+            $stnt->execute([$spasid]);
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['schoolcourse'] . " ". $row['name']. " ". $row['sy'],
+        
+                    "value" => $row['schoolcourse']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+
+        // Select School Year
+
+if(isset($_GET['school_years'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT yr_awarded,
+       next_year,
+       CONCAT(yr_awarded, '-', next_year) AS school_year
+FROM (
+    SELECT yr_awarded,
+           LEAD(yr_awarded) OVER (ORDER BY yr_awarded) AS next_year
+    FROM scholarship_info
+    WHERE yr_awarded IS NOT NULL AND yr_awarded != 0
+    GROUP BY yr_awarded
+) AS subquery
+WHERE next_year IS NOT NULL
+ORDER BY yr_awarded;
+");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['school_year'],
+    
+                "value" => $row['school_year']
     
             );
     }

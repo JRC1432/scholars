@@ -249,6 +249,7 @@
                         :options="regoptions"
                         @filter="filterregion"
                         :rules="[myRule]"
+                        clearable
                       >
                       </q-select>
                     </div>
@@ -286,6 +287,7 @@
                         emit-value
                         map-options
                         use-input
+                        clearable
                         input-debounce="0"
                         :options="zipOption"
                         @filter="filterZip"
@@ -566,6 +568,7 @@
                       :options="actoptions"
                       @filter="filteracnt"
                       :rules="[myRule]"
+                      clearable
                     >
                     </q-select>
                   </div>
@@ -588,6 +591,7 @@
                       :options="regoptions"
                       @filter="filterregion"
                       :rules="[myRule]"
+                      clearable
                     >
                     </q-select>
                   </div>
