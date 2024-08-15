@@ -560,7 +560,7 @@ const filterstat1 = (val, update) => {
 
 const spasid = ref();
 const printGrades = () => {
-  alert("Export PDF Please");
+  alert("Please click OK to print PDF");
 
   spasid.value = route.params.id;
   var formData = new FormData();
