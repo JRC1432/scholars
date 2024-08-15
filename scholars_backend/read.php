@@ -2027,38 +2027,39 @@ if(isset($_GET['readEditGrades'])){
     {
     
         $stnt = $pdo->prepare("SELECT 
-    tr.sy, 
-    tr.term, 
-    cl.name AS college_name, 
-    c.name AS course_name, 
-    tr.term_required, 
-    sh.standing, 
-    tr.reg_verified_by,
-    tr.latest_flag, 
-    tr.grades_verified_by 
+    t.sy, 
+    se.name as sem,
+    s.name as school,
+	 c.name as course,
+	 t.term_required,
+	 t.reg_verified_by,
+	 t.grades_verified_by,
+    p1.progress_status AS pstart,
+    s1.standing AS sstanding,
+	t.latest_flag
+    
+
 FROM 
-    term_record AS tr
-LEFT OUTER JOIN 
-    course_record AS cr ON tr.spas_id = cr.spas_id
-LEFT OUTER JOIN 
-    courses AS c ON CAST(cr.course_code AS integer) = c.id
-LEFT OUTER JOIN 
-    colleges AS cl ON CAST(cr.school_code AS integer) = cl.id
-LEFT OUTER JOIN 
-    standing_history AS sh ON tr.spas_id = sh.spas_id
+    term_record t
+LEFT JOIN 
+    course_record cr ON t.course_id = cr.id
+LEFT JOIN 
+    courses c ON cr.course_code = c.id::text
+LEFT JOIN 
+    colleges s ON cr.school_code = s.id::text
+LEFT JOIN 
+    progress_status_history p1 ON t.progress_status_start = p1.id
+LEFT JOIN 
+    progress_status_history p2 ON t.progress_status_end = p2.id
+LEFT JOIN 
+    standing_history s1 ON t.standing_start = s1.id
+LEFT JOIN 
+    standing_history s2 ON t.standing_end = s2.id
+LEFT JOIN 
+	semestral as se ON t.term = se.id
 WHERE 
-    tr.spas_id = ?
-    AND tr.latest_flag = 1
-GROUP BY 
-    tr.sy, 
-    tr.term, 
-    cl.name, 
-    c.name, 
-    tr.term_required, 
-    sh.standing, 
-    tr.reg_verified_by,
-	 tr.latest_flag,
-    tr.grades_verified_by
+    t.spas_id = ?
+	AND t.latest_flag = 1
 ");
         $params = array($id);
         $stnt->execute($params);
@@ -2636,6 +2637,42 @@ ORDER BY yr_awarded;
                 "label" => $row['school_year'],
     
                 "value" => $row['school_year']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    // Select Standing
+
+if(isset($_GET['standing'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT name FROM lu_standing ORDER BY id");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['name'],
+    
+                "value" => $row['name']
     
             );
     }

@@ -3,6 +3,7 @@
 require("dbconn.php");
 require("Encrypt.php");
 require("Decrypt.php");
+require('vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // User Creation
 
@@ -542,6 +543,181 @@ if(isset($_GET['createReplySlip'])){
 
 
 }
+
+
+if(isset($_GET['printGradesPDF'])){
+
+    // 
+    $scholarids = $_POST["id"];
+    $grades = json_decode($_POST['grades'], true);
+
+
+     $sy = $_POST["sy"];
+     $sem = $_POST["sem"];
+     $school = $_POST["school"];
+     $course = $_POST["course"];
+     $termreq = $_POST["termreq"];
+     $regVerified = $_POST["regVerified"];
+     $gradeVerified = $_POST["gradeVerified"];
+     $statStart = $_POST["statStart"];
+     $statEnd = $_POST["statEnd"];
+     $stat1 = $_POST["stat1"];
+     $stat2 = $_POST["stat2"];
+
+
+     $gwa = $_POST["computedGwa"];
+     $units = $_POST["computedTotalUnits"];
+
+
+    
+    
+        $stnt = $pdo->prepare("SELECT * FROM scholars_record WHERE spas_id = ?");
+        $stnt->execute([$scholarids]);
+    
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            
+             $fname = $row['full_name'];
+           
+    }
+    
+   
+    
+    
+    
+    
+    
+    // create new PDF document
+    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' ', PDF_HEADER_STRING, array(0,64,255), array(0,64,128));
+    $pdf->setFooterData(array(0,64,0), array(0,64,128));
+    
+    // set header and footer fonts
+    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    
+    
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    
+    // set margins
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+    
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    
+    // set some language-dependent strings (optional)
+    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+        require_once(dirname(__FILE__).'/lang/eng.php');
+        $pdf->setLanguageArray($l);
+    }
+    
+    // ---------------------------------------------------------
+
+
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Your Name');
+    $pdf->SetTitle('Grades Report');
+    $pdf->SetSubject('Grades Table');
+    $pdf->SetKeywords('TCPDF, PDF, table, CSS');
+    
+    $pdf->AddPage();
+   
+    $pdf->SetFont('helvetica', 'B', 14); // Set font to bold (B) with size 14
+    $pdf->Cell(0, 22, 'Scholar Grade Reports', 0, 1, 'C', 0, '', 0, false, 'M', 'M');
+    $pdf->SetFont('courier', '', 10, '', true);
+
+
+    $pdf->ln(3);
+    $pdf->Cell(90,10,'SPASID : '.$scholarids, 0, 0, 'L', 0, '', 0, false, 'M', 'M');
+    $pdf->Cell(90,10,'Name : '.$fname, 0, 1, 'R', 0, '', 0, false, 'M', 'M');
+
+
+    
+
+    $pdf->Ln(0); // Set to 0 to remove extra space between lines
+$pdf->MultiCell(90, 5, 'School Year: '.$sy.', '.$sem, 0, 'L', 0, 0, '', '', true); // Adjust height to 5
+$pdf->MultiCell(90, 5, 'Term Required : '.$termreq, 0, 'R', 0, 1, '', '', true);
+$pdf->MultiCell(90, 5, 'Course: '.$course, 0, 'L', 0, 0, '', '', true);
+$pdf->MultiCell(90, 5, 'Status(Start): '.$statStart.'-'.$statEnd, 0, 'R', 0, 1, '', '', true);
+$pdf->MultiCell(90, 10, 'School: '.$school, 0, 'L', 0, 0, '', '', true);
+$pdf->MultiCell(90, 10, 'Status(END): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
+
+
+
+    // Set table header
+    $html = '<style>
+    th {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    td {
+      text-align: center;
+    }
+  </style>
+    <h1>Grade Report</h1>';
+    $html .= '<table border="1" cellpadding="4">
+                <thead>
+                    <tr>
+                        <th>Subject Code</th>
+                        <th>Units</th>
+                        <th>Grade</th>
+                        <th>Academic</th>
+                        <th>Completion</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+
+
+                // Populate table rows
+    foreach ($grades as $item) {
+        $html .= '<tr>
+                 
+                      <td>' . htmlspecialchars($item['scode']) . '</td>
+                      <td>' . htmlspecialchars($item['units']) . '</td>
+                      <td>' . htmlspecialchars($item['grade']) . '</td>
+                       <td>' . ($item['academic'] ? 'Yes' : 'No') . '</td>
+                      <td>' . htmlspecialchars($item['completion']) . '</td>
+                      <td>' . htmlspecialchars($item['remarks']) . '</td>
+                  </tr>';
+    }
+
+    $html .= '</tbody></table>';
+
+    // $pdf->writeHTML($html, true, false, false, false, '');
+    $pdf->writeHTML($html);
+
+    $pdf->ln(3);
+    $pdf->Cell(90,10,'Total Units : '.$units, 0, 0, 'L', 0, '', 0, false, 'M', 'M');
+    $pdf->Cell(90,10,'GWA : '.$gwa, 0, 1, 'R', 0, '', 0, false, 'M', 'M');
+
+
+    $pdf->Ln(5);
+
+    $pdf->Cell(90,10,'Registration Form Verified By: '.$regVerified, 0, 1, 'L', 0, '', 0, false, 'M', 'M');
+    $pdf->Cell(90,10,'Grades Verified By: '.$gradeVerified, 0, 1, 'L', 0, '', 0, false, 'M', 'M');
+    
+    
+    
+   
+ 
+
+    // OutPDF
+    
+  
+    $pdf->Output(__DIR__ .'/test.pdf','I');
+        
+    
+         }
 
 
 

@@ -6,8 +6,24 @@
         <IconTool :size="30" stroke-width="2" />
         Monitoring Sheet
       </div>
+
+      <q-card-section
+        ><div class="q-pa-md text-center">
+          <q-banner
+            inline-actions
+            rounded
+            class="text-bold banner rounded-borders-20"
+          >
+            <div class="text-h3">
+              <IconEdit :size="40" stroke-width="2" />
+              EDIT GRADES
+            </div>
+          </q-banner>
+        </div></q-card-section
+      >
+
+      <q-card-section><EditGrades /></q-card-section>
     </q-card>
-    <EditGrades />
   </div>
 </template>
 <script setup>
@@ -18,7 +34,7 @@ import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
-import { IconTool } from "@tabler/icons-vue";
+import { IconTool, IconEdit } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
 

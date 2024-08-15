@@ -2,7 +2,11 @@
   <div class="primary-text">SPAS ID: {{ props.spasid.spas_id }}</div>
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-8 q-pa-sm">
-      <q-card class="my-card text-black rounded-borders-20 q-mr-sm">
+      <q-card
+        flat
+        bordered
+        class="my-card text-black rounded-borders-20 q-mr-sm"
+      >
         <q-table
           :rows="rows"
           :columns="columns"
@@ -253,6 +257,17 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Update"
+              @click="editCourse"
+            />
+          </div>
+        </q-card-actions>
       </q-card>
 
       <q-card
@@ -349,6 +364,18 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Update"
+              @click="editPSsart"
+            />
+            <q-btn outline style="color: goldenrod" label="Delete" />
+          </div>
+        </q-card-actions>
       </q-card>
 
       <q-card
@@ -455,6 +482,13 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn outline style="color: goldenrod" label="Update" />
+            <q-btn outline style="color: goldenrod" label="Delete" />
+          </div>
+        </q-card-actions>
       </q-card>
       <q-card
         class="my-q-card rounded-borders-20"
@@ -548,6 +582,18 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Update"
+              @click="editPSEnd"
+            />
+            <q-btn outline style="color: goldenrod" label="Delete" />
+          </div>
+        </q-card-actions>
       </q-card>
 
       <q-card
@@ -652,6 +698,18 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Update"
+              @click="editEndTerm"
+            />
+            <q-btn outline style="color: goldenrod" label="Delete" />
+          </div>
+        </q-card-actions>
       </q-card>
       <q-card class="my-q-card rounded-borders-20" flat bordered v-else>
         <Vue3Lottie
@@ -777,6 +835,7 @@
         <div class="q-px-sm text-bold">
           <span class="text-bold">Status</span>
           <q-select
+            ref="refaddStats"
             outlined
             dense
             hide-bottom-space
@@ -786,14 +845,15 @@
             input-debounce="0"
             :options="stat1options"
             @filter="filterstat1"
-            v-model="state.statTerm"
-            name="statTerm"
+            v-model="state.addStats"
+            name="addStats"
             clearable
           />
         </div>
         <div class="q-px-sm text-bold">
           <span class="text-bold">Monitoring Status</span>
           <q-select
+            ref="refmonitorStats"
             v-model="state.monitorStats"
             name="monitorStats"
             outlined
@@ -922,6 +982,330 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+
+  <!-- Edit Course -->
+
+  <q-dialog v-model="editModalCourse" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconEdit :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">EDIT</span>
+          Course & School
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">School Year</span>
+          <q-input outlined dense v-model="state.cssy" name="cssy" readonly />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Term</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.csterm"
+            name="csterm"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Course & School</span>
+          <q-select
+            ref="refcsCourseSchool"
+            :options="csCourseSchoolOptions"
+            v-model="state.csCourseSchool"
+            emit-value
+            name="csCourseSchool"
+            outlined
+            dense
+            hide-bottom-space
+            :rules="[myRule]"
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <div class="q-pa-md q-gutter-sm">
+          <q-btn outline style="color: goldenrod" label="Save" />
+          <q-btn outline style="color: goldenrod" label="Reset" />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Edit Progress Status (Start) -->
+
+  <q-dialog v-model="editModalPSStart" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconEdit :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">EDIT</span>
+          Progress Status (START)
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">School Year</span>
+          <q-input outlined dense v-model="state.psSY" name="psSY" readonly />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Term</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.psTerm"
+            name="psTerm"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Start/End</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.psStartEnd"
+            name="psStartEnd"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Status is latest?</span>
+          <q-toggle
+            :label="PSstatLatest"
+            v-model="PSstatLatest"
+            checked-icon="check"
+            color="green"
+            unchecked-icon="clear"
+            false-value="NO"
+            true-value="YES"
+            name="PSstatLatest"
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Progress Status</span>
+
+          <q-select
+            ref="refpsProgressStats"
+            outlined
+            dense
+            hide-bottom-space
+            emit-value
+            map-options
+            use-input
+            input-debounce="0"
+            :options="stat1options"
+            @filter="filterstat1"
+            v-model="state.psProgressStats"
+            name="psProgressStats"
+            clearable
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <div class="q-pa-md q-gutter-sm">
+          <q-btn outline style="color: goldenrod" label="Save" />
+          <q-btn outline style="color: goldenrod" label="Reset" />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Edit Progress Status (End) -->
+
+  <q-dialog v-model="editModalPSEnd" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconEdit :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">EDIT</span>
+          Progress Status (END)
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">School Year</span>
+          <q-input outlined dense v-model="state.peSY" name="peSY" readonly />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Term</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.peTerm"
+            name="peTerm"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Start/End</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.peStartEnd"
+            name="peStartEnd"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Status is latest?</span>
+          <q-toggle
+            :label="PEstatLatest"
+            v-model="PEstatLatest"
+            checked-icon="check"
+            color="green"
+            unchecked-icon="clear"
+            false-value="NO"
+            true-value="YES"
+            name="PEstatLatest"
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Progress Status</span>
+
+          <q-select
+            ref="refpeProgressStats"
+            outlined
+            dense
+            hide-bottom-space
+            emit-value
+            map-options
+            use-input
+            input-debounce="0"
+            :options="stat1options"
+            @filter="filterstat1"
+            v-model="state.peProgressStats"
+            name="peProgressStats"
+            clearable
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <div class="q-pa-md q-gutter-sm">
+          <q-btn outline style="color: goldenrod" label="Save" />
+          <q-btn outline style="color: goldenrod" label="Reset" />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Edit End of Term Standing  -->
+
+  <q-dialog v-model="editModalEndTerm" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconEdit :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">EDIT</span>
+          End of Term Standing
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">School Year</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.endTermSY"
+            name="endTermSY"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Term</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.endTermterm"
+            name="endTermterm"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Start/End</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.endTermStartEnd"
+            name="endTermStartEnd"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Status is latest?</span>
+          <q-toggle
+            :label="endTermStatLatest"
+            v-model="endTermStatLatest"
+            checked-icon="check"
+            color="green"
+            unchecked-icon="clear"
+            false-value="NO"
+            true-value="YES"
+            name="endTermStatLatest"
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Standing</span>
+          <q-select
+            ref="refendTermProgressStat"
+            :options="endTermProgressStatOptions"
+            v-model="state.endTermProgressStat"
+            emit-value
+            name="endTermProgressStat"
+            outlined
+            dense
+            hide-bottom-space
+            :rules="[myRule]"
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Monitoring Status</span>
+
+          <q-select
+            ref="refendTermMonitor"
+            v-model="state.endTermMonitor"
+            name="endTermMonitor"
+            outlined
+            dense
+            hide-bottom-space
+            emit-value
+            map-options
+            use-input
+            input-debounce="0"
+            :options="stat2options"
+            @filter="filterstat2"
+            clearable
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <div class="q-pa-md q-gutter-sm">
+          <q-btn outline style="color: goldenrod" label="Save" />
+          <q-btn outline style="color: goldenrod" label="Reset" />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -936,6 +1320,7 @@ import {
   IconCircleDashedCheck,
   IconChecks,
   IconBackpack,
+  IconEdit,
 } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
@@ -949,7 +1334,7 @@ const route = useRoute();
 const rows = ref([]);
 const filter = ref("");
 const pagination = ref({
-  rowsPerPage: 5,
+  rowsPerPage: 8,
 });
 
 const props = defineProps({
@@ -963,10 +1348,66 @@ const props = defineProps({
 
 const state = reactive({
   termRec: "Add New Term Record",
-  statTerm: "",
   monitorStats: "",
+
+  statSy: "",
+  StatTermType: "",
+  StatTerm: "",
+  monitorStats: "",
+
   csTermRec: "",
+  csstatSy: "",
+  csStatTermType: "",
+  csStatTerm: "",
+  scrTerm: "",
+  cssy: "",
+  csterm: "",
+  csCourseSchool: "",
+
+  psSY: "",
+  psTerm: "",
+  psStartEnd: "",
+  psProgressStats: "",
+
+  peSY: "",
+  peTerm: "",
+  peStartEnd: "",
+  peProgressStats: "",
+
+  endTermSY: "",
+  endTermterm: "",
+  endTermStartEnd: "",
+  endTermProgressStat: "",
+  endTermMonitor: "",
 });
+
+// View history
+
+const seTerm = ref("1");
+const statLatest = ref("NO");
+const PSstatLatest = ref("NO");
+const PEstatLatest = ref("NO");
+const endTermStatLatest = ref("NO");
+
+// Reference
+const reftermRec = ref(null);
+const refstatSy = ref(null);
+const refStatTermType = ref(null);
+const refStatTerm = ref(null);
+const refmonitorStats = ref(null);
+
+const refcsTermRec = ref(null);
+const refcsstatSy = ref(null);
+const refcsStatTermType = ref(null);
+const refcsStatTerm = ref(null);
+const refscrTerm = ref(null);
+const refcsCourseSchool = ref(null);
+
+const refpsProgressStats = ref(null);
+const refpeProgressStats = ref(null);
+
+const refendTermProgressStat = ref(null);
+const refendTermMonitor = ref(null);
 
 // Cards trigger
 const viewcourse = ref(false);
@@ -976,6 +1417,10 @@ const pend = ref(false);
 const standend = ref(false);
 const openStatus = ref(false);
 const openAddSC = ref(false);
+const editModalCourse = ref(false);
+const editModalPSStart = ref(false);
+const editModalPSEnd = ref(false);
+const editModalEndTerm = ref(false);
 
 // View Course Variables
 
@@ -1038,11 +1483,6 @@ const endTermUpdate = ref();
 const endTermVerified_by = ref();
 const endTermCreated_at = ref();
 const endTermUpdated_at = ref();
-
-// View history
-
-const seTerm = ref("1");
-const statLatest = ref("NO");
 
 // Validataions
 
@@ -1118,6 +1558,7 @@ const globalSPAS = props.spasid.spas_id;
 const termRecOptions = ref();
 const scrTermoptions = ref("Select");
 const preTermRec = "Add New Term Record";
+const endTermProgressStatOptions = ref();
 
 // Read History Records
 
@@ -1174,6 +1615,10 @@ const readHistoryRec = () => {
 
   axios.get("/read.php?school_years").then((response) => {
     syOptions2 = response.data;
+  });
+
+  axios.post("/read.php?standing", formData).then((response) => {
+    endTermProgressStatOptions.value = response.data;
   });
 };
 
@@ -1390,6 +1835,22 @@ const addStatus = () => {
 
 const addSC = () => {
   openAddSC.value = true;
+};
+
+const editCourse = () => {
+  editModalCourse.value = true;
+};
+
+const editPSsart = () => {
+  editModalPSStart.value = true;
+};
+
+const editPSEnd = () => {
+  editModalPSEnd.value = true;
+};
+
+const editEndTerm = () => {
+  editModalEndTerm.value = true;
 };
 </script>
 <style scoped>

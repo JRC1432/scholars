@@ -1,26 +1,13 @@
 <template>
   <q-card flat class="my-card surface-container rounded-borders-20">
-    <div class="q-pa-md q-gutter-sm">
-      <div class="text-bold text-h6 primary-text">Edit Grades</div>
-    </div>
-
     <q-card-section>
       <q-page class="q-pa-md">
-        <q-card class="q-pa-md rounded-borders-20">
+        <q-card class="q-pa-md rounded-borders-20 banner-5">
           <q-card-section>
             <div class="col-12">
               <div class="q-col-gutter-md row items-start">
                 <div class="col-xs-12 col-sm-3 col-md-6">
-                  <div class="text-h6" v-if="sem === 1">
-                    SY: {{ sy }}, {{ sem }}st Term
-                  </div>
-                  <div class="text-h6" v-else-if="sem === 2">
-                    SY: {{ sy }}, {{ sem }}nd Term
-                  </div>
-                  <div class="text-h6" v-else-if="sem === 3">
-                    SY: {{ sy }}, Summer
-                  </div>
-                  <div class="text-h6" v-else>SY: {{ sy }}, Midyear</div>
+                  <div class="text-h6">SY: {{ sy }}, {{ sem }}</div>
                   <div class="text-h6">School: {{ school }}</div>
                   <div class="text-h6">Course: {{ course }}</div>
                   <div>
@@ -46,7 +33,7 @@
                         label="Print"
                         icon="print"
                         rounded
-                        @click="exportToCSV"
+                        @click="printGrades"
                       />
                     </div>
                   </div>
@@ -64,7 +51,7 @@
                     Grades Verified by: {{ gradeVerified }}
                   </div>
                   <div class="text-h6">
-                    Status (Start of Term): {{}} - {{ statEnd }}
+                    Status (Start of Term): {{ statStart }} - {{ statEnd }}
                   </div>
 
                   <div class="q-gutter-sm row items-start">
@@ -84,6 +71,7 @@
                         input-debounce="0"
                         :options="stat1options"
                         @filter="filterstat1"
+                        clearable
                       />
                     </div>
                     <div class="col-xs-12 col-sm-3 col-md-3">
@@ -99,6 +87,7 @@
                         input-debounce="0"
                         :options="stat2options"
                         @filter="filterstat2"
+                        clearable
                       />
                     </div>
                   </div>
@@ -183,6 +172,7 @@
               flat
               bordered
               separator="cell"
+              class="banner-5"
             >
               <template v-slot:body-cell-scode="props">
                 <q-td :props="props">
@@ -290,8 +280,8 @@ const route = useRoute();
 
 const state = reactive({
   term: "",
-  stat1: "SELECT",
-  stat2: "SELECT",
+  stat1: "",
+  stat2: "",
 });
 const scode = ref("");
 const academic = ref(false);
@@ -302,24 +292,6 @@ const remarks = ref("");
 
 const toggle = ref("");
 const todos = ref([
-  {
-    id: uid(),
-    scode: "",
-    academic: false,
-    units: "",
-    grade: "",
-    completion: "",
-    remarks: "",
-  },
-  {
-    id: uid(),
-    scode: "",
-    academic: false,
-    units: "",
-    grade: "",
-    completion: "",
-    remarks: "",
-  },
   {
     id: uid(),
     scode: "",
@@ -461,7 +433,7 @@ const computedTotalUnits = computed(() => {
   return todos.value
     .filter((todo) => todo.academic)
     .reduce((total, todo) => total + parseFloat(todo.units || 0), 0)
-    .toFixed(2);
+    .toFixed(3);
 });
 
 const computedGwa = computed(() => {
@@ -475,68 +447,8 @@ const computedGwa = computed(() => {
       total + parseFloat(todo.units || 0) * parseFloat(todo.grade || 0),
     0
   );
-  return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(2) : "0.00";
+  return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(3) : "0.000";
 });
-
-// Select Term
-var stat2options2 = [];
-const stat2options = ref(stat2options2);
-
-onMounted(() => {
-  populatestat2();
-});
-
-const populatestat2 = () => {
-  axios.get("/read.php?readstat2").then((response) => {
-    stat2options2 = response.data;
-  });
-};
-
-const filterstat2 = (val, update) => {
-  if (val === "") {
-    update(() => {
-      stat2options.value = stat2options2;
-    });
-    return;
-  }
-
-  update(() => {
-    const needle = val.toLowerCase();
-    stat2options.value = stat2options2.filter((option) => {
-      return option.label.toLowerCase().includes(needle);
-    });
-  });
-};
-
-// Select Term
-var stat1options2 = [];
-const stat1options = ref(stat1options2);
-
-onMounted(() => {
-  populatestat1();
-});
-
-const populatestat1 = () => {
-  axios.get("/read.php?readstat1").then((response) => {
-    stat1options2 = response.data;
-  });
-};
-
-const filterstat1 = (val, update) => {
-  if (val === "") {
-    update(() => {
-      stat1options.value = stat1options2;
-    });
-    return;
-  }
-
-  update(() => {
-    const needle = val.toLowerCase();
-    stat1options.value = stat1options2.filter((option) => {
-      return option.label.toLowerCase().includes(needle);
-    });
-  });
-};
 
 // Method to export table data to CSV
 const exportToCSV = () => {
@@ -566,32 +478,116 @@ const exportToCSV = () => {
 
 // Grades Info
 
+var stat2options2 = [];
+const stat2options = ref(stat2options2);
+var stat1options2 = [];
+const stat1options = ref(stat1options2);
 const id = ref();
 onMounted(() => {
   populateEditGrades();
 });
 
 const populateEditGrades = () => {
-  console.log(toggle.value + "start");
+  // console.log(toggle.value + "start");
   id.value = route.params.id;
   var formData = new FormData();
   formData.append("id", id.value);
   axios.post("/read.php?readEditGrades", formData).then((response) => {
-    console.log(response.data);
+    // console.log(response.data);
 
     sy.value = response.data.sy;
-    sem.value = response.data.term;
-    school.value = response.data.college_name;
-    course.value = response.data.course_name;
+    sem.value = response.data.sem;
+    school.value = response.data.school;
+    course.value = response.data.course;
     termreq.value = response.data.term_required;
     regVerified.value = response.data.reg_verified_by;
     gradeVerified.value = response.data.grades_verified_by;
-    statEnd.value = response.data.standing;
+    statStart.value = response.data.pstart;
+    statEnd.value = response.data.sstanding;
     toggle.value = response.data.latest_flag == 1 ? true : false;
 
     watchEffect(() => {
       termreq.value = term_required.value === 1 ? "YES" : "NO";
     });
   });
+
+  axios.get("/read.php?readstat2").then((response) => {
+    stat2options2 = response.data;
+  });
+
+  axios.get("/read.php?readstat1").then((response) => {
+    stat1options2 = response.data;
+  });
+};
+
+// Select Term
+
+const filterstat2 = (val, update) => {
+  if (val === "") {
+    update(() => {
+      stat2options.value = stat2options2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    stat2options.value = stat2options2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
+// Select Term
+
+const filterstat1 = (val, update) => {
+  if (val === "") {
+    update(() => {
+      stat1options.value = stat1options2;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    stat1options.value = stat1options2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
+  });
+};
+
+// Export PDF Grades
+
+const spasid = ref();
+const printGrades = () => {
+  alert("Export PDF Please");
+
+  spasid.value = route.params.id;
+  var formData = new FormData();
+
+  formData.append("id", id.value);
+  formData.append("grades", JSON.stringify(todos.value));
+  formData.append("sy", sy.value);
+  formData.append("sem", sem.value);
+  formData.append("school", school.value);
+  formData.append("course", course.value);
+  formData.append("termreq", termreq.value);
+  formData.append("regVerified", regVerified.value);
+  formData.append("gradeVerified", gradeVerified.value);
+  formData.append("statStart", statStart.value);
+  formData.append("statEnd", statEnd.value);
+  formData.append("stat1", state.stat1);
+  formData.append("stat2", state.stat2);
+
+  formData.append("computedTotalUnits", computedTotalUnits.value);
+  formData.append("computedGwa", computedGwa.value);
+
+  axios
+    .post("/create.php?printGradesPDF", formData, { responseType: "blob" })
+    .then(function (response) {
+      var file = new Blob([response.data], { type: "application/pdf" });
+      var fileURL = URL.createObjectURL(file);
+      window.open(fileURL);
+    });
 };
 </script>
