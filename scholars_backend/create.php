@@ -925,6 +925,7 @@ if(isset($_GET['printNewTermGradesPDF'])){
 
      $valuesArray = array_map('trim', explode(',', $scrTerm));
 
+     
 
      $school = isset($valuesArray[0]) ? $valuesArray[0] : null;
      $course = isset($valuesArray[1]) ? $valuesArray[1] : null;
@@ -1060,7 +1061,7 @@ $pdf->Ln(10); // Add extra line spacing
 
     // OutPDF
     
-  
+    ob_end_clean();
     $pdf->Output(__DIR__ .'/test.pdf','I');
         
     
