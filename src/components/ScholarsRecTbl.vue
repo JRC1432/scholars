@@ -32,6 +32,22 @@
           <q-tooltip class="bg-primary">Batch Upload</q-tooltip>
         </q-btn>
       </div>
+      <div class="q-ml-sm">
+        <q-btn
+          color="primary"
+          size="10px"
+          no-caps
+          round
+          icon="download"
+          tag="a"
+          href="http://localhost/scholars/scholars_backend/upload/Scholar_Rec.csv"
+          target="_blank"
+        >
+          <q-tooltip class="bg-primary"
+            >Download Scholars Records Template</q-tooltip
+          >
+        </q-btn>
+      </div>
     </template>
     <template v-slot:top-right>
       <q-input

@@ -100,6 +100,16 @@
             "
           />
           <q-breadcrumbs-el
+            label="Exam Info"
+            icon="diversity_3"
+            :to="'/examinfo/' + scids"
+            :class="
+              route.name == 'examinfo'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
+          />
+          <q-breadcrumbs-el
             label="Graduate Obligation & Tracking Info"
             icon="gavel"
             :to="'/gradtrackinfo/' + scids"

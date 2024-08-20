@@ -2511,42 +2511,34 @@ if(isset($_GET['courses'])){
 
         // Read Term Record
 
-    if(isset($_GET['readTermRec'])){
-        $data = array();
-        $spasid = $_POST['id'];
-        try
-        {
-        
-            $stnt = $pdo->prepare("SELECT t.term_id, t.sy, s.name 
+if (isset($_GET['readTermRec'])) {
+    $data = array();
+    $spasid = $_POST['id'];
+    try {
+        $stnt = $pdo->prepare("SELECT t.term_id, t.sy, s.name 
             FROM term_record as t 
             LEFT JOIN semestral as s ON t.term = s.id
-            WHERE 
-            t.spas_id = ?");
-            $stnt->execute([$spasid]);
-        
-        }catch (Exception $ex){
-            die("Failed to run query". $ex);
-        
-        }
-        
-        http_response_code(200);
-        
-        while ($row = $stnt->fetch()){
-            $data[] = array(
-        
-                    "label" => $row['sy'] . " ". $row['name'],
-        
-                    "value" => $row['term_id']
-        
-                );
-        }
-        
-        echo json_encode($data);
-        
-        $stnt = null;
-        $pdo = null;
-        
-        }
+            WHERE t.spas_id = ?");
+        $stnt->execute([$spasid]);
+    } catch (Exception $ex) {
+        die("Failed to run query" . $ex);
+    }
+
+    http_response_code(200);
+
+    while ($row = $stnt->fetch()) {
+        $data[] = array(
+            "label" => $row['sy'] . " " . $row['name'],
+            "value" => $row['sy'] . " " . $row['name'] // Concatenate sy and name as value
+        );
+    }
+
+    echo json_encode($data);
+
+    $stnt = null;
+    $pdo = null;
+}
+
 
 
 
@@ -2586,9 +2578,9 @@ WHERE t.spas_id = ?");
         while ($row = $stnt->fetch()){
             $data[] = array(
         
-                    "label" => $row['schoolcourse'] . " ". $row['name']. " ". $row['sy'],
+                    "label" => $row['schoolcourse'] . " ( ". $row['sy']. " ". $row['name']. " )",
         
-                    "value" => $row['schoolcourse']
+                    "value" => $row['schoolcourse'] . ", ".$row['sy']. " ". $row['name']
         
                 );
         }
@@ -2675,6 +2667,43 @@ if(isset($_GET['standing'])){
                 "value" => $row['name']
     
             );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+
+
+
+
+
+    // Read UnderGrad Info
+
+if(isset($_GET['readExamInfo'])){
+    $data = array();
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM exam_info WHERE spas_id = ?");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
     }
     
     echo json_encode($data);

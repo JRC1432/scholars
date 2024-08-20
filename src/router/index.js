@@ -87,6 +87,11 @@ const router = createRouter({
           component: () => import("../views/FamInfoView.vue"),
         },
         {
+          path: "/examinfo/:id",
+          name: "examinfo",
+          component: () => import("../views/ExamInfoView.vue"),
+        },
+        {
           path: "/gradtrackinfo/:id",
           name: "gradtrackinfo",
           component: () => import("../views/GradObTrackInfoView.vue"),
@@ -95,6 +100,16 @@ const router = createRouter({
           path: "/monitorsheet/:id",
           name: "monitorsheet",
           component: () => import("../views/MonitorSheetView.vue"),
+        },
+        {
+          path: "/enrollmentinfo/:id",
+          name: "enrollmentinfo",
+          component: () => import("../views/EnrollmentInfoView.vue"),
+        },
+        {
+          path: "/newenrollmentinfo/:id",
+          name: "newenrollmentinfo",
+          component: () => import("../views/NewEnrollmentInfoView.vue"),
         },
         {
           path: "/financial/",
