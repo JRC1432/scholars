@@ -715,7 +715,7 @@ $pdf->MultiCell(90, 10, 'Status(END): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '',
 
     // OutPDF
     
-  
+    ob_end_clean();
     $pdf->Output(__DIR__ .'/test.pdf','I');
         
     
@@ -888,7 +888,7 @@ $pdf->Ln(10); // Add extra line spacing
 
     // OutPDF
     
-  
+    ob_end_clean();
     $pdf->Output(__DIR__ .'/test.pdf','I');
         
     
