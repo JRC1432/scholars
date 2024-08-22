@@ -10,16 +10,26 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import { watch, ref } from "vue";
+import { watch, ref, onMounted } from "vue";
 import { IconMoonStars, IconBrightness2 } from "@tabler/icons-vue";
 
 const $q = useQuasar();
-const isMoonStars = ref(true);
+
+// Initialize isMoonStars from session storage, default to true if not present
+const isMoonStars = ref(sessionStorage.getItem("isMoonStars") === "true");
 
 const changetheme = () => {
   isMoonStars.value = !isMoonStars.value;
-  $q.dark.toggle();
+  sessionStorage.setItem("isMoonStars", isMoonStars.value);
+  $q.dark.set(isMoonStars.value);
 };
+
+// Sync Quasar's dark mode with isMoonStars when the component mounts
+onMounted(() => {
+  if (isMoonStars.value !== $q.dark.isActive) {
+    $q.dark.set(isMoonStars.value);
+  }
+});
 
 watch(
   () => $q.dark.isActive,

@@ -10,7 +10,7 @@
             class="text-bold banner rounded-borders-20"
           >
             <div class="text-h3">
-              <IconEdit :size="40" stroke-width="2" />
+              <IconClipboardPlus :size="40" stroke-width="2" />
               ADD ENROLLMENT INFORMATION
             </div>
           </q-banner>
@@ -24,13 +24,10 @@
                 <div class="q-col-gutter-md row items-start">
                   <div class="col-xs-12 col-sm-6 col-md-3">
                     <div class="text-h6">SY: {{ newsy }}</div>
-                    <div class="text-h6">
-                      Term: {{ newterm }} {{ newterm1 }} {{ newterm2 }} Term
-                    </div>
+                    <div class="text-h6">Term: {{ getTermLabel }}</div>
                     <div class="text-h6">
                       Term Required: {{ newcurriculum }}
                     </div>
-
                     <div>
                       <div class="q-pa-xs q-gutter-sm">
                         <q-btn
@@ -169,63 +166,66 @@
             </q-card-section>
 
             <q-card-section>
-              <q-table
-                :rows="todos"
-                :columns="columns"
-                row-key="id"
-                flat
-                bordered
-                separator="cell"
-                class="banner-5"
-              >
-                <template v-slot:body-cell-scode="props">
-                  <q-td :props="props">
-                    <q-input v-model="props.row.scode" />
-                  </q-td>
-                </template>
+              <q-scroll-area style="height: 300px">
+                <q-table
+                  :rows="todos"
+                  :columns="columns"
+                  row-key="id"
+                  flat
+                  bordered
+                  separator="cell"
+                  class="banner-5"
+                >
+                  <template v-slot:body-cell-scode="props">
+                    <q-td :props="props">
+                      <q-input v-model="props.row.scode" />
+                    </q-td>
+                  </template>
 
-                <template v-slot:body-cell-academic="props">
-                  <q-td :props="props">
-                    <q-checkbox v-model="props.row.academic" />
-                  </q-td>
-                </template>
+                  <template v-slot:body-cell-academic="props">
+                    <q-td :props="props">
+                      <q-checkbox v-model="props.row.academic" />
+                    </q-td>
+                  </template>
 
-                <template v-slot:body-cell-units="props">
-                  <q-td :props="props">
-                    <q-input v-model="props.row.units" mask="##.##" />
-                  </q-td>
-                </template>
+                  <template v-slot:body-cell-units="props">
+                    <q-td :props="props">
+                      <q-input v-model="props.row.units" mask="##.##" />
+                    </q-td>
+                  </template>
 
-                <template v-slot:body-cell-grade="props">
-                  <q-td :props="props">
-                    <q-input v-model="props.row.grade" mask="#.##" />
-                  </q-td>
-                </template>
+                  <template v-slot:body-cell-grade="props">
+                    <q-td :props="props">
+                      <q-input v-model="props.row.grade" mask="#.##" />
+                    </q-td>
+                  </template>
 
-                <template v-slot:body-cell-completion="props">
-                  <q-td :props="props">
-                    <q-input v-model="props.row.completion" />
-                  </q-td>
-                </template>
+                  <template v-slot:body-cell-completion="props">
+                    <q-td :props="props">
+                      <q-input v-model="props.row.completion" />
+                    </q-td>
+                  </template>
 
-                <template v-slot:body-cell-remarks="props">
-                  <q-td :props="props">
-                    <q-input v-model="props.row.remarks" />
-                  </q-td>
-                </template>
+                  <template v-slot:body-cell-remarks="props">
+                    <q-td :props="props">
+                      <q-input v-model="props.row.remarks" />
+                    </q-td>
+                  </template>
 
-                <template v-slot:body-cell-action="props">
-                  <q-td :props="props">
-                    <q-btn
-                      flat
-                      icon="delete"
-                      color="negative"
-                      @click="removeTodo(props.row.id)"
-                    />
-                  </q-td>
-                </template>
-              </q-table>
-
+                  <template v-slot:body-cell-action="props">
+                    <q-td :props="props">
+                      <q-btn
+                        flat
+                        icon="delete"
+                        color="negative"
+                        @click="removeTodo(props.row.id)"
+                      />
+                    </q-td>
+                  </template>
+                </q-table>
+              </q-scroll-area>
+            </q-card-section>
+            <q-card-section>
               <div class="q-pa-md">
                 <div class="col-12">
                   <div class="q-col-gutter-md row items-start">
@@ -249,8 +249,15 @@
                 </div>
               </div>
             </q-card-section>
+
             <q-card-actions align="around">
-              <q-btn rounded style="width: 40%" color="primary">SAVE</q-btn>
+              <q-btn
+                rounded
+                style="width: 40%"
+                color="primary"
+                @click="saveGrades"
+                >SAVE</q-btn
+              >
               <q-btn
                 rounded
                 style="width: 40%"
@@ -274,6 +281,7 @@ import router from "../router";
 import { uid } from "quasar";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
+import { IconClipboardPlus } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
 
@@ -297,6 +305,16 @@ const completion = ref("");
 const remarks = ref("");
 
 const toggle = ref("");
+
+// Validations
+
+const myRule = (val) => {
+  if (val === null || val === undefined || val === "") {
+    return "You must make a selection!";
+  }
+  return true;
+};
+
 const todos = ref([
   {
     id: uid(),
@@ -519,6 +537,25 @@ const populateEditGrades = () => {
   }
 };
 
+// Transform to Terms
+
+const getTermLabel = computed(() => {
+  const termValue = Math.max(newterm.value, newterm1.value, newterm2.value);
+
+  switch (termValue) {
+    case 1:
+      return "1st Term";
+    case 2:
+      return "2nd Term";
+    case 3:
+      return "3rd Term";
+    case 4:
+      return "4th Term";
+    default:
+      return "5th Term";
+  }
+});
+
 // Select Term
 
 const filterstat2 = (val, update) => {
@@ -591,5 +628,33 @@ const printGrades = () => {
       var fileURL = URL.createObjectURL(file);
       window.open(fileURL);
     });
+};
+
+const spasidgrade = ref();
+
+const saveGrades = () => {
+  spasidgrade.value = route.params.id;
+  const getTermValue = computed(() => {
+    const termValue = Math.max(newterm.value, newterm1.value, newterm2.value);
+
+    switch (termValue) {
+      case 1:
+        return 1;
+      case 2:
+        return 2;
+      case 3:
+        return 3;
+      case 4:
+        return 4;
+      default:
+        return 5;
+    }
+  });
+  console.log(spasidgrade.value);
+  console.log(newsy.value);
+  console.log(getTermValue.value);
+  console.log(newtermtype.value);
+  console.log(newcurriculum.value);
+  console.log(toggle.value);
 };
 </script>

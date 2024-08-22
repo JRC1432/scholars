@@ -88,12 +88,13 @@
               ref="reftermtype"
               :options="termTypeOptions"
               v-model="state.termtype"
-              emit-value
               name="termtype"
               outlined
               dense
               hide-bottom-space
+              emit-value
               :rules="[myRule]"
+              @update:model-value="handleTermTypeSelect"
             />
           </div>
           <div class="q-px-sm" v-if="state.termtype === 'Semestral'">
@@ -331,31 +332,31 @@ const filtersy = (val, update) => {
 
 // TermType
 const termTypeOptions = [
-  { label: "Semestral", value: "Semestral", color: "primary" },
-  { label: "Trimestral", value: "Trimestral", color: "primary" },
-  { label: "Quarterly", value: "Quarterly", color: "primary" },
+  { label: "Semestral", value: "2", color: "primary" },
+  { label: "Trimestral", value: "3", color: "primary" },
+  { label: "Quarterly", value: "4", color: "primary" },
 ];
 
 const termOptions = [
-  { label: "1st", value: "1st", color: "primary" },
-  { label: "2nd", value: "2nd", color: "primary" },
-  { label: "Summer", value: "Summer", color: "primary" },
-  { label: "Midyear", value: "Midyear", color: "primary" },
+  { label: "1st", value: "1", color: "primary" },
+  { label: "2nd", value: "2", color: "primary" },
+  { label: "Summer", value: "3", color: "primary" },
+  { label: "Midyear", value: "4", color: "primary" },
 ];
 
 const term1Options = [
-  { label: "1st", value: "1st", color: "primary" },
-  { label: "2nd", value: "2nd", color: "primary" },
-  { label: "3rd", value: "3rd", color: "primary" },
-  { label: "Summer", value: "Summer", color: "primary" },
+  { label: "1st", value: "1", color: "primary" },
+  { label: "2nd", value: "2", color: "primary" },
+  { label: "3rd", value: "3", color: "primary" },
+  { label: "Summer", value: "4", color: "primary" },
 ];
 
 const term2Options = [
-  { label: "1st", value: "1st", color: "primary" },
-  { label: "2nd", value: "2nd", color: "primary" },
-  { label: "3rd", value: "3rd", color: "primary" },
-  { label: "4th", value: "4th", color: "primary" },
-  { label: "Summer", value: "Summer", color: "primary" },
+  { label: "1st", value: "1", color: "primary" },
+  { label: "2nd", value: "2", color: "primary" },
+  { label: "3rd", value: "3", color: "primary" },
+  { label: "4th", value: "4", color: "primary" },
+  { label: "Summer", value: "5", color: "primary" },
 ];
 
 const openEnrollment = () => {

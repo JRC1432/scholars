@@ -907,9 +907,7 @@ if(isset($_GET['printNewTermGradesPDF'])){
 
 
      $sy = $_POST["newsy"];
-     $sem = $_POST["newterm"];
-     $sem1 = $_POST["newterm1"];
-     $sem2 = $_POST["newterm2"];
+     
     
      $termreq = $_POST["newcurriculum"];
      
@@ -931,8 +929,33 @@ if(isset($_GET['printNewTermGradesPDF'])){
      $course = isset($valuesArray[1]) ? $valuesArray[1] : null;
 
 
-    
-    
+
+     $sem = $_POST["newterm"];
+     $sem1 = $_POST["newterm1"];
+     $sem2 = $_POST["newterm2"];
+
+
+     $maxTerm = max($sem, $sem1, $sem2);
+
+     switch ($maxTerm) {
+        case 1:
+            $termLabel = "1st Term";
+            break;
+        case 2:
+            $termLabel = "2nd Term";
+            break;
+        case 3:
+            $termLabel = "3rd Term";
+            break;
+        case 4:
+            $termLabel = "4th Term";
+            break;
+        default:
+            $termLabel = "5th Term";
+            break;
+    }
+
+
         $stnt = $pdo->prepare("SELECT * FROM scholars_record WHERE spas_id = ?");
         $stnt->execute([$scholarids]);
     
@@ -999,7 +1022,7 @@ if(isset($_GET['printNewTermGradesPDF'])){
     
 
     $pdf->Ln(0); // Set to 0 to remove extra space between lines
-$pdf->MultiCell(90, 5, 'School Year: '.$sy.', '.$sem.$sem1.$sem2.' Term', 0, 'L', 0, 0, '', '', true); // Adjust height to 5
+$pdf->MultiCell(90, 5, 'School Year: '.$sy.', '.$termLabel, 0, 'L', 0, 0, '', '', true); // Adjust height to 5
 $pdf->MultiCell(90, 5, 'Term Required: '.$termreq, 0, 'R', 0, 1, '', '', true);
 $pdf->MultiCell(90, 5, 'Course: '.$course, 0, 'L', 0, 0, '', '', true);
  $pdf->MultiCell(90, 5, 'Status(Start): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
