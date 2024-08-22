@@ -2,11 +2,16 @@
   <q-table
     flat
     bordered
+    ref="tableRef"
+    title="Treats"
     :rows="rows"
     :columns="columns"
-    row-key="name"
-    :filter="filter"
+    row-key="id"
     v-model:pagination="pagination"
+    :loading="loading"
+    :filter="filter"
+    binary-state-sort
+    @request="onRequest"
     class="rounded-borders-20 no-border custom-table"
   >
     <template v-slot:top-left>
@@ -1608,10 +1613,15 @@ const axios = inject("$axios");
 
 // Items Variable
 
+const originalRows = ref([]);
 const rows = ref([]);
 const filter = ref("");
+const loading = ref(false);
 const pagination = ref({
+  descending: false,
+  page: 1,
   rowsPerPage: 10,
+  rowsNumber: 10,
 });
 const showedit = ref(false);
 const tab = ref("scholar");
@@ -1735,54 +1745,6 @@ const checkSpasid = async (value) => {
 };
 
 const combinedRules = [checkSpasid, ...inputRules];
-
-// Email Validations
-
-// const checkMails = async (value) => {
-//   const formData = new FormData(document.getElementById("ScholarForm"));
-//   formData.append("mail", state.mail);
-//   try {
-//     const response = await axios.post("/read.php?checkMail", formData);
-//     if (response.data === true) {
-//       // Do something if username is available
-//     } else {
-//       return new Promise((resolve) => {
-//         setTimeout(() => {
-//           resolve("This E-mail is already been taken!!!");
-//         }, 1500);
-//       });
-//     }
-//   } catch (error) {
-//     // Handle any errors
-//     console.error("Error:", error);
-//   }
-// };
-
-// const combinedMails = [checkMails, ...inputRules];
-
-// Contact Validations
-
-// const cheknum = async (value) => {
-//   const formData = new FormData(document.getElementById("ScholarForm"));
-//   formData.append("contact", state.contact);
-//   try {
-//     const response = await axios.post("/read.php?checkContact", formData);
-//     if (response.data === true) {
-//       // Do something if username is available
-//     } else {
-//       return new Promise((resolve) => {
-//         setTimeout(() => {
-//           resolve("This phone number is already been taken!!!");
-//         }, 1500);
-//       });
-//     }
-//   } catch (error) {
-//     // Handle any errors
-//     console.error("Error:", error);
-//   }
-// };
-
-// const combinedNum = [cheknum, ...inputRules];
 
 // Sweet Alerts
 
@@ -2219,15 +2181,82 @@ const filterZip = (val, update) => {
 
 // Read Users
 
+const fetchFromServer = (startRow, count, filter, sortBy, descending) => {
+  let data = originalRows.value;
+  const normalizedFilter = filter.toLowerCase().replace(/-/g, "");
+
+  if (filter) {
+    data = data.filter(
+      (row) =>
+        row.username.toLowerCase().includes(filter.toLowerCase()) ||
+        row.spas_id.toLowerCase().replace(/-/g, "").includes(normalizedFilter)
+    );
+  }
+
+  if (sortBy) {
+    const sortField = sortBy;
+    data.sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      if (aValue === bValue) return 0;
+      return (aValue > bValue ? 1 : -1) * (descending ? -1 : 1);
+    });
+  }
+
+  return data.slice(startRow, startRow + count);
+};
+
+const getRowsNumberCount = (filter) => {
+  if (!filter) return originalRows.value.length;
+  return originalRows.value.filter((row) =>
+    row.username.toLowerCase().includes(filter.toLowerCase())
+  ).length;
+};
+
+const onRequest = (props) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  const filter = props.filter;
+
+  loading.value = true;
+
+  setTimeout(() => {
+    pagination.value.rowsNumber = getRowsNumberCount(filter);
+
+    const fetchCount =
+      rowsPerPage === 0 ? pagination.value.rowsNumber : rowsPerPage;
+    const startRow = (page - 1) * rowsPerPage;
+    const returnedData = fetchFromServer(
+      startRow,
+      fetchCount,
+      filter,
+      sortBy,
+      descending
+    );
+
+    rows.value.splice(0, rows.value.length, ...returnedData);
+
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.sortBy = sortBy;
+    pagination.value.descending = descending;
+
+    loading.value = false;
+  }, 1500);
+};
+
+const readusers = () => {
+  axios.get("/read.php?readScholarRec").then((response) => {
+    originalRows.value = response.data;
+    tableRef.value.requestServerInteraction(); // Ensure this is called after data is fetched
+  });
+};
+
+const tableRef = ref(null);
+
 onMounted(() => {
   readusers();
 });
 
-const readusers = () => {
-  axios.get("/read.php?readScholarRec").then(function (response) {
-    rows.value = response.data;
-  });
-};
 // Close Button
 const CloseEditBtn = () => {
   showedit.value = false;
