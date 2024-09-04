@@ -128,7 +128,7 @@
                   <q-badge
                     color="orange-4"
                     :label="props.value"
-                    @click="shownotAvail(props)"
+                    @click="showContractStats(props)"
                     class="pointer-class"
                   >
                     {{ props.row.contract_status }}
@@ -148,7 +148,7 @@
                   <q-badge
                     color="blue-4"
                     :label="props.value"
-                    @click="showDefer(props)"
+                    @click="showContractStats(props)"
                     class="pointer-class"
                   >
                     {{ props.row.contract_status }}
@@ -173,8 +173,12 @@
 
   <!-- Scholar Contract Details  -->
 
-  <q-dialog v-model="showContractDetails" persistent>
-    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+  <q-dialog
+    v-model="showContractDetails"
+    persistent
+    v-if="contract_Status === 'AVAILING'"
+  >
+    <q-card style="min-width: 500px; width: 600px" class="rounded-borders-20">
       <q-toolbar>
         <IconScript :size="30" stroke-width="2" />
 
@@ -209,6 +213,12 @@
                 <td class="primary-text text-bold">Other Scholarship:</td>
                 <td class="on-surface-text text-bold">
                   {{ otherScholarship }}
+                </td>
+              </tr>
+              <tr>
+                <td class="primary-text text-bold">Contract Location:</td>
+                <td class="on-surface-text text-bold">
+                  {{ contractLoc }}
                 </td>
               </tr>
               <tr>
@@ -288,6 +298,113 @@
           label="Update"
           @click="UpdateContract"
         />
+        <q-btn
+          outline
+          style="color: goldenrod"
+          label="Disallow"
+          @click="disAvailing"
+        />
+        <q-btn
+          outline
+          style="color: goldenrod"
+          label="Delete"
+          @click="delContract"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- DEFERRED -->
+
+  <q-dialog
+    v-model="showContractDetails"
+    persistent
+    v-else-if="contract_Status === 'DEFERRED'"
+  >
+    <q-card style="min-width: 500px; width: 600px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconScript :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">VIEW</span> CONTRACT
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section
+        ><div class="q-mb-sm text-h5 primary-text text-bold">
+          Contract Details
+        </div>
+
+        <q-markup-table separator="cell" flat bordered>
+          <tbody>
+            <tr>
+              <td class="primary-text text-bold">Contract Status</td>
+              <td class="on-surface-text text-bold">
+                {{ contractStats }}
+              </td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Created By:</td>
+              <td class="on-surface-text text-bold">{{ created }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Updated By:</td>
+              <td class="on-surface-text text-bold">{{ update }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Verified By:</td>
+              <td class="on-surface-text text-bold">{{ verified }}</td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+
+        <div class="q-mb-sm text-h5 primary-text text-bold">
+          Deferment Details
+        </div>
+
+        <q-markup-table separator="cell" flat bordered>
+          <tbody>
+            <tr>
+              <td class="primary-text text-bold">With deferment form?</td>
+              <td class="on-surface-text text-bold" v-if="defform === true">
+                YES
+              </td>
+              <td
+                class="on-surface-text text-bold"
+                v-else-if="defform === false"
+              >
+                NO
+              </td>
+              <td class="on-surface-text text-bold" v-else>N/A</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Reason:</td>
+              <td class="on-surface-text text-bold">{{ defreason }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">School Year Deferred:</td>
+              <td class="on-surface-text text-bold">{{ sydef }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Term Type Deferred:</td>
+              <td class="on-surface-text text-bold">{{ termTypeDef }}</td>
+            </tr>
+            <tr>
+              <td class="primary-text text-bold">Term Deferred:</td>
+              <td class="on-surface-text text-bold">{{ termDef }}</td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+      </q-card-section>
+      <q-card-actions align="center">
+        <q-btn
+          outline
+          style="color: goldenrod"
+          label="Update"
+          @click="UpDeferContract"
+        />
         <q-btn outline style="color: goldenrod" label="Disallow" />
         <q-btn outline style="color: goldenrod" label="Delete" />
       </q-card-actions>
@@ -296,8 +413,8 @@
 
   <!-- DID NOT AVAIL -->
 
-  <q-dialog v-model="showDidNotAvailContracts" persistent>
-    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+  <q-dialog v-model="showContractDetails" persistent v-else>
+    <q-card style="min-width: 500px; width: 600px" class="rounded-borders-20">
       <q-toolbar>
         <IconScript :size="30" stroke-width="2" />
 
@@ -349,83 +466,26 @@
           </tbody>
         </q-markup-table>
       </q-card-section>
-    </q-card>
-  </q-dialog>
-
-  <!-- DEFERRED -->
-
-  <q-dialog v-model="showDeferred" persistent>
-    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
-      <q-toolbar>
-        <IconScript :size="30" stroke-width="2" />
-
-        <q-toolbar-title
-          ><span class="text-weight-bold" color="primary">VIEW</span> CONTRACT
-        </q-toolbar-title>
-
-        <q-btn flat round dense icon="close" v-close-popup />
-      </q-toolbar>
-
-      <q-card-section
-        ><div class="q-mb-sm text-h5 primary-text text-bold">
-          Contract Details
-        </div>
-
-        <q-markup-table separator="cell" flat bordered>
-          <tbody>
-            <tr>
-              <td class="primary-text text-bold">Contract Status</td>
-              <td class="on-surface-text text-bold">
-                {{ contractStats }}
-              </td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">Created By:</td>
-              <td class="on-surface-text text-bold">{{ created }}</td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">Updated By:</td>
-              <td class="on-surface-text text-bold">{{ update }}</td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">Verified By:</td>
-              <td class="on-surface-text text-bold">{{ verified }}</td>
-            </tr>
-          </tbody>
-        </q-markup-table>
-
-        <div class="q-mb-sm text-h5 primary-text text-bold">
-          Deferment Details
-        </div>
-
-        <q-markup-table separator="cell" flat bordered>
-          <tbody>
-            <tr>
-              <td class="primary-text text-bold">With deferment form?</td>
-              <td class="on-surface-text text-bold" v-if="defform === true">
-                YES
-              </td>
-              <td class="on-surface-text text-bold" v-else>NO</td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">Reason:</td>
-              <td class="on-surface-text text-bold">{{ defreason }}</td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">School Year Deferred:</td>
-              <td class="on-surface-text text-bold">{{ sydef }}</td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">Term Type Deferred:</td>
-              <td class="on-surface-text text-bold">{{ termTypeDef }}</td>
-            </tr>
-            <tr>
-              <td class="primary-text text-bold">Term Deferred:</td>
-              <td class="on-surface-text text-bold">{{ termDef }}</td>
-            </tr>
-          </tbody>
-        </q-markup-table>
-      </q-card-section>
+      <q-card-actions align="center">
+        <q-btn
+          outline
+          style="color: goldenrod"
+          label="Update"
+          @click="UpDidnotContract"
+        />
+        <q-btn
+          outline
+          style="color: goldenrod"
+          label="Disallow"
+          @click="disAvailing"
+        />
+        <q-btn
+          outline
+          style="color: goldenrod"
+          label="Delete"
+          @click="delContract"
+        />
+      </q-card-actions>
     </q-card>
   </q-dialog>
 
@@ -664,9 +724,11 @@
     </q-card>
   </q-dialog>
 
+  <!-- Avaliling Update Contract  -->
+
   <q-dialog v-model="upContract" persistent>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
-      <form id="ContractForm" @submit.prevent.stop="UpdateContract">
+      <form id="SubmitContractForm" @submit.prevent.stop="SubmitContract">
         <q-toolbar>
           <IconScript :size="30" stroke-width="2" />
 
@@ -682,7 +744,7 @@
           <div class="q-px-sm">
             <span class="text-bold">Contract Status</span>
             <q-select
-              ref="refcontractStats"
+              ref="refcntrctStatus"
               outlined
               dense
               hide-bottom-space
@@ -704,11 +766,11 @@
           <div class="q-px-sm">
             <span class="text-bold">Availed Award </span>
             <q-select
-              ref="refavail"
+              ref="refavailAward"
               :options="awardOptions"
               v-model="state.availAward"
-              emit-value
               name="availAward"
+              emit-value
               outlined
               dense
               hide-bottom-space
@@ -718,12 +780,11 @@
           <div class="q-px-sm">
             <span class="text-bold">Other Scholarship</span>
             <q-input
-              ref="refotherScholarship"
               outlined
               dense
               hide-bottom-space
-              v-model="state.otherScholarship"
-              name="otherScholarship"
+              v-model="state.upotherScholarship"
+              name="upotherScholarship"
             />
           </div>
           <div class="q-px-sm">
@@ -751,25 +812,27 @@
           <div class="q-px-sm">
             <span class="text-bold">Duration</span>
             <q-input
-              ref="refduration"
+              ref="refupduration"
               outlined
               dense
               hide-bottom-space
-              v-model="state.duration"
-              name="duration"
+              v-model="state.upduration"
+              name="upduration"
               type="number"
             />
           </div>
           <div class="q-px-sm">
             <span class="text-bold">ETG Month </span>
             <q-select
-              ref="refetgMonth"
+              ref="refupetgMonth"
               :options="etgOptions"
-              v-model="state.etgMonth"
+              v-model="state.upetgMonth"
+              name="upetgMonth"
               emit-value
-              name="etgMonth"
               outlined
               dense
+              use-input
+              map-options
               hide-bottom-space
               :rules="[myRule]"
             />
@@ -777,12 +840,12 @@
           <div class="q-px-sm">
             <span class="text-bold">ETG</span>
             <q-input
-              ref="refetg"
+              ref="refupetg"
               outlined
               dense
               hide-bottom-space
-              v-model="state.etg"
-              name="etg"
+              v-model="state.upetg"
+              name="upetg"
               type="number"
             />
           </div>
@@ -802,29 +865,29 @@
           <div class="q-px-sm">
             <span class="text-bold">School And Course Record</span>
             <q-select
-              ref="refschoolCourse"
-              :options="scOptions"
-              v-model="state.schoolCourse"
+              :options="scrTermoptions"
+              v-model="state.upscrTerm"
+              name="upscrTerm"
               emit-value
-              name="schoolCourse"
               outlined
               dense
+              use-input
+              map-options
               hide-bottom-space
-              :rules="[myRule]"
             />
           </div>
           <div class="q-px-sm">
             <span class="text-bold">SY and Term Started</span>
             <q-select
-              ref="refSyTerm"
-              :options="syOptions"
-              v-model="state.SyTerm"
+              :options="termRecOptions"
+              v-model="state.uptermRec"
+              name="uptermRec"
               emit-value
-              name="SyTerm"
               outlined
               dense
+              use-input
+              map-options
               hide-bottom-space
-              :rules="[myRule]"
             />
           </div>
 
@@ -841,133 +904,174 @@
           </q-card-actions>
         </q-card-section>
 
-        <q-card-section v-else-if="state.cntrctStatus === 'DID NOT AVAIL'">
-          <div class="q-px-sm text-bold">
-            <span class="text-bold">Scholar deferred before?</span>
-            <q-toggle
-              :label="didNotscholarDefer"
-              v-model="didNotscholarDefer"
-              checked-icon="check"
-              color="green"
-              unchecked-icon="clear"
-              false-value="NO"
-              true-value="YES"
-              name="didNotscholarDefer"
-            />
-          </div>
-          <div class="q-px-sm">
-            <span class="text-bold">Reason</span>
-            <q-input
-              v-model="state.didNotreason"
-              filled
-              autogrow
-              outlined
-              dense
-            />
-          </div>
+        <!-- DID NOT AVAIL UPDATE -->
 
-          <q-card-actions align="center">
-            <div class="q-pa-md q-gutter-sm">
-              <q-btn outline style="color: goldenrod" label="Save" />
-              <q-btn outline style="color: goldenrod" label="Reset" />
+        <q-card-section v-else-if="state.cntrctStatus === 'DID NOT AVAIL'">
+          <form
+            id="SubmitDidNotForm"
+            @submit.prevent.stop="SubmitDidNotContract"
+          >
+            <div class="q-px-sm text-bold">
+              <span class="text-bold">Scholar deferred before?</span>
+              <q-toggle
+                :label="didNotscholarDefer"
+                v-model="didNotscholarDefer"
+                checked-icon="check"
+                color="green"
+                unchecked-icon="clear"
+                false-value="NO"
+                true-value="YES"
+                name="didNotscholarDefer"
+              />
             </div>
-          </q-card-actions>
+            <div class="q-px-sm">
+              <span class="text-bold">Reason</span>
+              <q-input
+                v-model="state.didNotreason"
+                name="didNotreason"
+                filled
+                autogrow
+                outlined
+                dense
+              />
+            </div>
+
+            <q-card-actions align="center">
+              <div class="q-pa-md q-gutter-sm">
+                <q-btn
+                  outline
+                  style="color: goldenrod"
+                  label="Save"
+                  type="submit"
+                />
+                <q-btn outline style="color: goldenrod" label="Reset" />
+              </div>
+            </q-card-actions>
+          </form>
         </q-card-section>
 
+        <!-- Update Deffered -->
+
         <q-card-section v-else-if="state.cntrctStatus === 'DEFERRED'">
-          <div class="q-px-sm text-bold">
-            <span class="text-bold">Scholar deferred before?</span>
-            <q-toggle
-              :label="defscholarDefer"
-              v-model="defscholarDefer"
-              checked-icon="check"
-              color="green"
-              unchecked-icon="clear"
-              false-value="NO"
-              true-value="YES"
-              name="defscholarDefer"
-            />
-          </div>
-          <div class="q-px-sm">
-            <span class="text-bold">Reason</span>
-            <q-input v-model="state.defreason" filled autogrow outlined dense />
-          </div>
-
-          <div class="q-px-sm">
-            <span class="text-bold">School Year Deferred</span>
-            <q-select
-              ref="refschoolCourse"
-              :options="scOptions"
-              v-model="state.schoolCourse"
-              emit-value
-              name="schoolCourse"
-              outlined
-              dense
-              hide-bottom-space
-              :rules="[myRule]"
-            />
-          </div>
-          <div class="q-px-sm">
-            <span class="text-bold">Term Type</span>
-            <q-select
-              ref="reftermType"
-              :options="termtypeOptions"
-              v-model="state.termType"
-              emit-value
-              name="termType"
-              outlined
-              dense
-              hide-bottom-space
-              :rules="[myRule]"
-            />
-          </div>
-          <div class="q-px-sm">
-            <span class="text-bold">Term Deferred</span>
-            <q-select
-              ref="reftermType"
-              :options="termtypeOptions"
-              v-model="state.termType"
-              emit-value
-              name="termType"
-              outlined
-              dense
-              hide-bottom-space
-              :rules="[myRule]"
-            />
-          </div>
-          <div class="q-px-sm text-bold">
-            <span class="text-bold">Status is Latest?</span>
-            <q-toggle
-              :label="statsLatest"
-              v-model="statsLatest"
-              checked-icon="check"
-              color="green"
-              unchecked-icon="clear"
-              false-value="NO"
-              true-value="YES"
-              name="statsLatest"
-            />
-          </div>
-          <div class="q-px-sm text-bold">
-            <span class="text-bold">Record is Active?</span>
-            <q-toggle
-              :label="recActive"
-              v-model="recActive"
-              checked-icon="check"
-              color="green"
-              unchecked-icon="clear"
-              false-value="NO"
-              true-value="YES"
-              name="recActive"
-            />
-          </div>
-
-          <q-card-actions align="center">
-            <div class="q-pa-md q-gutter-sm">
-              <q-btn outline style="color: goldenrod" label="Save" />
-              <q-btn outline style="color: goldenrod" label="Reset" />
+          <form id="SubmitDefForm" @submit.prevent.stop="SubmitDefContract">
+            <div class="q-px-sm text-bold">
+              <span class="text-bold">With deferment form?</span>
+              <q-toggle
+                :label="defscholarDefer"
+                v-model="defscholarDefer"
+                checked-icon="check"
+                color="green"
+                unchecked-icon="clear"
+                false-value="NO"
+                true-value="YES"
+                name="defscholarDefer"
+              />
             </div>
-          </q-card-actions>
+            <div class="q-px-sm">
+              <span class="text-bold">Reason</span>
+              <q-input
+                name="updefreason"
+                v-model="state.updefreason"
+                filled
+                autogrow
+                outlined
+                dense
+              />
+            </div>
+
+            <div class="q-px-sm">
+              <span class="text-bold">School Year Deferred</span>
+              <q-select
+                ref="refupSyDef"
+                outlined
+                dense
+                hide-bottom-space
+                behavior="menu"
+                emit-value
+                map-options
+                use-input
+                input-debounce="0"
+                v-model="state.upSyDef"
+                name="upSyDef"
+                :options="syOptions"
+                @filter="filtersy"
+                :rules="[myRule]"
+                mask="#### - ####"
+                clearable
+              />
+            </div>
+            <div class="q-px-sm">
+              <span class="text-bold">Term Type</span>
+              <q-select
+                ref="refuptermtype"
+                :options="termTypeOptions"
+                v-model="state.uptermtype"
+                name="uptermtype"
+                outlined
+                dense
+                hide-bottom-space
+                emit-value
+                use-input
+                map-options
+                :rules="[myRule]"
+              />
+            </div>
+            <div class="q-px-sm">
+              <span class="text-bold">Term Deferred</span>
+              <q-select
+                ref="refuptermDef"
+                :options="computedTermOptions"
+                v-model="state.uptermDef"
+                name="uptermDef"
+                emit-value
+                outlined
+                dense
+                use-input
+                map-options
+                hide-bottom-space
+                :rules="[myRule]"
+              />
+            </div>
+
+            <div class="q-px-sm text-bold">
+              <span class="text-bold">Status is Latest?</span>
+              <q-toggle
+                :label="statsLatest"
+                v-model="statsLatest"
+                checked-icon="check"
+                color="green"
+                unchecked-icon="clear"
+                false-value="NO"
+                true-value="YES"
+                name="statsLatest"
+              />
+            </div>
+            <div class="q-px-sm text-bold">
+              <span class="text-bold">Record is Active?</span>
+              <q-toggle
+                :label="recActive"
+                v-model="recActive"
+                checked-icon="check"
+                color="green"
+                unchecked-icon="clear"
+                false-value="NO"
+                true-value="YES"
+                name="recActive"
+              />
+            </div>
+
+            <q-card-actions align="center">
+              <div class="q-pa-md q-gutter-sm">
+                <q-btn
+                  outline
+                  style="color: goldenrod"
+                  label="Save"
+                  type="submit"
+                />
+                <q-btn outline style="color: goldenrod" label="Reset" />
+              </div>
+            </q-card-actions>
+          </form>
         </q-card-section>
 
         <q-card-section v-else>
@@ -1014,54 +1118,6 @@ const filter = ref("");
 const pagination = ref({
   rowsPerPage: 10,
 });
-const showContractDetails = ref(false);
-const showDidNotAvailContracts = ref(false);
-const showDeferred = ref(false);
-const updateReplies = ref(false);
-
-const showReplies = ref(false);
-const addReplies = ref(false);
-const upContract = ref(false);
-const scholarDefer = ref("NO");
-const didNotscholarDefer = ref("NO");
-const defscholarDefer = ref("NO");
-const statsLatest = ref("NO");
-const recActive = ref("NO");
-
-const contractStats = ref();
-const avail = ref();
-const otherScholarship = ref();
-const duration = ref();
-const etgMonth = ref();
-const etg = ref();
-const scdefbef = ref();
-const school = ref();
-const course = ref();
-const scYearAvail = ref();
-const termType = ref();
-const termAvail = ref();
-const reason = ref();
-const created = ref();
-const update = ref();
-const verified = ref();
-
-const defform = ref();
-const defreason = ref();
-const sydef = ref();
-const termTypeDef = ref();
-const termDef = ref();
-
-const replySlip = ref();
-const datereply = ref();
-const reply_reason = ref();
-const reply_created = ref();
-const reply_updated = ref();
-const reply_verified = ref();
-
-const refreply = ref(null);
-const refdaterep = ref(null);
-const refupreply = ref(null);
-const refupdaterep = ref(null);
 
 // Validations
 
@@ -1133,6 +1189,70 @@ const updateAlertReply = () => {
   });
 };
 
+// Variable Lists
+
+const showContractDetails = ref(false);
+
+const updateReplies = ref(false);
+
+const showReplies = ref(false);
+const addReplies = ref(false);
+const upContract = ref(false);
+const scholarDefer = ref("NO");
+const didNotscholarDefer = ref("NO");
+const defscholarDefer = ref("NO");
+const statsLatest = ref("NO");
+const recActive = ref("NO");
+
+const contractStats = ref();
+const avail = ref();
+const otherScholarship = ref();
+const contractLoc = ref();
+const duration = ref();
+const etgMonth = ref();
+const etg = ref();
+const scdefbef = ref();
+const school = ref();
+const course = ref();
+const scYearAvail = ref();
+const termType = ref();
+const termAvail = ref();
+const reason = ref();
+const created = ref();
+const update = ref();
+const verified = ref();
+
+const defVerifiedFlag = ref();
+const defform = ref();
+const defreason = ref();
+const sydef = ref();
+const termTypeDef = ref();
+const termDef = ref();
+
+const replySlip = ref();
+const datereply = ref();
+const reply_reason = ref();
+const reply_created = ref();
+const reply_updated = ref();
+const reply_verified = ref();
+
+const refreply = ref(null);
+const refdaterep = ref(null);
+const refupreply = ref(null);
+const refupdaterep = ref(null);
+
+const refcntrctStatus = ref(null);
+const refavailAward = ref(null);
+
+const refclocations = ref(null);
+const refupduration = ref(null);
+const refupetgMonth = ref(null);
+const refupetg = ref(null);
+
+const refupSyDef = ref(null);
+const refuptermtype = ref(null);
+const refuptermDef = ref(null);
+
 const state = reactive({
   reply: "",
   daterep: "",
@@ -1144,11 +1264,23 @@ const state = reactive({
 
   cntrctStatus: "",
   availAward: "",
-  otherScholarship: "",
+  upotherScholarship: "",
+  clocations: "",
   etgMonth: "",
   etg: "",
   didNotreason: "",
   defreason: "",
+
+  upduration: "",
+  upetgMonth: "",
+  upetg: "",
+  upscrTerm: "",
+  uptermRec: "",
+
+  updefreason: "",
+  upSyDef: "",
+  uptermtype: "",
+  uptermDef: "",
 });
 
 const columns = [
@@ -1241,6 +1373,10 @@ const cntrctStatusoptions = ref();
 const etgOptions = ref();
 var regoptions2 = [];
 const regoptions = ref(regoptions2);
+const scrTermoptions = ref("");
+const termRecOptions = ref();
+var syOptions2 = [];
+const syOptions = ref(syOptions2);
 
 const id = ref();
 
@@ -1281,6 +1417,18 @@ const populateAll = () => {
   axios.get("/read.php?region").then((response) => {
     regoptions2 = response.data;
   });
+
+  axios.post("/read.php?readAddSC", formData).then((response) => {
+    scrTermoptions.value = response.data;
+  });
+
+  axios.post("/read.php?readTermRec", formData).then((response) => {
+    termRecOptions.value = response.data;
+  });
+
+  axios.get("/read.php?school_years").then((response) => {
+    syOptions2 = response.data;
+  });
 };
 
 // Availed Award
@@ -1289,6 +1437,39 @@ const awardOptions = [
   { label: "TN", value: "TN", color: "primary" },
   { label: "TL", value: "TL", color: "primary" },
 ];
+
+// TermType
+const termTypeOptions = [
+  { label: "Semestral", value: "2", color: "primary" },
+  { label: "Trimestral", value: "3", color: "primary" },
+  { label: "Quarterly", value: "4", color: "primary" },
+];
+
+const termOptions = {
+  2: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "Summer", value: "3", color: "primary" },
+    { label: "Midyear", value: "4", color: "primary" },
+  ],
+  3: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "Summer", value: "4", color: "primary" },
+  ],
+  4: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "4th", value: "4", color: "primary" },
+    { label: "Summer", value: "5", color: "primary" },
+  ],
+};
+
+const computedTermOptions = computed(() => {
+  return termOptions[state.uptermtype] || [];
+});
 
 // Filter Regions
 const filterregion = (val, update) => {
@@ -1307,83 +1488,21 @@ const filterregion = (val, update) => {
   });
 };
 
-// Availing
+// School Year Filters
 
-const spasid = ref();
+const filtersy = (val, update) => {
+  if (val === "") {
+    update(() => {
+      syOptions.value = syOptions2;
+    });
+    return;
+  }
 
-const showContractStats = (props) => {
-  showContractDetails.value = true;
-
-  spasid.value = props.row.spas_id;
-  var formData = new FormData();
-  formData.append("id", spasid.value);
-
-  axios.post("/read.php?readSCID", formData).then((response) => {
-    contractStats.value = response.data.contract_status;
-    avail.value = response.data.avail_award;
-    otherScholarship.value = response.data.other_schp;
-    duration.value = response.data.duration;
-
-    etgMonth.value = response.data.etg_month;
-    etg.value = response.data.etg;
-    school.value = response.data.schools;
-    course.value = response.data.course;
-    scdefbef.value = response.data.deferment_status;
-    scYearAvail.value = response.data.sy;
-    termType.value = response.data.term_type;
-    termAvail.value = response.data.term;
-    created.value = response.data.created_by;
-    update.value = response.data.updated_by;
-    verified.value = response.data.verified_by;
-  });
-};
-
-// DID NOT AVAIL
-
-const spasidNotAvail = ref();
-
-const shownotAvail = (props) => {
-  showDidNotAvailContracts.value = true;
-  spasidNotAvail.value = props.row.spas_id;
-
-  var formData = new FormData();
-  formData.append("id", spasidNotAvail.value);
-
-  axios.post("/read.php?readSCID", formData).then((response) => {
-    contractStats.value = response.data.contract_status;
-
-    scdefbef.value = response.data.deferment_status;
-    reason.value = response.data.reason;
-
-    created.value = response.data.created_by;
-    update.value = response.data.updated_by;
-    verified.value = response.data.verified_by;
-  });
-};
-
-// DEFerred
-
-const spasidDefer = ref();
-
-const showDefer = (props) => {
-  showDeferred.value = true;
-  spasidDefer.value = props.row.spas_id;
-
-  var formData = new FormData();
-  formData.append("id", spasidDefer.value);
-
-  axios.post("/read.php?readSCID", formData).then((response) => {
-    contractStats.value = response.data.contract_status;
-
-    created.value = response.data.created_by;
-    update.value = response.data.updated_by;
-    verified.value = response.data.verified_by;
-
-    defform.value = response.data.with_deferment_form;
-    defreason.value = response.data.defer_reason;
-    sydef.value = response.data.sy_deferred;
-    termTypeDef.value = response.data.defer_type;
-    termDef.value = response.data.term_deferred;
+  update(() => {
+    const needle = val.toLowerCase();
+    syOptions.value = syOptions2.filter((option) => {
+      return option.label.toLowerCase().includes(needle);
+    });
   });
 };
 
@@ -1560,11 +1679,339 @@ const resetBtnrep = () => {
   refdaterep.value.resetValidation();
 };
 
+// Contract Codes Here
+
+// Availing
+
+const spasid = ref();
+const contract_Status = ref();
+
+const showContractStats = (props) => {
+  showContractDetails.value = true;
+
+  spasid.value = props.row.spas_id;
+  contract_Status.value = props.row.contract_status;
+
+  var formData = new FormData();
+  formData.append("id", spasid.value);
+
+  axios.post("/read.php?readSCID", formData).then((response) => {
+    // Availing Status
+    contractStats.value = response.data.contract_status;
+    avail.value = response.data.avail_award;
+    otherScholarship.value = response.data.other_schp;
+    contractLoc.value = response.data.contract_loc;
+    duration.value = response.data.duration;
+
+    etgMonth.value = response.data.etg_month;
+    etg.value = response.data.etg;
+    school.value = response.data.schools;
+    course.value = response.data.course;
+    scdefbef.value = response.data.deferment_status;
+    scYearAvail.value = response.data.sy;
+    termType.value = response.data.term_type;
+    termAvail.value = response.data.term;
+    created.value = response.data.created_by;
+    update.value = response.data.updated_by;
+    verified.value = response.data.verified_by;
+    reason.value = response.data.reason;
+    defform.value = response.data.with_deferment_form;
+    defreason.value = response.data.defer_reason;
+    sydef.value = response.data.sy_deferred;
+    termTypeDef.value = response.data.defer_type;
+    termDef.value = response.data.term_deferred;
+    defVerifiedFlag.value = response.data.verified_flag;
+  });
+};
+
 // Update the contract
 
-const UpdateContract = (props) => {
+const UpdateContract = () => {
+  console.log(spasid.value);
   showContractDetails.value = false;
   upContract.value = true;
+  state.cntrctStatus = contractStats.value;
+  state.availAward = avail.value;
+  state.upotherScholarship = otherScholarship.value;
+  state.clocations = contractLoc.value;
+  state.upduration = duration.value;
+  state.upetgMonth = etgMonth.value;
+  state.upetg = etg.value;
+  scholarDefer.value = scdefbef.value === 1 ? "YES" : "NO";
+};
+
+const SubmitContract = () => {
+  console.log(spasid.value);
+
+  refcntrctStatus.value.validate();
+  refavailAward.value.validate();
+  refclocations.value.validate();
+  refupduration.value.validate();
+  refupetgMonth.value.validate();
+  refupetg.value.validate();
+
+  if (
+    refcntrctStatus.value.hasError ||
+    refavailAward.value.hasError ||
+    refclocations.value.hasError ||
+    refupduration.value.hasError ||
+    refupetgMonth.value.hasError ||
+    refupetg.value.hasError
+  ) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all the required fields.",
+    });
+  } else {
+    upContract.value = false;
+    var formData = new FormData(document.getElementById("SubmitContractForm"));
+
+    formData.append("user", user.username);
+    formData.append("spasid", spasid.value);
+    formData.append("scholarDefer", scholarDefer.value);
+
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        axios
+          .post("/update.php?updateContract", formData)
+          .then(function (response) {
+            if (response.data == true) {
+              populateAll();
+              Swal.fire("Saved!", "", "success");
+            } else {
+              $q.notify({
+                color: "red",
+                textColor: "white",
+                message: "Failed to update Contract",
+              });
+            }
+          });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  }
+};
+
+const UpDeferContract = () => {
+  console.log(spasid.value);
+  upContract.value = true;
+  showContractDetails.value = false;
+  state.cntrctStatus = contractStats.value;
+  // Deferment
+
+  defscholarDefer.value = defform.value === true ? "YES" : "NO";
+  state.updefreason = defreason.value;
+  state.upSyDef = sydef.value;
+  state.uptermtype = termTypeDef.value;
+  state.uptermDef = termDef.value;
+  statsLatest.value = defVerifiedFlag.value === true ? "YES" : "NO";
+};
+
+const SubmitDefContract = () => {
+  refupSyDef.value.validate();
+  refuptermtype.value.validate();
+  refuptermDef.value.validate();
+
+  if (
+    refupSyDef.value.hasError ||
+    refuptermtype.value.hasError ||
+    refuptermDef.value.hasError
+  ) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all the required fields.",
+    });
+  } else {
+    upContract.value = false;
+    var formData = new FormData(document.getElementById("SubmitContractForm"));
+
+    formData.append("user", user.username);
+    formData.append("spasid", spasid.value);
+    formData.append("defscholarDefer", defscholarDefer.value);
+    formData.append("statsLatest", statsLatest.value);
+    formData.append("recActive", recActive.value);
+
+    formData.append("updefreason", state.updefreason);
+    formData.append("upSyDef", state.upSyDef);
+    formData.append("uptermtype", state.uptermtype);
+    formData.append("uptermDef", state.uptermDef);
+
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        axios.post("/update.php?updateDef", formData).then(function (response) {
+          if (response.data == true) {
+            populateAll();
+            Swal.fire("Saved!", "", "success");
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Failed to update Contract",
+            });
+          }
+        });
+        axios
+          .post("/update.php?updateDefContract", formData)
+          .then(function (response) {
+            if (response.data == true) {
+              populateAll();
+              Swal.fire("Saved!", "", "success");
+            } else {
+              $q.notify({
+                color: "red",
+                textColor: "white",
+                message: "Failed to update Contract",
+              });
+            }
+          });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  }
+};
+
+const UpDidnotContract = () => {
+  upContract.value = true;
+  showContractDetails.value = false;
+  state.cntrctStatus = contractStats.value;
+  didNotscholarDefer.value = scdefbef.value === 1 ? "YES" : "NO";
+  state.didNotreason = reason.value;
+};
+
+const SubmitDidNotContract = () => {
+  upContract.value = false;
+
+  var formData = new FormData(document.getElementById("SubmitDidNotForm"));
+
+  formData.append("user", user.username);
+  formData.append("spasid", spasid.value);
+  formData.append("didNotscholarDefer", didNotscholarDefer.value);
+  formData.append("cntrctStatus", state.cntrctStatus);
+
+  Swal.fire({
+    title: "Do you want to save the changes?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      axios
+        .post("/update.php?updateDidNotAvail", formData)
+        .then(function (response) {
+          if (response.data == true) {
+            populateAll();
+            Swal.fire("Saved!", "", "success");
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Failed to update Contract",
+            });
+          }
+        });
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
+  });
+};
+
+// Delete Contract
+
+const delContract = () => {
+  // console.log(spasid.value);
+  showContractDetails.value = false;
+  var formData = new FormData();
+  formData.append("delSpasid", spasid.value);
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axios.post("/delete.php?delContract", formData).then(function (response) {
+        if (response.data == true) {
+          populateAll();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+          });
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "Failed to update Contract",
+          });
+        }
+      });
+    }
+  });
+};
+
+// Disallow Availing
+
+const disAvailing = () => {
+  console.log(spasid.value);
+  console.log(user.username);
+  showContractDetails.value = false;
+
+  var formData = new FormData();
+
+  formData.append("user", user.username);
+  formData.append("spasid", spasid.value);
+
+  Swal.fire({
+    title: "Do you want to Disallow?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      axios
+        .post("/update.php?disallowAvailing", formData)
+        .then(function (response) {
+          if (response.data == true) {
+            populateAll();
+            Swal.fire("Saved!", "", "success");
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Failed to update Contract",
+            });
+          }
+        });
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
+  });
 };
 </script>
 <style scoped>

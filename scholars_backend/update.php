@@ -242,6 +242,167 @@ if(isset($_GET['updateReplySlip'])){
     
     }
 
+    // Update Contract
+    // Update Availing
+
+
+    if(isset($_GET['updateContract'])){
+        date_default_timezone_set('Asia/Manila');
+        $date = date("Y-m-d h:i:s a");
+    
+        $updatedby = $_POST["user"];
+        $spasid = $_POST["spasid"];
+
+        $cntrctStatus = $_POST["cntrctStatus"];
+        $availAward = $_POST["availAward"];
+        $upotherScholarship = $_POST["upotherScholarship"];
+        $clocations = $_POST["clocations"];
+        $upduration = $_POST["upduration"];
+        $upetgMonth = $_POST["upetgMonth"];
+        $upetg = $_POST["upetg"];
+        $scholarDefer = ($_POST["scholarDefer"] === 'YES') ? 1 : 0;
+
+
+
+        
+        $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, avail_award = ?, other_schp = ?, contract_loc = ?, duration = ?, etg_month = ?,
+        etg = ?, deferment_status = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+        $stnt->execute([$cntrctStatus,$availAward,$upotherScholarship,$clocations,$upduration,$upetgMonth,$upetg,$scholarDefer,$updatedby,$date,$spasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+         // Update Deferment Details
+
+
+        if(isset($_GET['updateDef'])){
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+            
+            $updatedby = $_POST["user"];
+            $spasid = $_POST["spasid"];
+
+            $defscholarDefer = ($_POST["defscholarDefer"] === 'YES') ? 1 : 0;
+            $updefreason = $_POST["updefreason"];
+            $upSyDef = $_POST["upSyDef"];
+            $uptermtype = $_POST["uptermtype"];
+            $uptermDef = $_POST["uptermDef"];
+            $statsLatest = ($_POST["statsLatest"] === 'YES') ? 1 : 0;
+            $recActive = ($_POST["recActive"] === 'YES') ? true : false;
+    
+            
+            $stnt = $pdo->prepare("UPDATE deferment_details SET with_deferment_form = ?, reason = ?, sy_deferred = ?, term_type = ?, term_deferred = ?, verified_flag = ?,
+            updated_by = ?, updated_at = ? WHERE spas_id = ?");
+            $stnt->execute([$defscholarDefer,$updefreason,$upSyDef,$uptermtype,$uptermDef,$statsLatest,$updatedby,$date,$spasid]);
+            
+             if($stnt){
+                    $result =  true;
+                } else{
+                    
+                    $result = false;
+                }
+            
+                echo json_encode($result);
+            
+            }
+
+            // Update Deferment Details Contract
+
+
+
+            if(isset($_GET['updateDefContract'])){
+                date_default_timezone_set('Asia/Manila');
+                $date = date("Y-m-d h:i:s a");
+            
+                $updatedby = $_POST["user"];
+                $spasid = $_POST["spasid"];
+                $cntrctStatus = $_POST["cntrctStatus"];
+    
+                
+                $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+                $stnt->execute([$cntrctStatus,$updatedby,$date,$spasid]);
+                
+                 if($stnt){
+                        $result =  true;
+                    } else{
+                        
+                        $result = false;
+                    }
+                
+                    echo json_encode($result);
+                
+                }
+
+
+
+
+                // Update Did NOT AVail
+
+
+
+            if(isset($_GET['updateDidNotAvail'])){
+                date_default_timezone_set('Asia/Manila');
+                $date = date("Y-m-d h:i:s a");
+            
+                $updatedby = $_POST["user"];
+                $spasid = $_POST["spasid"];
+                $cntrctStatus = $_POST["cntrctStatus"];
+          
+                $didNotscholarDefer = ($_POST["didNotscholarDefer"] === 'YES') ? 1 : 0;
+                $didNotreason = $_POST["didNotreason"];
+
+
+                $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, deferment_status = ?, reason = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+                $stnt->execute([$cntrctStatus,$didNotscholarDefer,$didNotreason,$updatedby,$date,$spasid]);
+                
+                 if($stnt){
+                        $result =  true;
+                    } else{
+                        
+                        $result = false;
+                    }
+                
+                    echo json_encode($result);
+                
+                }
+
+
+
+                // Disallow Availing
+
+
+                if(isset($_GET['disallowAvailing'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verified = 0;
+    
+    
+                    $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+                    $stnt->execute([$verified,$updatedby,$date,$spasid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
 
 
 

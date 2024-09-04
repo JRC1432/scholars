@@ -4,7 +4,6 @@
       flat
       bordered
       ref="tableRef"
-      title="Treats"
       :rows="rows"
       :columns="columns"
       row-key="id"

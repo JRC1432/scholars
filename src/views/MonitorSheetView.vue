@@ -93,49 +93,23 @@
               dense
               hide-bottom-space
               emit-value
+              use-input
+              map-options
               :rules="[myRule]"
-              @update:model-value="handleTermTypeSelect"
             />
           </div>
-          <div class="q-px-sm" v-if="state.termtype === 'Semestral'">
+          <div class="q-px-sm">
             <span class="text-bold">Term</span>
             <q-select
               ref="refterm"
-              :options="termOptions"
+              :options="computedTermOptions"
               v-model="state.term"
               emit-value
               name="term"
               outlined
               dense
-              hide-bottom-space
-              :rules="[myRule]"
-            />
-          </div>
-
-          <div class="q-px-sm" v-else-if="state.termtype === 'Trimestral'">
-            <span class="text-bold">Term</span>
-            <q-select
-              ref="refterm"
-              :options="term1Options"
-              v-model="state.term1"
-              emit-value
-              name="term1"
-              outlined
-              dense
-              hide-bottom-space
-              :rules="[myRule]"
-            />
-          </div>
-          <div class="q-px-sm" v-else>
-            <span class="text-bold">Term</span>
-            <q-select
-              ref="refterm"
-              :options="term2Options"
-              v-model="state.term2"
-              emit-value
-              name="term2"
-              outlined
-              dense
+              use-input
+              map-options
               hide-bottom-space
               :rules="[myRule]"
             />
@@ -337,27 +311,31 @@ const termTypeOptions = [
   { label: "Quarterly", value: "4", color: "primary" },
 ];
 
-const termOptions = [
-  { label: "1st", value: "1", color: "primary" },
-  { label: "2nd", value: "2", color: "primary" },
-  { label: "Summer", value: "3", color: "primary" },
-  { label: "Midyear", value: "4", color: "primary" },
-];
+const termOptions = {
+  2: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "Summer", value: "3", color: "primary" },
+    { label: "Midyear", value: "4", color: "primary" },
+  ],
+  3: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "Summer", value: "4", color: "primary" },
+  ],
+  4: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "4th", value: "4", color: "primary" },
+    { label: "Summer", value: "5", color: "primary" },
+  ],
+};
 
-const term1Options = [
-  { label: "1st", value: "1", color: "primary" },
-  { label: "2nd", value: "2", color: "primary" },
-  { label: "3rd", value: "3", color: "primary" },
-  { label: "Summer", value: "4", color: "primary" },
-];
-
-const term2Options = [
-  { label: "1st", value: "1", color: "primary" },
-  { label: "2nd", value: "2", color: "primary" },
-  { label: "3rd", value: "3", color: "primary" },
-  { label: "4th", value: "4", color: "primary" },
-  { label: "Summer", value: "5", color: "primary" },
-];
+const computedTermOptions = computed(() => {
+  return termOptions[state.termtype] || [];
+});
 
 const openEnrollment = () => {
   showEnrollment.value = true;

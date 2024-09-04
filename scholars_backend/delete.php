@@ -52,4 +52,51 @@ if(isset($_GET['delUserInfo'])){
 
 
 
+         // Delete Contract 
+
+    if(isset($_GET['delContract'])){
+
+    
+        $delSpasid = $_POST["delSpasid"];
+        
+        
+        $stnt = $pdo->prepare("DELETE FROM contract_status_details WHERE spas_id = ?");
+        $stnt->execute([$delSpasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+        // Delete Defer Contract 
+
+    if(isset($_GET['delDefContract'])){
+
+    
+        $delSpasid = $_POST["delSpasid"];
+        
+        
+        $stnt = $pdo->prepare("DELETE FROM deferment_details WHERE spas_id = ?");
+        $stnt->execute([$delSpasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+
 ?>

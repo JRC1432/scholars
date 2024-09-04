@@ -299,9 +299,27 @@
               <tr>
                 <td class="primary-text text-bold">Term:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    pstartTerm
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="pstartTerm === 1"
+                    >1st Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="pstartTerm === 2"
+                    >2nd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="pstartTerm === 3"
+                    >3rd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="pstartTerm === 4"
+                    >4th Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else>5th Term</text>
                 </td>
               </tr>
               <tr>
@@ -316,9 +334,16 @@
               <tr>
                 <td class="primary-text text-bold">Progress Status:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    pstartProgress
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="pstartLatest === true"
+                    >{{ pstartProgress }}
+                    <q-badge align="top">Latest</q-badge>
+                  </text>
+                  <text class="on-surface-text text-bold" v-else
+                    >{{ pstartProgress }}
+                    <q-badge align="top"></q-badge>
+                  </text>
                 </td>
               </tr>
               <tr>
@@ -409,9 +434,27 @@
               <tr>
                 <td class="primary-text text-bold">Term:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    startTermterm
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="startTermterm === 1"
+                    >1st Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="startTermterm === 2"
+                    >2nd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="startTermterm === 3"
+                    >3rd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="startTermterm === 4"
+                    >4th Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else>5th Term</text>
                 </td>
               </tr>
               <tr>
@@ -426,9 +469,15 @@
               <tr>
                 <td class="primary-text text-bold">Standing:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    startTermStand
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="startTermLatest === true"
+                    >{{ startTermStand }}
+                    <q-badge align="top">Latest</q-badge>
+                  </text>
+                  <text class="on-surface-text text-bold" v-else
+                    >{{ startTermStand }} <q-badge align="top"></q-badge
+                  ></text>
                 </td>
               </tr>
               <tr>
@@ -485,7 +534,12 @@
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
             <q-btn outline style="color: goldenrod" label="Disallow" />
-            <q-btn outline style="color: goldenrod" label="Update" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Update"
+              @click="editStartTerm"
+            />
             <q-btn outline style="color: goldenrod" label="Delete" />
           </div>
         </q-card-actions>
@@ -519,7 +573,25 @@
               <tr>
                 <td class="primary-text text-bold">Term:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{ pendTerm }}</text>
+                  <text class="on-surface-text text-bold" v-if="pendTerm === 1"
+                    >1st Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="pendTerm === 2"
+                    >2nd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="pendTerm === 3"
+                    >3rd term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="pendTerm === 4"
+                    >4th Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else>5th Term</text>
                 </td>
               </tr>
               <tr>
@@ -534,9 +606,15 @@
               <tr>
                 <td class="primary-text text-bold">Progress Status:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    pendProgress
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="pendLatest === true"
+                    >{{ pendProgress }}
+                    <q-badge align="top">Latest</q-badge></text
+                  >
+                  <text class="on-surface-text text-bold" v-else
+                    >{{ pendProgress }} <q-badge align="top"></q-badge
+                  ></text>
                 </td>
               </tr>
               <tr>
@@ -625,9 +703,29 @@
               <tr>
                 <td class="primary-text text-bold">Term:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    endTermterm
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="endTermterm === 1"
+                    >1st Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="endTermterm === 2"
+                    >2nd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="endTermterm === 3"
+                    >3rd Term</text
+                  >
+                  <text
+                    class="on-surface-text text-bold"
+                    v-else-if="endTermterm === 4"
+                    >4th Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else>
+                    5th Term
+                  </text>
                 </td>
               </tr>
               <tr>
@@ -642,9 +740,15 @@
               <tr>
                 <td class="primary-text text-bold">Standing:</td>
                 <td>
-                  <text class="on-surface-text text-bold">{{
-                    endTermStand
-                  }}</text>
+                  <text
+                    class="on-surface-text text-bold"
+                    v-if="endTermLatest === true"
+                    >{{ endTermStand }}
+                    <q-badge align="top">Latest</q-badge></text
+                  >
+                  <text class="on-surface-text text-bold" v-else
+                    >{{ endTermStand }} <q-badge align="top"></q-badge
+                  ></text>
                 </td>
               </tr>
               <tr>
@@ -777,12 +881,14 @@
           <span class="text-bold">Term Type</span>
           <q-select
             ref="refStatTermType"
-            :options="termtypeptions"
+            :options="termTypeOptions"
             v-model="state.StatTermType"
             emit-value
             name="StatTermType"
             outlined
             dense
+            use-input
+            map-options
             hide-bottom-space
             :rules="[myRule]"
           />
@@ -791,12 +897,14 @@
           <span class="text-bold">Term</span>
           <q-select
             ref="refStatTerm"
-            :options="termOptions"
+            :options="computedTermOptions"
             v-model="state.StatTerm"
             emit-value
             name="StatTerm"
             outlined
             dense
+            use-input
+            map-options
             hide-bottom-space
             :rules="[myRule]"
           />
@@ -934,9 +1042,10 @@
           <span class="text-bold">Term Type</span>
           <q-select
             ref="refcsStatTermType"
-            :options="termtypeptions"
+            :options="termTypeOptions"
             v-model="state.csStatTermType"
             emit-value
+            map-options
             name="csStatTermType"
             outlined
             dense
@@ -948,7 +1057,7 @@
           <span class="text-bold">Term</span>
           <q-select
             ref="refcsStatTerm"
-            :options="termOptions"
+            :options="computedTermOption"
             v-model="state.csStatTerm"
             emit-value
             name="csStatTerm"
@@ -1017,10 +1126,10 @@
           <span class="text-bold">Course & School</span>
           <q-select
             ref="refcsCourseSchool"
-            :options="csCourseSchoolOptions"
+            :options="scrTermoptions"
             v-model="state.csCourseSchool"
-            emit-value
             name="csCourseSchool"
+            emit-value
             outlined
             dense
             hide-bottom-space
@@ -1083,12 +1192,12 @@
           <q-toggle
             :label="PSstatLatest"
             v-model="PSstatLatest"
+            name="PSstatLatest"
             checked-icon="check"
             color="green"
             unchecked-icon="clear"
             false-value="NO"
             true-value="YES"
-            name="PSstatLatest"
           />
         </div>
         <div class="q-px-sm text-bold">
@@ -1166,12 +1275,12 @@
           <q-toggle
             :label="PEstatLatest"
             v-model="PEstatLatest"
+            name="PEstatLatest"
             checked-icon="check"
             color="green"
             unchecked-icon="clear"
             false-value="NO"
             true-value="YES"
-            name="PEstatLatest"
           />
         </div>
         <div class="q-px-sm text-bold">
@@ -1190,6 +1299,109 @@
             @filter="filterstat1"
             v-model="state.peProgressStats"
             name="peProgressStats"
+            clearable
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <div class="q-pa-md q-gutter-sm">
+          <q-btn outline style="color: goldenrod" label="Save" />
+          <q-btn outline style="color: goldenrod" label="Reset" />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Edit Start of Term Standing  -->
+
+  <q-dialog v-model="editModalStartTerm" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconEdit :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">EDIT</span>
+          Start of Term Standing
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">School Year</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.startUPTermSY"
+            name="startUPTermSY"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Term</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.startUPTerm"
+            name="startUPTerm"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Start/End</span>
+          <q-input
+            outlined
+            dense
+            v-model="state.startUPStartEnd"
+            name="startUPStartEnd"
+            readonly
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Status is latest?</span>
+          <q-toggle
+            :label="startTermStatLatest"
+            v-model="startTermStatLatest"
+            name="startTermStatLatest"
+            checked-icon="check"
+            color="green"
+            unchecked-icon="clear"
+            false-value="NO"
+            true-value="YES"
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Standing</span>
+          <q-select
+            ref="refendTermProgressStat"
+            :options="endTermProgressStatOptions"
+            v-model="state.startTermProgressStat"
+            name="startTermProgressStat"
+            emit-value
+            outlined
+            dense
+            hide-bottom-space
+            :rules="[myRule]"
+          />
+        </div>
+        <div class="q-px-sm text-bold">
+          <span class="text-bold">Monitoring Status</span>
+
+          <q-select
+            ref="refendTermMonitor"
+            v-model="state.startTermMonitorStats"
+            name="startTermMonitorStats"
+            outlined
+            dense
+            hide-bottom-space
+            emit-value
+            map-options
+            use-input
+            input-debounce="0"
+            :options="stat2options"
+            @filter="filterstat2"
             clearable
           />
         </div>
@@ -1255,12 +1467,12 @@
           <q-toggle
             :label="endTermStatLatest"
             v-model="endTermStatLatest"
+            name="endTermStatLatest"
             checked-icon="check"
             color="green"
             unchecked-icon="clear"
             false-value="NO"
             true-value="YES"
-            name="endTermStatLatest"
           />
         </div>
         <div class="q-px-sm text-bold">
@@ -1269,8 +1481,8 @@
             ref="refendTermProgressStat"
             :options="endTermProgressStatOptions"
             v-model="state.endTermProgressStat"
-            emit-value
             name="endTermProgressStat"
+            emit-value
             outlined
             dense
             hide-bottom-space
@@ -1282,8 +1494,8 @@
 
           <q-select
             ref="refendTermMonitor"
-            v-model="state.endTermMonitor"
-            name="endTermMonitor"
+            v-model="state.endTermMonitorStats"
+            name="endTermMonitorStats"
             outlined
             dense
             hide-bottom-space
@@ -1374,11 +1586,18 @@ const state = reactive({
   peStartEnd: "",
   peProgressStats: "",
 
+  startUPTermSY: "",
+  startUPTerm: "",
+  startUPStartEnd: "",
+  startTermStatLatest: "",
+  startTermProgressStat: "",
+  startTermMonitorStats: "",
+
   endTermSY: "",
   endTermterm: "",
   endTermStartEnd: "",
   endTermProgressStat: "",
-  endTermMonitor: "",
+  endTermMonitorStats: "",
 });
 
 // View history
@@ -1387,6 +1606,7 @@ const seTerm = ref("1");
 const statLatest = ref("NO");
 const PSstatLatest = ref("NO");
 const PEstatLatest = ref("NO");
+const startTermStatLatest = ref("NO");
 const endTermStatLatest = ref("NO");
 
 // Reference
@@ -1420,6 +1640,7 @@ const openAddSC = ref(false);
 const editModalCourse = ref(false);
 const editModalPSStart = ref(false);
 const editModalPSEnd = ref(false);
+const editModalStartTerm = ref(false);
 const editModalEndTerm = ref(false);
 
 // View Course Variables
@@ -1440,6 +1661,7 @@ const pstartSy = ref();
 const pstartTerm = ref();
 const pstartSE = ref();
 const pstartProgress = ref();
+const pstartLatest = ref();
 const pstartCreate = ref();
 const pstartUpdate = ref();
 const pstartVerified = ref();
@@ -1452,6 +1674,7 @@ const pendSy = ref();
 const pendTerm = ref();
 const pendSE = ref();
 const pendProgress = ref();
+const pendLatest = ref();
 const pendCreate = ref();
 const pendUpdate = ref();
 const pendVerified = ref();
@@ -1464,6 +1687,7 @@ const startTermsy = ref();
 const startTermterm = ref();
 const startTermStrEnd = ref();
 const startTermStand = ref();
+const startTermLatest = ref();
 const startTermMonitor = ref();
 const startTermCreated = ref();
 const startTermUpdate = ref();
@@ -1477,6 +1701,7 @@ const endTermsy = ref();
 const endTermterm = ref();
 const endTermStrEnd = ref();
 const endTermStand = ref();
+const endTermLatest = ref();
 const endTermMonitor = ref();
 const endTermCreated = ref();
 const endTermUpdate = ref();
@@ -1678,6 +1903,42 @@ const filtersy = (val, update) => {
   });
 };
 
+// TermType
+const termTypeOptions = [
+  { label: "Semestral", value: "2", color: "primary" },
+  { label: "Trimestral", value: "3", color: "primary" },
+  { label: "Quarterly", value: "4", color: "primary" },
+];
+
+const termOptions = {
+  2: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "Summer", value: "3", color: "primary" },
+    { label: "Midyear", value: "4", color: "primary" },
+  ],
+  3: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "Summer", value: "4", color: "primary" },
+  ],
+  4: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "4th", value: "4", color: "primary" },
+    { label: "Summer", value: "5", color: "primary" },
+  ],
+};
+const computedTermOptions = computed(() => {
+  return termOptions[state.StatTermType] || [];
+});
+
+const computedTermOption = computed(() => {
+  return termOptions[state.csStatTermType] || [];
+});
+
 // Read School/Course
 
 const openSC = () => {
@@ -1711,9 +1972,10 @@ const openpstart = (props) => {
     .post("/read.php?viewStartStatID", formData)
     .then((response) => {
       pstartSy.value = response.data.sy;
-      pstartTerm.value = response.data.name;
+      pstartTerm.value = response.data.term;
       pstartSE.value = response.data.start_end;
       pstartProgress.value = response.data.progress_status;
+      pstartLatest.value = response.data.latest_flag;
       pstartCreate.value = response.data.created_by;
       pstartUpdate.value = response.data.updated_by;
       pstartVerified.value = response.data.verified_by;
@@ -1747,9 +2009,10 @@ const opensstanding = (props) => {
     .then((response) => {
       console.log(response.data);
       startTermsy.value = response.data.sy;
-      startTermterm.value = response.data.name;
+      startTermterm.value = response.data.term;
       startTermStrEnd.value = response.data.start_end;
       startTermStand.value = response.data.standing;
+      startTermLatest.value = response.data.latest_flag;
       startTermMonitor.value = response.data.list_name;
       startTermCreated.value = response.data.created_by;
       startTermUpdate.value = response.data.updated_by;
@@ -1782,9 +2045,10 @@ const openpend = (props) => {
     .post("/read.php?viewEndID", formData)
     .then((response) => {
       pendSy.value = response.data.sy;
-      pendTerm.value = response.data.name;
+      pendTerm.value = response.data.term;
       pendSE.value = response.data.start_end;
       pendProgress.value = response.data.progress_status;
+      pendLatest.value = response.data.latest_flag;
       pendCreate.value = response.data.created_by;
       pendUpdate.value = response.data.updated_by;
       pendVerified.value = response.data.verified_by;
@@ -1814,9 +2078,10 @@ const opensend = (props) => {
     .post("/read.php?viewENDStandID", formData)
     .then((response) => {
       endTermsy.value = response.data.sy;
-      endTermterm.value = response.data.name;
+      endTermterm.value = response.data.term;
       endTermStrEnd.value = response.data.start_end;
       endTermStand.value = response.data.standing;
+      endTermLatest.value = response.data.latest_flag;
       endTermMonitor.value = response.data.list_name;
       endTermCreated.value = response.data.created_by;
       endTermUpdate.value = response.data.updated_by;
@@ -1839,18 +2104,46 @@ const addSC = () => {
 
 const editCourse = () => {
   editModalCourse.value = true;
+  state.cssy = sy.value;
+  state.csterm = term.value;
 };
 
 const editPSsart = () => {
   editModalPSStart.value = true;
+  state.psSY = pstartSy.value;
+  state.psTerm = pstartTerm.value;
+  state.psStartEnd = pstartSE.value;
+  PSstatLatest.value = pstartLatest.value === 1 ? "YES" : "NO";
+  state.psProgressStats = pstartProgress.value;
 };
 
 const editPSEnd = () => {
   editModalPSEnd.value = true;
+  state.peSY = pendSy.value;
+  state.peTerm = pendTerm.value;
+  state.peStartEnd = pendSE.value;
+  PEstatLatest.value = pendLatest.value === true ? "YES" : "NO";
+  state.peProgressStats = pendProgress.value;
+};
+
+const editStartTerm = () => {
+  editModalStartTerm.value = true;
+  state.startUPTermSY = startTermsy.value;
+  state.startUPTerm = startTermterm.value;
+  state.startUPStartEnd = startTermStrEnd.value;
+  startTermStatLatest.value = startTermLatest.value === true ? "YES" : "NO";
+  state.startTermProgressStat = startTermStand.value;
+  state.startTermMonitorStats = startTermMonitor.value;
 };
 
 const editEndTerm = () => {
   editModalEndTerm.value = true;
+  state.endTermSY = endTermsy.value;
+  state.endTermterm = endTermterm.value;
+  state.endTermStartEnd = endTermStrEnd.value;
+  endTermStatLatest.value = endTermLatest.value === true ? "YES" : "NO";
+  state.endTermProgressStat = endTermStand.value;
+  state.endTermMonitorStats = endTermMonitor.value;
 };
 </script>
 <style scoped>

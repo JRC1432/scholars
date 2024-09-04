@@ -116,7 +116,7 @@
 
   <q-dialog v-model="showUndegrad" persistent>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
-      <form id="UpReplyForm" @submit.prevent.stop="UpdateReplyNow">
+      <form id="CreateUndergradForm" @submit.prevent.stop="CreateUndergrad">
         <q-toolbar>
           <IconClipboardText :size="30" stroke-width="2" />
 
@@ -133,13 +133,13 @@
             <span class="text-bold">SPAS ID:</span>
             <q-select
               ref="refspasid"
-              :options="spasoptions"
               v-model="state.spasid"
-              emit-value
               name="spasid"
+              emit-value
               outlined
               dense
               hide-bottom-space
+              :options="spasoptions"
               :rules="[myRule]"
             />
           </div>
@@ -148,6 +148,8 @@
 
             <q-select
               ref="refschool"
+              v-model="state.school"
+              name="school"
               outlined
               dense
               hide-bottom-space
@@ -156,8 +158,6 @@
               map-options
               use-input
               input-debounce="0"
-              v-model="state.school"
-              name="school"
               :options="schooloptions"
               @filter="filterschool"
               :rules="[myRule]"
@@ -170,6 +170,8 @@
 
             <q-select
               ref="refcourses"
+              v-model="state.courses"
+              name="courses"
               outlined
               dense
               hide-bottom-space
@@ -178,8 +180,6 @@
               map-options
               use-input
               input-debounce="0"
-              v-model="state.courses"
-              name="courses"
               :options="courseoptions"
               @filter="filtercourse"
               :rules="[myRule]"
@@ -192,6 +192,8 @@
 
             <q-select
               ref="refsy"
+              v-model="state.sy"
+              name="sy"
               outlined
               dense
               hide-bottom-space
@@ -200,8 +202,6 @@
               map-options
               use-input
               input-debounce="0"
-              v-model="state.sy"
-              name="sy"
               :options="syoptions"
               @filter="filtersy"
               :rules="[myRule]"
@@ -214,13 +214,15 @@
             <span class="text-bold">Term Type</span>
             <q-select
               ref="reftermtype"
-              :options="termTypeOptions"
               v-model="state.termtype"
-              emit-value
               name="termtype"
               outlined
               dense
               hide-bottom-space
+              emit-value
+              use-input
+              map-options
+              :options="termTypeOptions"
               :rules="[myRule]"
             />
           </div>
@@ -228,13 +230,15 @@
             <span class="text-bold">Term</span>
             <q-select
               ref="refterm"
-              :options="termoptions"
               v-model="state.term"
-              emit-value
               name="term"
+              emit-value
               outlined
               dense
+              use-input
+              map-options
               hide-bottom-space
+              :options="computedTermOptions"
               :rules="[myRule]"
             />
           </div>
@@ -290,8 +294,20 @@ const myRule = (val) => {
   return true;
 };
 
+const refspasid = ref(null);
+const refschool = ref(null);
+const refcourses = ref(null);
+const refsy = ref(null);
+const reftermtype = ref(null);
+const refterm = ref(null);
+
 const state = reactive({
   spasid: "",
+  school: "",
+  courses: "",
+  sy: "",
+  termtype: "",
+  term: "",
 });
 
 const columns = [
@@ -463,12 +479,78 @@ const filtersy = (val, update) => {
 
 // TermType
 const termTypeOptions = [
-  { label: "Semestral", value: "Semestral", color: "primary" },
-  { label: "Trimestral", value: "Trimestral", color: "primary" },
-  { label: "Quarterly", value: "Quarterly", color: "primary" },
+  { label: "Semestral", value: "2", color: "primary" },
+  { label: "Trimestral", value: "3", color: "primary" },
+  { label: "Quarterly", value: "4", color: "primary" },
 ];
+
+const termOptions = {
+  2: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "Summer", value: "3", color: "primary" },
+    { label: "Midyear", value: "4", color: "primary" },
+  ],
+  3: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "Summer", value: "4", color: "primary" },
+  ],
+  4: [
+    { label: "1st", value: "1", color: "primary" },
+    { label: "2nd", value: "2", color: "primary" },
+    { label: "3rd", value: "3", color: "primary" },
+    { label: "4th", value: "4", color: "primary" },
+    { label: "Summer", value: "5", color: "primary" },
+  ],
+};
+
+const computedTermOptions = computed(() => {
+  return termOptions[state.termtype] || [];
+});
 
 const newUndergrad = () => {
   showUndegrad.value = true;
+};
+
+const CreateUndergrad = () => {
+  refspasid.value.validate();
+  refschool.value.validate();
+  refcourses.value.validate();
+  refsy.value.validate();
+  reftermtype.value.validate();
+  refterm.value.validate();
+
+  if (
+    refspasid.value.hasError ||
+    refschool.value.hasError ||
+    refcourses.value.hasError ||
+    refsy.value.hasError ||
+    reftermtype.value.hasError ||
+    refterm.value.hasError
+  ) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please complete all the required fields.",
+    });
+  } else {
+    var formData = new FormData(document.getElementById("CreateUndergradForm"));
+
+    axios
+      .post("/create.php?createUndergradRec", formData)
+      .then(function (response) {
+        if (response.data == true) {
+          populateAll();
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "Failed to create new user",
+          });
+        }
+      });
+  }
 };
 </script>
