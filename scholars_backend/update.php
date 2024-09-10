@@ -403,6 +403,259 @@ if(isset($_GET['updateReplySlip'])){
                     }
 
 
+                    // Update Progress Status start
+
+
+                if(isset($_GET['upProgressStart'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $status = ($_POST["status"] === 'YES') ? 1 : 0;
+                    $psProgressStats = $_POST["psProgressStats"];
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET progress_status = ?, latest_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
+                    $stnt->execute([$psProgressStats,$status,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+                    // Update Progress Status end
+
+
+                if(isset($_GET['upProgressEnd'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $status = ($_POST["status"] === 'YES') ? 1 : 0;
+                    $peProgressStats = $_POST["peProgressStats"];
+                    $termid = $_POST["term_ID_Pend"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET progress_status = ?, latest_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
+                    $stnt->execute([$peProgressStats,$status,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+                    // Update Start of Term Standing
+
+
+                if(isset($_GET['upStartTermStanding'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $status = ($_POST["status"] === 'YES') ? 1 : 0;
+                    $startTermProgressStat = $_POST["startTermProgressStat"];
+                    $termid = $_POST["start_Term_Id"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE standing_history SET standing = ?, latest_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
+                    $stnt->execute([$startTermProgressStat,$status,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+
+
+
+                    // Update End of Term Standing
+
+
+                if(isset($_GET['upEndTermStanding'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $status = ($_POST["status"] === 'YES') ? 1 : 0;
+                    $endTermProgressStat = $_POST["endTermProgressStat"];
+                    $termid = $_POST["term_ID_endTerm"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE standing_history SET standing = ?, latest_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
+                    $stnt->execute([$endTermProgressStat,$status,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+                    // Disallow Progress Status start
+
+
+                if(isset($_GET['disProgressStart'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 0;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+
+                  // Disallow Start of Term Standing
+
+
+                if(isset($_GET['disStartTermStanding'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 0;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+
+                    // Disallow Progress Status end
+
+
+                if(isset($_GET['disProgressEnd'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 0;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+                     // Disallow End of Term Standing
+
+
+                if(isset($_GET['disEndTermStanding'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 0;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
 
 
 

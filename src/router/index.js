@@ -47,6 +47,11 @@ const router = createRouter({
           component: () => import("../views/ReportsView.vue"),
         },
         {
+          path: "/forappeal",
+          name: "forappeal",
+          component: () => import("../views/ForAppealView.vue"),
+        },
+        {
           path: "/test/",
           name: "test",
           component: () => import("../views/TestView.vue"),

@@ -86,10 +86,10 @@
                   v-else
                   @click="openSC(props)"
                   color="light-green-4"
-                  :label="props.value"
+                  :label="props.row.schoolcourse"
                   class="pointer-class"
                 >
-                  {{ props.row.schoolcourse }}
+                  <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
               <q-td key="pstart" :props="props">
@@ -104,10 +104,10 @@
                   v-else
                   @click="openpstart(props)"
                   color="light-green-4"
-                  :label="props.value"
+                  :label="props.row.pstart"
                   class="pointer-class"
                 >
-                  {{ props.row.pstart }}
+                  <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
               <q-td key="sstanding" :props="props">
@@ -124,10 +124,11 @@
                   v-else
                   @click="opensstanding(props)"
                   color="light-green-4"
-                  :label="props.value"
+                  :label="props.row.sstanding"
                   class="pointer-class"
                 >
-                  {{ props.row.sstanding }}
+                  <!-- Display props.row.sstanding only -->
+                  <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
 
@@ -144,10 +145,10 @@
                   v-else
                   @click="openpend(props)"
                   color="light-green-4"
-                  :label="props.value"
+                  :label="props.row.pend"
                   class="pointer-class"
                 >
-                  {{ props.row.pend }}
+                  <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
               <q-td key="send" :props="props">
@@ -162,10 +163,10 @@
                   v-else
                   @click="opensend(props)"
                   color="light-green-4"
-                  :label="props.value"
+                  :label="props.row.send"
                   class="pointer-class"
                 >
-                  {{ props.row.send }}
+                  <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
             </q-tr>
@@ -198,49 +199,85 @@
             <tbody>
               <tr>
                 <td class="primary-text text-bold">School Year:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ sy }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Term:</td>
-                <td>
-                  <text class="on-surface-text text-bold">{{ term }}</text>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
+                  <text class="on-surface-text text-bold" v-if="term === 1"
+                    >1st Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else-if="term === 2"
+                    >2nd Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else-if="term === 3"
+                    >3rd Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else-if="term === 4"
+                    >4th Term</text
+                  >
+                  <text class="on-surface-text text-bold" v-else>5th Term</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">School:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ school }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Course:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ course }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ create }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ update }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Verified By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ verified }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     created_at
                   }}</text>
@@ -248,7 +285,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     updated_at
                   }}</text>
@@ -292,13 +332,19 @@
             <tbody>
               <tr>
                 <td class="primary-text text-bold">School Year:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ pstartSy }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Term:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="pstartTerm === 1"
@@ -324,16 +370,24 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Start/End:</td>
-                <td v-if="pstartSE === 1">
-                  <text class="on-surface-text text-bold">START</text>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
                 </td>
+
                 <td v-else>
-                  <text class="on-surface-text text-bold">END</text>
+                  <text v-if="pstartSE === 1" class="on-surface-text text-bold"
+                    >START</text
+                  >
+
+                  <text v-else class="on-surface-text text-bold">END</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Progress Status:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="pstartLatest === true"
@@ -348,7 +402,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pstartCreate
                   }}</text>
@@ -356,7 +413,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pstartUpdate
                   }}</text>
@@ -364,7 +424,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Verified By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pstartVerified
                   }}</text>
@@ -372,7 +435,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pstartCreated_at
                   }}</text>
@@ -380,7 +446,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pstartUpdated_at
                   }}</text>
@@ -391,14 +460,24 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Disallow"
+              @click="disPStart"
+            />
             <q-btn
               outline
               style="color: goldenrod"
               label="Update"
               @click="editPSsart"
             />
-            <q-btn outline style="color: goldenrod" label="Delete" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Delete"
+              @click="delPStart"
+            />
           </div>
         </q-card-actions>
       </q-card>
@@ -425,7 +504,10 @@
             <tbody>
               <tr>
                 <td class="primary-text text-bold">School Year:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermsy
                   }}</text>
@@ -433,7 +515,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Term:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="startTermterm === 1"
@@ -459,16 +544,24 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Start/End:</td>
-                <td v-if="startTermStrEnd === 1">
-                  <text class="on-surface-text text-bold">START</text>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
                 </td>
                 <td v-else>
-                  <text class="on-surface-text text-bold">END</text>
+                  <text
+                    v-if="startTermStrEnd === 1"
+                    class="on-surface-text text-bold"
+                    >START</text
+                  >
+                  <text v-else class="on-surface-text text-bold">END</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Standing:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="startTermLatest === true"
@@ -482,7 +575,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Monitoring Status:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermMonitor
                   }}</text>
@@ -490,7 +586,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermCreated
                   }}</text>
@@ -498,7 +597,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermUpdate
                   }}</text>
@@ -506,7 +608,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Verified By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermVerified_by
                   }}</text>
@@ -514,7 +619,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermCreated_at
                   }}</text>
@@ -522,7 +630,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     startTermUpdated_at
                   }}</text>
@@ -544,6 +655,7 @@
           </div>
         </q-card-actions>
       </q-card>
+
       <q-card
         class="my-q-card rounded-borders-20"
         flat
@@ -566,13 +678,19 @@
             <tbody>
               <tr>
                 <td class="primary-text text-bold">School Year:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ pendSy }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Term:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold" v-if="pendTerm === 1"
                     >1st Term</text
                   >
@@ -596,16 +714,22 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Start/End:</td>
-                <td v-if="pendSE === 2">
-                  <text class="on-surface-text text-bold">END</text>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
                 </td>
                 <td v-else>
-                  <text class="on-surface-text text-bold">START</text>
+                  <text v-if="pendSE === 2" class="on-surface-text text-bold"
+                    >END</text
+                  >
+                  <text v-else class="on-surface-text text-bold">START</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Progress Status:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="pendLatest === true"
@@ -619,7 +743,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pendCreate
                   }}</text>
@@ -627,7 +754,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pendUpdate
                   }}</text>
@@ -635,7 +765,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Verified By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pendVerified
                   }}</text>
@@ -643,7 +776,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pendCreated_at
                   }}</text>
@@ -651,7 +787,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     pendUpdated_at
                   }}</text>
@@ -696,13 +835,20 @@
             <tbody>
               <tr>
                 <td class="primary-text text-bold">School Year:</td>
-                <td>
+
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{ endTermsy }}</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Term:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="endTermterm === 1"
@@ -730,16 +876,24 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Start/End:</td>
-                <td v-if="endTermStrEnd === 2">
-                  <text class="on-surface-text text-bold">END</text>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
                 </td>
                 <td v-else>
-                  <text class="on-surface-text text-bold">START</text>
+                  <text
+                    v-if="endTermStrEnd === 2"
+                    class="on-surface-text text-bold"
+                    >END</text
+                  >
+                  <text v-else class="on-surface-text text-bold">START</text>
                 </td>
               </tr>
               <tr>
                 <td class="primary-text text-bold">Standing:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text
                     class="on-surface-text text-bold"
                     v-if="endTermLatest === true"
@@ -753,7 +907,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Monitoring Status:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     endTermMonitor
                   }}</text>
@@ -761,7 +918,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     endTermCreated
                   }}</text>
@@ -769,7 +929,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     endTermUpdate
                   }}</text>
@@ -777,7 +940,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Verified By:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     endTermVerified_by
                   }}</text>
@@ -785,7 +951,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Created At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     endTermCreated_at
                   }}</text>
@@ -793,7 +962,10 @@
               </tr>
               <tr>
                 <td class="primary-text text-bold">Updated At:</td>
-                <td>
+                <td v-if="loading">
+                  <q-skeleton animation="blink" type="text" width="300px" />
+                </td>
+                <td v-else>
                   <text class="on-surface-text text-bold">{{
                     endTermUpdated_at
                   }}</text>
@@ -1161,72 +1333,79 @@
 
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
+      <form id="updatePSstartForm" @submit.prevent.stop="updatePSstart">
+        <q-card-section>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">School Year</span>
+            <q-input outlined dense v-model="state.psSY" name="psSY" readonly />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Term</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.psTerm"
+              name="psTerm"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Start/End</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.psStartEnd"
+              name="psStartEnd"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Status is latest?</span>
+            <q-toggle
+              :label="PSstatLatest"
+              v-model="PSstatLatest"
+              name="PSstatLatest"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
+              false-value="NO"
+              true-value="YES"
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Progress Status</span>
 
-      <q-card-section>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">School Year</span>
-          <q-input outlined dense v-model="state.psSY" name="psSY" readonly />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Term</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.psTerm"
-            name="psTerm"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Start/End</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.psStartEnd"
-            name="psStartEnd"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Status is latest?</span>
-          <q-toggle
-            :label="PSstatLatest"
-            v-model="PSstatLatest"
-            name="PSstatLatest"
-            checked-icon="check"
-            color="green"
-            unchecked-icon="clear"
-            false-value="NO"
-            true-value="YES"
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Progress Status</span>
+            <q-select
+              ref="refpsProgressStats"
+              outlined
+              dense
+              hide-bottom-space
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              :options="stat1options"
+              @filter="filterstat1"
+              v-model="state.psProgressStats"
+              name="psProgressStats"
+              clearable
+              :rules="[myRule]"
+            />
+          </div>
+        </q-card-section>
 
-          <q-select
-            ref="refpsProgressStats"
-            outlined
-            dense
-            hide-bottom-space
-            emit-value
-            map-options
-            use-input
-            input-debounce="0"
-            :options="stat1options"
-            @filter="filterstat1"
-            v-model="state.psProgressStats"
-            name="psProgressStats"
-            clearable
-          />
-        </div>
-      </q-card-section>
-
-      <q-card-actions align="center">
-        <div class="q-pa-md q-gutter-sm">
-          <q-btn outline style="color: goldenrod" label="Save" />
-          <q-btn outline style="color: goldenrod" label="Reset" />
-        </div>
-      </q-card-actions>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Save"
+              type="submit"
+            />
+            <q-btn outline style="color: goldenrod" label="Reset" />
+          </div>
+        </q-card-actions>
+      </form>
     </q-card>
   </q-dialog>
 
@@ -1245,71 +1424,79 @@
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
 
-      <q-card-section>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">School Year</span>
-          <q-input outlined dense v-model="state.peSY" name="peSY" readonly />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Term</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.peTerm"
-            name="peTerm"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Start/End</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.peStartEnd"
-            name="peStartEnd"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Status is latest?</span>
-          <q-toggle
-            :label="PEstatLatest"
-            v-model="PEstatLatest"
-            name="PEstatLatest"
-            checked-icon="check"
-            color="green"
-            unchecked-icon="clear"
-            false-value="NO"
-            true-value="YES"
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Progress Status</span>
+      <form id="updatePSendForm" @submit.prevent.stop="updatePSend">
+        <q-card-section>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">School Year</span>
+            <q-input outlined dense v-model="state.peSY" name="peSY" readonly />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Term</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.peTerm"
+              name="peTerm"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Start/End</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.peStartEnd"
+              name="peStartEnd"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Status is latest?</span>
+            <q-toggle
+              :label="PEstatLatest"
+              v-model="PEstatLatest"
+              name="PEstatLatest"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
+              false-value="NO"
+              true-value="YES"
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Progress Status</span>
 
-          <q-select
-            ref="refpeProgressStats"
-            outlined
-            dense
-            hide-bottom-space
-            emit-value
-            map-options
-            use-input
-            input-debounce="0"
-            :options="stat1options"
-            @filter="filterstat1"
-            v-model="state.peProgressStats"
-            name="peProgressStats"
-            clearable
-          />
-        </div>
-      </q-card-section>
+            <q-select
+              ref="refpeProgressStats"
+              outlined
+              dense
+              hide-bottom-space
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              :options="stat1options"
+              @filter="filterstat1"
+              v-model="state.peProgressStats"
+              name="peProgressStats"
+              clearable
+              :rules="[myRule]"
+            />
+          </div>
+        </q-card-section>
 
-      <q-card-actions align="center">
-        <div class="q-pa-md q-gutter-sm">
-          <q-btn outline style="color: goldenrod" label="Save" />
-          <q-btn outline style="color: goldenrod" label="Reset" />
-        </div>
-      </q-card-actions>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Save"
+              type="submit"
+            />
+            <q-btn outline style="color: goldenrod" label="Reset" />
+          </div>
+        </q-card-actions>
+      </form>
     </q-card>
   </q-dialog>
 
@@ -1327,92 +1514,98 @@
 
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
+      <form id="updateStartTermForm" @submit.prevent.stop="updateStartTerm">
+        <q-card-section>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">School Year</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.startUPTermSY"
+              name="startUPTermSY"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Term</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.startUPTerm"
+              name="startUPTerm"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Start/End</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.startUPStartEnd"
+              name="startUPStartEnd"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Status is latest?</span>
+            <q-toggle
+              :label="startTermStatLatest"
+              v-model="startTermStatLatest"
+              name="startTermStatLatest"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
+              false-value="NO"
+              true-value="YES"
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Standing</span>
+            <q-select
+              ref="refstartTermProgressStat"
+              :options="endTermProgressStatOptions"
+              v-model="state.startTermProgressStat"
+              name="startTermProgressStat"
+              emit-value
+              outlined
+              dense
+              hide-bottom-space
+              :rules="[myRule]"
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Monitoring Status</span>
 
-      <q-card-section>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">School Year</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.startUPTermSY"
-            name="startUPTermSY"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Term</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.startUPTerm"
-            name="startUPTerm"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Start/End</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.startUPStartEnd"
-            name="startUPStartEnd"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Status is latest?</span>
-          <q-toggle
-            :label="startTermStatLatest"
-            v-model="startTermStatLatest"
-            name="startTermStatLatest"
-            checked-icon="check"
-            color="green"
-            unchecked-icon="clear"
-            false-value="NO"
-            true-value="YES"
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Standing</span>
-          <q-select
-            ref="refendTermProgressStat"
-            :options="endTermProgressStatOptions"
-            v-model="state.startTermProgressStat"
-            name="startTermProgressStat"
-            emit-value
-            outlined
-            dense
-            hide-bottom-space
-            :rules="[myRule]"
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Monitoring Status</span>
+            <q-select
+              ref="refendTermMonitor"
+              v-model="state.startTermMonitorStats"
+              name="startTermMonitorStats"
+              outlined
+              dense
+              hide-bottom-space
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              :options="stat2options"
+              @filter="filterstat2"
+              clearable
+            />
+          </div>
+        </q-card-section>
 
-          <q-select
-            ref="refendTermMonitor"
-            v-model="state.startTermMonitorStats"
-            name="startTermMonitorStats"
-            outlined
-            dense
-            hide-bottom-space
-            emit-value
-            map-options
-            use-input
-            input-debounce="0"
-            :options="stat2options"
-            @filter="filterstat2"
-            clearable
-          />
-        </div>
-      </q-card-section>
-
-      <q-card-actions align="center">
-        <div class="q-pa-md q-gutter-sm">
-          <q-btn outline style="color: goldenrod" label="Save" />
-          <q-btn outline style="color: goldenrod" label="Reset" />
-        </div>
-      </q-card-actions>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Save"
+              type="submit"
+            />
+            <q-btn outline style="color: goldenrod" label="Reset" />
+          </div>
+        </q-card-actions>
+      </form>
     </q-card>
   </q-dialog>
 
@@ -1430,92 +1623,98 @@
 
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
+      <form id="updateEndTermForm" @submit.prevent.stop="updateEndTerm">
+        <q-card-section>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">School Year</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.endTermSY"
+              name="endTermSY"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Term</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.endTermterm"
+              name="endTermterm"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Start/End</span>
+            <q-input
+              outlined
+              dense
+              v-model="state.endTermStartEnd"
+              name="endTermStartEnd"
+              readonly
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Status is latest?</span>
+            <q-toggle
+              :label="endTermStatLatest"
+              v-model="endTermStatLatest"
+              name="endTermStatLatest"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
+              false-value="NO"
+              true-value="YES"
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Standing</span>
+            <q-select
+              ref="refendTermProgressStat"
+              :options="endTermProgressStatOptions"
+              v-model="state.endTermProgressStat"
+              name="endTermProgressStat"
+              emit-value
+              outlined
+              dense
+              hide-bottom-space
+              :rules="[myRule]"
+            />
+          </div>
+          <div class="q-px-sm text-bold">
+            <span class="text-bold">Monitoring Status</span>
 
-      <q-card-section>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">School Year</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.endTermSY"
-            name="endTermSY"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Term</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.endTermterm"
-            name="endTermterm"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Start/End</span>
-          <q-input
-            outlined
-            dense
-            v-model="state.endTermStartEnd"
-            name="endTermStartEnd"
-            readonly
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Status is latest?</span>
-          <q-toggle
-            :label="endTermStatLatest"
-            v-model="endTermStatLatest"
-            name="endTermStatLatest"
-            checked-icon="check"
-            color="green"
-            unchecked-icon="clear"
-            false-value="NO"
-            true-value="YES"
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Standing</span>
-          <q-select
-            ref="refendTermProgressStat"
-            :options="endTermProgressStatOptions"
-            v-model="state.endTermProgressStat"
-            name="endTermProgressStat"
-            emit-value
-            outlined
-            dense
-            hide-bottom-space
-            :rules="[myRule]"
-          />
-        </div>
-        <div class="q-px-sm text-bold">
-          <span class="text-bold">Monitoring Status</span>
+            <q-select
+              ref="refendTermMonitor"
+              v-model="state.endTermMonitorStats"
+              name="endTermMonitorStats"
+              outlined
+              dense
+              hide-bottom-space
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              :options="stat2options"
+              @filter="filterstat2"
+              clearable
+            />
+          </div>
+        </q-card-section>
 
-          <q-select
-            ref="refendTermMonitor"
-            v-model="state.endTermMonitorStats"
-            name="endTermMonitorStats"
-            outlined
-            dense
-            hide-bottom-space
-            emit-value
-            map-options
-            use-input
-            input-debounce="0"
-            :options="stat2options"
-            @filter="filterstat2"
-            clearable
-          />
-        </div>
-      </q-card-section>
-
-      <q-card-actions align="center">
-        <div class="q-pa-md q-gutter-sm">
-          <q-btn outline style="color: goldenrod" label="Save" />
-          <q-btn outline style="color: goldenrod" label="Reset" />
-        </div>
-      </q-card-actions>
+        <q-card-actions align="center">
+          <div class="q-pa-md q-gutter-sm">
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Save"
+              type="submit"
+            />
+            <q-btn outline style="color: goldenrod" label="Reset" />
+          </div>
+        </q-card-actions>
+      </form>
     </q-card>
   </q-dialog>
 </template>
@@ -1533,6 +1732,7 @@ import {
   IconChecks,
   IconBackpack,
   IconEdit,
+  IconRefresh,
 } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
@@ -1625,6 +1825,7 @@ const refcsCourseSchool = ref(null);
 
 const refpsProgressStats = ref(null);
 const refpeProgressStats = ref(null);
+const refstartTermProgressStat = ref(null);
 
 const refendTermProgressStat = ref(null);
 const refendTermMonitor = ref(null);
@@ -1776,6 +1977,18 @@ const columns = [
   },
 ];
 
+// Loading Simulation
+
+const loading = ref(false);
+
+const simulateLoad = () => {
+  loading.value = true;
+  // Simulating an API call delay
+  setTimeout(() => {
+    loading.value = false;
+  }, 2000); // Delay of 3 seconds
+};
+
 const globalSPAS = props.spasid.spas_id;
 
 // Select Statements
@@ -1804,18 +2017,6 @@ const readHistoryRec = () => {
 
   axios.post("/read.php?historyRecID", formData).then((response) => {
     rows.value = response.data;
-  });
-
-  axios.post("/read.php?viewCourseID", formData).then((response) => {
-    sy.value = response.data.sy_start;
-    term.value = response.data.term_start;
-    school.value = response.data.school;
-    course.value = response.data.course;
-    create.value = response.data.created_by;
-    update.value = response.data.updated_by;
-    verified.value = response.data.verified_by;
-    created_at.value = response.data.created_at;
-    updated_at.value = response.data.updated_at;
   });
 
   axios.post("/read.php?readTermRec", formData).then((response) => {
@@ -1941,17 +2142,47 @@ const computedTermOption = computed(() => {
 
 // Read School/Course
 
-const openSC = () => {
-  viewcourse.value = !viewcourse.value;
-  pstart.value = false;
-  standstart.value = false;
-  pend.value = false;
-  standend.value = false;
+const openSC = async (props) => {
+  simulateLoad();
+  try {
+    console.log(props?.row?.term_id);
+
+    if (!props || !props.row) {
+      console.error("Props or props.row is missing");
+      return;
+    }
+
+    viewcourse.value = !viewcourse.value;
+    pstart.value = false;
+    standstart.value = false;
+    pend.value = false;
+    standend.value = false;
+
+    const formData = new FormData();
+    formData.append("termid", props.row.term_id);
+
+    const response = await axios.post("/read.php?viewCourseID", formData);
+
+    sy.value = response.data.sy;
+    term.value = response.data.term;
+    school.value = response.data.school;
+    course.value = response.data.course;
+    create.value = response.data.created_by;
+    update.value = response.data.updated_by;
+    verified.value = response.data.verified_by;
+    created_at.value = response.data.created_at;
+    updated_at.value = response.data.updated_at;
+  } catch (error) {
+    console.error("Error occurred while fetching course data:", error);
+  }
 };
 
 // Prgress Status Start
 
-const openpstart = (props) => {
+const termid_PStart = ref();
+
+const openpstart = async (props) => {
+  simulateLoad();
   if (!props || !props.row) {
     console.error("Props or props.row is missing");
     return;
@@ -1967,29 +2198,33 @@ const openpstart = (props) => {
   formData.append("id", globalSPAS);
   formData.append("termstanding", props.row.term);
   formData.append("progress", props.row.pstart);
+  formData.append("termid", props.row.term_id);
 
-  axios
-    .post("/read.php?viewStartStatID", formData)
-    .then((response) => {
-      pstartSy.value = response.data.sy;
-      pstartTerm.value = response.data.term;
-      pstartSE.value = response.data.start_end;
-      pstartProgress.value = response.data.progress_status;
-      pstartLatest.value = response.data.latest_flag;
-      pstartCreate.value = response.data.created_by;
-      pstartUpdate.value = response.data.updated_by;
-      pstartVerified.value = response.data.verified_by;
-      pstartCreated_at.value = response.data.created_at;
-      pstartUpdated_at.value = response.data.updated_at;
-    })
-    .catch((error) => {
-      console.error("Error during axios request:", error);
-    });
+  try {
+    const response = await axios.post("/read.php?viewStartStatID", formData);
+
+    pstartSy.value = response.data.sy;
+    pstartTerm.value = response.data.term;
+    pstartSE.value = response.data.start_end;
+    pstartProgress.value = response.data.progress_status;
+    pstartLatest.value = response.data.latest_flag;
+    pstartCreate.value = response.data.created_by;
+    pstartUpdate.value = response.data.updated_by;
+    pstartVerified.value = response.data.verified_by;
+    pstartCreated_at.value = response.data.created_at;
+    pstartUpdated_at.value = response.data.updated_at;
+    termid_PStart.value = response.data.term_id;
+  } catch (error) {
+    console.error("Error during axios request:", error);
+  }
 };
 
 // Start of Term Standing
 
-const opensstanding = (props) => {
+const startTermid = ref();
+
+const opensstanding = async (props) => {
+  simulateLoad();
   if (!props || !props.row) {
     console.error("Props or props.row is missing");
     return;
@@ -2003,29 +2238,34 @@ const opensstanding = (props) => {
   const formData = new FormData();
   formData.append("id", globalSPAS);
   formData.append("progress", props.row.sstanding);
+  formData.append("termid", props.row.term_id);
 
-  axios
-    .post("/read.php?viewSTRTStandID", formData)
-    .then((response) => {
-      console.log(response.data);
-      startTermsy.value = response.data.sy;
-      startTermterm.value = response.data.term;
-      startTermStrEnd.value = response.data.start_end;
-      startTermStand.value = response.data.standing;
-      startTermLatest.value = response.data.latest_flag;
-      startTermMonitor.value = response.data.list_name;
-      startTermCreated.value = response.data.created_by;
-      startTermUpdate.value = response.data.updated_by;
-      startTermVerified_by.value = response.data.verified_by;
-      startTermCreated_at.value = response.data.created_at;
-      startTermUpdated_at.value = response.data.updated_at;
-    })
-    .catch((error) => {
-      console.error("Error during axios request:", error);
-    });
+  try {
+    const response = await axios.post("/read.php?viewSTRTStandID", formData);
+
+    startTermid.value = response.data.term_id;
+    startTermsy.value = response.data.sy;
+    startTermterm.value = response.data.term;
+    startTermStrEnd.value = response.data.start_end;
+    startTermStand.value = response.data.standing;
+    startTermLatest.value = response.data.latest_flag;
+    startTermMonitor.value = response.data.list_name;
+    startTermCreated.value = response.data.created_by;
+    startTermUpdate.value = response.data.updated_by;
+    startTermVerified_by.value = response.data.verified_by;
+    startTermCreated_at.value = response.data.created_at;
+    startTermUpdated_at.value = response.data.updated_at;
+  } catch (error) {
+    console.error("Error during axios request:", error);
+  }
 };
 
-const openpend = (props) => {
+// Progress Status End
+
+const termid_Pend = ref();
+
+const openpend = async (props) => {
+  simulateLoad();
   if (!props || !props.row) {
     console.error("Props or props.row is missing");
     return;
@@ -2040,27 +2280,33 @@ const openpend = (props) => {
   formData.append("id", globalSPAS);
   formData.append("termstanding", props.row.term);
   formData.append("progress", props.row.pend);
+  formData.append("termid", props.row.term_id);
 
-  axios
-    .post("/read.php?viewEndID", formData)
-    .then((response) => {
-      pendSy.value = response.data.sy;
-      pendTerm.value = response.data.term;
-      pendSE.value = response.data.start_end;
-      pendProgress.value = response.data.progress_status;
-      pendLatest.value = response.data.latest_flag;
-      pendCreate.value = response.data.created_by;
-      pendUpdate.value = response.data.updated_by;
-      pendVerified.value = response.data.verified_by;
-      pendCreated_at.value = response.data.created_at;
-      pendUpdated_at.value = response.data.updated_at;
-    })
-    .catch((error) => {
-      console.error("Error during axios request:", error);
-    });
+  try {
+    const response = await axios.post("/read.php?viewEndID", formData);
+
+    termid_Pend.value = response.data.term_id;
+    pendSy.value = response.data.sy;
+    pendTerm.value = response.data.term;
+    pendSE.value = response.data.start_end;
+    pendProgress.value = response.data.progress_status;
+    pendLatest.value = response.data.latest_flag;
+    pendCreate.value = response.data.created_by;
+    pendUpdate.value = response.data.updated_by;
+    pendVerified.value = response.data.verified_by;
+    pendCreated_at.value = response.data.created_at;
+    pendUpdated_at.value = response.data.updated_at;
+  } catch (error) {
+    console.error("Error during axios request:", error);
+  }
 };
 
-const opensend = (props) => {
+// End Of Term Standing
+
+const termid_endTerm = ref();
+
+const opensend = async (props) => {
+  simulateLoad();
   if (!props || !props.row) {
     console.error("Props or props.row is missing");
     return;
@@ -2074,24 +2320,26 @@ const opensend = (props) => {
   const formData = new FormData();
   formData.append("id", globalSPAS);
   formData.append("progress", props.row.send);
-  axios
-    .post("/read.php?viewENDStandID", formData)
-    .then((response) => {
-      endTermsy.value = response.data.sy;
-      endTermterm.value = response.data.term;
-      endTermStrEnd.value = response.data.start_end;
-      endTermStand.value = response.data.standing;
-      endTermLatest.value = response.data.latest_flag;
-      endTermMonitor.value = response.data.list_name;
-      endTermCreated.value = response.data.created_by;
-      endTermUpdate.value = response.data.updated_by;
-      endTermVerified_by.value = response.data.verified_by;
-      endTermCreated_at.value = response.data.created_at;
-      endTermUpdated_at.value = response.data.updated_at;
-    })
-    .catch((error) => {
-      console.error("Error during axios request:", error);
-    });
+  formData.append("termid", props.row.term_id);
+
+  try {
+    const response = await axios.post("/read.php?viewENDStandID", formData);
+
+    termid_endTerm.value = response.data.term_id;
+    endTermsy.value = response.data.sy;
+    endTermterm.value = response.data.term;
+    endTermStrEnd.value = response.data.start_end;
+    endTermStand.value = response.data.standing;
+    endTermLatest.value = response.data.latest_flag;
+    endTermMonitor.value = response.data.list_name;
+    endTermCreated.value = response.data.created_by;
+    endTermUpdate.value = response.data.updated_by;
+    endTermVerified_by.value = response.data.verified_by;
+    endTermCreated_at.value = response.data.created_at;
+    endTermUpdated_at.value = response.data.updated_at;
+  } catch (error) {
+    console.error("Error during axios request:", error);
+  }
 };
 
 const addStatus = () => {
@@ -2108,14 +2356,188 @@ const editCourse = () => {
   state.csterm = term.value;
 };
 
+// Edit Progress Status (Start)
+
+const term_id_Pstart = ref();
 const editPSsart = () => {
   editModalPSStart.value = true;
   state.psSY = pstartSy.value;
   state.psTerm = pstartTerm.value;
   state.psStartEnd = pstartSE.value;
-  PSstatLatest.value = pstartLatest.value === 1 ? "YES" : "NO";
+  PSstatLatest.value = pstartLatest.value === true ? "YES" : "NO";
   state.psProgressStats = pstartProgress.value;
+  term_id_Pstart.value = termid_PStart.value;
 };
+
+const updatePSstart = () => {
+  refpsProgressStats.value.validate();
+  var formData = new FormData(document.getElementById("updatePSstartForm"));
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+  formData.append("status", PSstatLatest.value);
+  formData.append("termid", term_id_Pstart.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to save changes?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      if (refpsProgressStats.value.hasError) {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Please complete all the required fields.",
+        });
+      } else {
+        const dialog = $q.dialog({
+          message: "Updating... 0%",
+          progress: true, // we enable default settings
+          persistent: true, // we want the user to not be able to close it
+          ok: false, // we want the user to not be able to close it
+        });
+
+        // we simulate some progress here...
+        let percentage = 0;
+        const interval = setInterval(() => {
+          percentage = Math.min(
+            100,
+            percentage + Math.floor(Math.random() * 22)
+          );
+
+          // we update the dialog
+          dialog.update({
+            message: `${percentage}%`,
+          });
+
+          // if we are done....
+          if (percentage === 100) {
+            axios
+              .post("/update.php?upProgressStart", formData)
+              .then(function (response) {
+                if (response.data == true) {
+                  editModalPSStart.value = false;
+                  readHistoryRec();
+
+                  pstart.value = false;
+                  clearInterval(interval);
+
+                  dialog.update({
+                    title: "Done!",
+                    message: "Updated Successfully",
+                    progress: false,
+                    ok: true,
+                  });
+                } else {
+                  $q.notify({
+                    color: "red",
+                    textColor: "white",
+                    message: "Failed to update edit Progress Status(Start)",
+                  });
+                }
+              });
+          }
+        }, 100);
+      }
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Delete & Disallow Progress Status (Start)
+
+const dis_termid_PS_start = ref();
+const disPStart = () => {
+  dis_termid_PS_start.value = termid_PStart.value;
+  var formData = new FormData();
+  formData.append("termid", dis_termid_PS_start.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+  console.log(dis_termid_PS_start.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to disallow?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Updating... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/update.php?disProgressStart", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Updated Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to update edit Progress Status(Start)",
+                });
+              }
+            });
+        }
+      }, 100);
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+const del_termid_PS_start = ref();
+const delPStart = () => {
+  del_termid_PS_start.value = termid_PStart.value;
+  console.log(del_termid_PS_start.value);
+};
+
+// Edit Progress Status (End)
+
+const term_ID_Pend = ref();
 
 const editPSEnd = () => {
   editModalPSEnd.value = true;
@@ -2124,7 +2546,96 @@ const editPSEnd = () => {
   state.peStartEnd = pendSE.value;
   PEstatLatest.value = pendLatest.value === true ? "YES" : "NO";
   state.peProgressStats = pendProgress.value;
+  term_ID_Pend.value = termid_Pend.value;
 };
+
+const updatePSend = () => {
+  refpeProgressStats.value.validate();
+  var formData = new FormData(document.getElementById("updatePSendForm"));
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+  formData.append("status", PEstatLatest.value);
+  formData.append("term_ID_Pend", term_ID_Pend.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to save changes?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      if (refpeProgressStats.value.hasError) {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Please complete all the required fields.",
+        });
+      } else {
+        const dialog = $q.dialog({
+          message: "Updating... 0%",
+          progress: true, // we enable default settings
+          persistent: true, // we want the user to not be able to close it
+          ok: false, // we want the user to not be able to close it
+        });
+
+        // we simulate some progress here...
+        let percentage = 0;
+        const interval = setInterval(() => {
+          percentage = Math.min(
+            100,
+            percentage + Math.floor(Math.random() * 22)
+          );
+
+          // we update the dialog
+          dialog.update({
+            message: `${percentage}%`,
+          });
+
+          // if we are done...
+          if (percentage === 100) {
+            axios
+              .post("/update.php?upProgressEnd", formData)
+              .then(function (response) {
+                if (response.data == true) {
+                  editModalPSEnd.value = false;
+                  pend.value = false;
+                  readHistoryRec();
+                  clearInterval(interval);
+                  dialog.update({
+                    title: "Done!",
+                    message: "Updated Successfully",
+                    progress: false,
+                    ok: true,
+                  });
+                } else {
+                  $q.notify({
+                    color: "red",
+                    textColor: "white",
+                    message: "Failed to update Progress Status End",
+                  });
+                }
+              });
+          }
+        }, 100);
+      }
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Edit Start Term Stnding
+
+const start_Term_Id = ref();
 
 const editStartTerm = () => {
   editModalStartTerm.value = true;
@@ -2134,8 +2645,96 @@ const editStartTerm = () => {
   startTermStatLatest.value = startTermLatest.value === true ? "YES" : "NO";
   state.startTermProgressStat = startTermStand.value;
   state.startTermMonitorStats = startTermMonitor.value;
+  start_Term_Id.value = startTermid.value;
 };
 
+const updateStartTerm = () => {
+  refstartTermProgressStat.value.validate();
+  var formData = new FormData(document.getElementById("updateStartTermForm"));
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+  formData.append("status", startTermStatLatest.value);
+  formData.append("start_Term_Id", start_Term_Id.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to save changes?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      if (refstartTermProgressStat.value.hasError) {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Please complete all the required fields.",
+        });
+      } else {
+        const dialog = $q.dialog({
+          message: "Updating... 0%",
+          progress: true, // we enable default settings
+          persistent: true, // we want the user to not be able to close it
+          ok: false, // we want the user to not be able to close it
+        });
+
+        // we simulate some progress here...
+        let percentage = 0;
+        const interval = setInterval(() => {
+          percentage = Math.min(
+            100,
+            percentage + Math.floor(Math.random() * 22)
+          );
+
+          // we update the dialog
+          dialog.update({
+            message: `${percentage}%`,
+          });
+
+          // if we are done...
+          if (percentage === 100) {
+            axios
+              .post("/update.php?upStartTermStanding", formData)
+              .then(function (response) {
+                if (response.data == true) {
+                  editModalStartTerm.value = false;
+                  standstart.value = false;
+                  readHistoryRec();
+                  clearInterval(interval);
+                  dialog.update({
+                    title: "Done!",
+                    message: "Updated Successfully",
+                    progress: false,
+                    ok: true,
+                  });
+                } else {
+                  $q.notify({
+                    color: "red",
+                    textColor: "white",
+                    message: "Failed to update Start of Term Standing",
+                  });
+                }
+              });
+          }
+        }, 100);
+      }
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Edit End Term Stnding
+
+const term_ID_endTerm = ref();
 const editEndTerm = () => {
   editModalEndTerm.value = true;
   state.endTermSY = endTermsy.value;
@@ -2144,6 +2743,91 @@ const editEndTerm = () => {
   endTermStatLatest.value = endTermLatest.value === true ? "YES" : "NO";
   state.endTermProgressStat = endTermStand.value;
   state.endTermMonitorStats = endTermMonitor.value;
+  term_ID_endTerm.value = termid_endTerm.value;
+};
+
+const updateEndTerm = () => {
+  refendTermProgressStat.value.validate();
+  var formData = new FormData(document.getElementById("updateEndTermForm"));
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+  formData.append("status", endTermStatLatest.value);
+  formData.append("term_ID_endTerm", term_ID_endTerm.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to save changes?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      if (refendTermProgressStat.value.hasError) {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Please complete all the required fields.",
+        });
+      } else {
+        const dialog = $q.dialog({
+          message: "Updating... 0%",
+          progress: true, // we enable default settings
+          persistent: true, // we want the user to not be able to close it
+          ok: false, // we want the user to not be able to close it
+        });
+
+        // we simulate some progress here...
+        let percentage = 0;
+        const interval = setInterval(() => {
+          percentage = Math.min(
+            100,
+            percentage + Math.floor(Math.random() * 22)
+          );
+
+          // we update the dialog
+          dialog.update({
+            message: `${percentage}%`,
+          });
+
+          // if we are done...
+          if (percentage === 100) {
+            axios
+              .post("/update.php?upEndTermStanding", formData)
+              .then(function (response) {
+                if (response.data == true) {
+                  editModalEndTerm.value = false;
+                  standend.value = false;
+                  readHistoryRec();
+                  clearInterval(interval);
+                  dialog.update({
+                    title: "Done!",
+                    message: "Updated Successfully",
+                    progress: false,
+                    ok: true,
+                  });
+                } else {
+                  $q.notify({
+                    color: "red",
+                    textColor: "white",
+                    message: "Failed to update End of Term Standing",
+                  });
+                }
+              });
+          }
+        }, 100);
+      }
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
 };
 </script>
 <style scoped>

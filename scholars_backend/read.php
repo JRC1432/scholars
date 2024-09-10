@@ -636,7 +636,7 @@ if(isset($_GET['historyRecID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT 
+        $stnt = $pdo->prepare("SELECT t.term_id,
     t.sy, 
     se.name,
     CONCAT(s.name, ', ', c.name) AS schoolcourse, 
@@ -696,22 +696,26 @@ ORDER BY
 
 if(isset($_GET['viewCourseID'])){
     $data = array();
-    $id = $_POST["id"];
+    $termid = $_POST["termid"];
+  
     try
     {
     
-        $stnt = $pdo->prepare("SELECT r.sy_start, r.term_start, s.name as school, c.name as course, r.created_by,
-        r.updated_by, r.verified_by, r.created_at, r.updated_at
-        
-        FROM course_record as r
-        
-        LEFT OUTER JOIN colleges as s ON s.id::text = r.school_code
-        LEFT OUTER JOIN courses as c ON c.id::text = r.course_code
-        
-        WHERE r.spas_id = ?
+        $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, t.sy, t.term, s.name as school, c.name as course, r.created_by,
+r.updated_by, r.verified_by, r.created_at, r.updated_at
+
+
+FROM term_record as t
+
+LEFT OUTER JOIN course_record as r ON t.course_id = r.id
+LEFT OUTER JOIN colleges as s ON s.id::text = r.school_code
+LEFT OUTER JOIN courses as c ON c.id::text = r.course_code
+
+
+WHERE t.term_id = ?
     
         ");
-        $params = array($id);
+        $params = array($termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -738,13 +742,13 @@ if(isset($_GET['viewCourseID'])){
 if(isset($_GET['viewStartStatID'])){
     $data = array();
     $id = $_POST["id"];
-
     $progress = $_POST["progress"];
+    $termid = $_POST["termid"];
 
     try
     {
     
-        $stnt = $pdo->prepare("SELECT sy, term, start_end, progress_status,
+        $stnt = $pdo->prepare("SELECT id, term_id, sy, term, start_end, progress_status,
 created_by, updated_by, verified_by, latest_flag,
 to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
 to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
@@ -757,10 +761,11 @@ FROM progress_status_history
 WHERE spas_id = ?
 AND start_end = 1
 AND progress_status = ?
+AND term_id = ?
 
     
         ");
-        $params = array($id,$progress);
+        $params = array($id,$progress,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -787,13 +792,13 @@ AND progress_status = ?
 if(isset($_GET['viewEndID'])){
     $data = array();
     $id = $_POST["id"];
-    
     $progress = $_POST["progress"];
+    $termid = $_POST["termid"];
 
     try
     {
     
-        $stnt = $pdo->prepare("SELECT sy, term, start_end, progress_status,
+        $stnt = $pdo->prepare("SELECT term_id, sy, term, start_end, progress_status,
 created_by, updated_by, verified_by, latest_flag,
 to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
 to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
@@ -804,8 +809,9 @@ FROM progress_status_history as p
 WHERE spas_id = ?
 AND start_end = 2
 AND progress_status = ?
+AND term_id = ?
         ");
-        $params = array($id,$progress);
+        $params = array($id,$progress,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -833,11 +839,12 @@ if(isset($_GET['viewSTRTStandID'])){
     $data = array();
     $id = $_POST["id"];
     $progress = $_POST["progress"];
+    $termid = $_POST["termid"];
     
     try
     {
     
-        $stnt = $pdo->prepare("SELECT sh.sy, sh.term, sh.start_end,
+        $stnt = $pdo->prepare("SELECT sh.id, sh.term_id, sh.sy, sh.term, sh.start_end,
 sh.standing, ms.list_name, sh.created_by, sh.updated_by, 
 sh.verified_by, sh.latest_flag,
 to_char(sh.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
@@ -852,9 +859,10 @@ LEFT JOIN monitored_scholars_list_generation_history as ms ON m.list_id = ms.id
 
 WHERE sh.spas_id = ?
 AND sh.standing = ?
+AND sh.term_id = ?
 AND sh.start_end = 1
 ");
-        $params = array($id,$progress);
+        $params = array($id,$progress,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -882,29 +890,27 @@ if(isset($_GET['viewENDStandID'])){
     $data = array();
     $id = $_POST["id"];
     $progress = $_POST["progress"];
+    $termid = $_POST["termid"];
     
     try
     {
     
-        $stnt = $pdo->prepare("SELECT sh.sy, sh.term, sh.start_end,
-sh.standing, ms.list_name, sh.created_by, sh.updated_by, 
-sh.verified_by, sh.latest_flag,
-to_char(sh.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
-to_char(sh.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
+        $stnt = $pdo->prepare("SELECT term_id, sy, term, start_end,
+standing, created_by, updated_by, 
+verified_by, latest_flag,
+to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
+to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 
-FROM standing_history as sh
+FROM standing_history
 
-LEFT JOIN monitored_scholars as m ON sh.spas_id = m.spas_id
-LEFT JOIN monitored_scholars_list_generation_history as ms ON m.list_id = ms.id
-
-
-WHERE sh.spas_id = ?
-AND sh.standing = ?
-AND sh.start_end = 2
+WHERE spas_id = ?
+AND standing = ?
+AND start_end = 2
+AND term_id = ?
 
     
         ");
-        $params = array($id,$progress);
+        $params = array($id,$progress,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -2804,6 +2810,42 @@ if(isset($_GET['readExamInfo'])){
         $stnt = $pdo->prepare("SELECT * FROM exam_info WHERE spas_id = ?");
         $params = array($id);
         $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    // Read For Appeal 
+
+if(isset($_GET['readForAppeal'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT p.spas_id, s.full_name, s.sex, s.dob, s.pob
+
+FROM progress_status_history as p
+
+LEFT OUTER JOIN scholars_record as s ON p.spas_id = s.spas_id
+
+WHERE p.progress_status = 'FOR APPEAL'");
+        $stnt->execute();
     
     }catch (Exception $ex){
         die("Failed to run query". $ex);

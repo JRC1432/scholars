@@ -99,4 +99,29 @@ if(isset($_GET['delUserInfo'])){
 
 
 
+         // Delete Defer Contract 
+
+    if(isset($_GET['delProgressStart'])){
+
+    
+        $deltermid = $_POST["deltermid"];
+        $spasid = $POST["spasid"];
+        
+        
+        $stnt = $pdo->prepare("UPDATE progress_status_history SET active_flag = 0 WHERE term_id = ? AND spas_id = ? AND start_end = 1");
+        $stnt->execute([$deltermid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+
 ?>
