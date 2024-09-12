@@ -92,14 +92,20 @@
                   <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
+
               <q-td key="pstart" :props="props">
                 <q-badge
-                  v-if="props.row.pstart === null || props.row.pstart === ''"
+                  v-if="
+                    props.row.pstart === null ||
+                    props.row.pstart === '' ||
+                    props.row.actflag1 === false
+                  "
                   color="red-4"
                   :label="props.value"
                 >
                   N/A
                 </q-badge>
+
                 <q-badge
                   v-else
                   @click="openpstart(props)"
@@ -110,10 +116,13 @@
                   <span style="display: none">{{ props.row.term_id }}</span>
                 </q-badge>
               </q-td>
+
               <q-td key="sstanding" :props="props">
                 <q-badge
                   v-if="
-                    props.row.sstanding === null || props.row.sstanding === ''
+                    props.row.sstanding === null ||
+                    props.row.sstanding === '' ||
+                    props.row.actflag3 === false
                   "
                   color="red-4"
                   :label="props.value"
@@ -134,7 +143,11 @@
 
               <q-td key="pend" :props="props">
                 <q-badge
-                  v-if="props.row.pend === null || props.row.pend === ''"
+                  v-if="
+                    props.row.pend === null ||
+                    props.row.pend === '' ||
+                    props.row.actflag2 === false
+                  "
                   color="red-4"
                   :label="props.value"
                 >
@@ -153,7 +166,11 @@
               </q-td>
               <q-td key="send" :props="props">
                 <q-badge
-                  v-if="props.row.send === null || props.row.send === ''"
+                  v-if="
+                    props.row.send === null ||
+                    props.row.send === '' ||
+                    props.row.actflag4 === false
+                  "
                   color="red-4"
                   :label="props.value"
                 >
@@ -644,14 +661,24 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Disallow"
+              @click="disStartTerm"
+            />
             <q-btn
               outline
               style="color: goldenrod"
               label="Update"
               @click="editStartTerm"
             />
-            <q-btn outline style="color: goldenrod" label="Delete" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Delete"
+              @click="delStartTerm"
+            />
           </div>
         </q-card-actions>
       </q-card>
@@ -801,14 +828,24 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Disallow"
+              @click="disPSEnd"
+            />
             <q-btn
               outline
               style="color: goldenrod"
               label="Update"
               @click="editPSEnd"
             />
-            <q-btn outline style="color: goldenrod" label="Delete" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Delete"
+              @click="delPSEnd"
+            />
           </div>
         </q-card-actions>
       </q-card>
@@ -976,14 +1013,24 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Disallow"
+              @click="disEndTerm"
+            />
             <q-btn
               outline
               style="color: goldenrod"
               label="Update"
               @click="editEndTerm"
             />
-            <q-btn outline style="color: goldenrod" label="Delete" />
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="Delete"
+              @click="delEndTerm"
+            />
           </div>
         </q-card-actions>
       </q-card>
@@ -2507,7 +2554,7 @@ const disPStart = () => {
                 clearInterval(interval);
                 dialog.update({
                   title: "Done!",
-                  message: "Updated Successfully",
+                  message: "Disallowed Successfully",
                   progress: false,
                   ok: true,
                 });
@@ -2515,7 +2562,7 @@ const disPStart = () => {
                 $q.notify({
                   color: "red",
                   textColor: "white",
-                  message: "Failed to update edit Progress Status(Start)",
+                  message: "Failed to disallow Progress Status(Start)",
                 });
               }
             });
@@ -2532,7 +2579,72 @@ const disPStart = () => {
 const del_termid_PS_start = ref();
 const delPStart = () => {
   del_termid_PS_start.value = termid_PStart.value;
-  console.log(del_termid_PS_start.value);
+  var formData = new FormData();
+  formData.append("spasid", globalSPAS);
+  formData.append("deltermid", del_termid_PS_start.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to remove Progress Status (Start)?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Removing... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/delete.php?delProgressStart", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Removed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to removed Progress Status(Start)",
+                });
+              }
+            });
+        }
+      }, 100);
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
 };
 
 // Edit Progress Status (End)
@@ -2624,6 +2736,155 @@ const updatePSend = () => {
           }
         }, 100);
       }
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Delete & Disallow Progress Status (End)
+
+const dis_termid_PS_end = ref();
+const disPSEnd = () => {
+  dis_termid_PS_end.value = termid_Pend.value;
+  console.log(dis_termid_PS_end.value);
+
+  var formData = new FormData();
+  formData.append("termid", dis_termid_PS_end.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to disallow?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Updating... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/update.php?disProgressEnd", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Disallowed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to disallow Progress Status(End)",
+                });
+              }
+            });
+        }
+      }, 100);
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+const del_termid_PS_end = ref();
+const delPSEnd = () => {
+  del_termid_PS_end.value = termid_Pend.value;
+  console.log(del_termid_PS_end.value);
+
+  var formData = new FormData();
+  formData.append("spasid", globalSPAS);
+  formData.append("deltermid", del_termid_PS_end.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to remove Progress Status (End)?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Removing... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/delete.php?delProgressEnd", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Removed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to removed Progress Status(End)",
+                });
+              }
+            });
+        }
+      }, 100);
     })
     .onCancel(() => {
       // console.log('>>>> Cancel')
@@ -2732,6 +2993,153 @@ const updateStartTerm = () => {
     });
 };
 
+// Delete & Disallow Start of Term Standing
+
+const dis_termid_StartTerm = ref();
+const disStartTerm = () => {
+  dis_termid_StartTerm.value = startTermid.value;
+
+  var formData = new FormData();
+  formData.append("termid", dis_termid_StartTerm.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to disallow?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Updating... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/update.php?disStartTermStanding", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Disallowed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to disallow Start of Term Standing",
+                });
+              }
+            });
+        }
+      }, 100);
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+const del_termid_StartTerm = ref();
+const delStartTerm = () => {
+  del_termid_StartTerm.value = startTermid.value;
+
+  var formData = new FormData();
+  formData.append("spasid", globalSPAS);
+  formData.append("deltermid", del_termid_StartTerm.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to remove Start of Term Standing?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Removing... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/delete.php?delStartTerm", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Removed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to removed Progress Status(Start)",
+                });
+              }
+            });
+        }
+      }, 100);
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
 // Edit End Term Stnding
 
 const term_ID_endTerm = ref();
@@ -2821,6 +3229,156 @@ const updateEndTerm = () => {
           }
         }, 100);
       }
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Delete & Disallow End of Term Standing
+
+const dis_termid_EndTerm = ref();
+const disEndTerm = () => {
+  dis_termid_EndTerm.value = termid_endTerm.value;
+  console.log(dis_termid_EndTerm.value);
+
+  var formData = new FormData();
+  formData.append("termid", dis_termid_EndTerm.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to disallow?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Updating... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/update.php?disEndTermStanding", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Disallowed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to disallow End of Term Standing",
+                });
+              }
+            });
+        }
+      }, 100);
+    })
+    .onCancel(() => {
+      // console.log('>>>> Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+const del_termid_EndTerm = ref();
+const delEndTerm = () => {
+  del_termid_EndTerm.value = termid_endTerm.value;
+
+  console.log(del_termid_EndTerm.value);
+
+  var formData = new FormData();
+  formData.append("spasid", globalSPAS);
+  formData.append("deltermid", del_termid_EndTerm.value);
+
+  $q.dialog({
+    title: "Confirm",
+    message: "Do you want to remove End of Term Standing?",
+    ok: {
+      push: true,
+    },
+    cancel: {
+      push: true,
+      color: "negative",
+    },
+    persistent: true,
+  })
+    .onOk(() => {
+      const dialog = $q.dialog({
+        message: "Removing... 0%",
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      // we simulate some progress here...
+      let percentage = 0;
+      const interval = setInterval(() => {
+        percentage = Math.min(100, percentage + Math.floor(Math.random() * 22));
+
+        // we update the dialog
+        dialog.update({
+          message: `${percentage}%`,
+        });
+
+        // if we are done....
+        if (percentage === 100) {
+          axios
+            .post("/delete.php?delEndTerm", formData)
+            .then(function (response) {
+              if (response.data == true) {
+                readHistoryRec();
+                pstart.value = false;
+                clearInterval(interval);
+                dialog.update({
+                  title: "Done!",
+                  message: "Removed Successfully",
+                  progress: false,
+                  ok: true,
+                });
+              } else {
+                $q.notify({
+                  color: "red",
+                  textColor: "white",
+                  message: "Failed to removed End of Term Standing",
+                });
+              }
+            });
+        }
+      }, 100);
     })
     .onCancel(() => {
       // console.log('>>>> Cancel')

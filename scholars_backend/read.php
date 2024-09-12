@@ -641,9 +641,13 @@ if(isset($_GET['historyRecID'])){
     se.name,
     CONCAT(s.name, ', ', c.name) AS schoolcourse, 
     p1.progress_status AS pstart,
+    p1.active_flag AS actflag1,
     p2.progress_status AS pend,
+    p2.active_flag AS actflag2,
     s1.standing AS sstanding,
-    s2.standing AS send
+    s1.active_flag AS actflag3,
+    s2.standing AS send,
+    s2.active_flag AS actflag4
 
 FROM 
     term_record t
@@ -665,6 +669,7 @@ LEFT JOIN
 	semestral as se ON t.term = se.id
 WHERE 
     t.spas_id = ?
+
 ORDER BY 
     cr.id ASC, 
     t.term_id ASC;

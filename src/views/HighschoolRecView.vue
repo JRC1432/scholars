@@ -5,7 +5,6 @@
       <div class="q-pa-md text-center text-bold primary-text text-h4">
         Highschool Record
       </div>
-      <q-separator class="q-mt-md q-mb-xs" inset />
 
       <div class="q-pa-lg q-mb-md">
         <div class="col-12">

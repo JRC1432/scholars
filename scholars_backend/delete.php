@@ -99,17 +99,18 @@ if(isset($_GET['delUserInfo'])){
 
 
 
-         // Delete Defer Contract 
+         // Delete Progress Status Start
 
     if(isset($_GET['delProgressStart'])){
 
     
         $deltermid = $_POST["deltermid"];
-        $spasid = $POST["spasid"];
+        $spasid = $_POST["spasid"];
+        $sctive_flag = 0;
         
         
-        $stnt = $pdo->prepare("UPDATE progress_status_history SET active_flag = 0 WHERE term_id = ? AND spas_id = ? AND start_end = 1");
-        $stnt->execute([$deltermid]);
+        $stnt = $pdo->prepare("UPDATE progress_status_history SET active_flag = ? WHERE term_id = ? AND spas_id = ? AND start_end = 1");
+        $stnt->execute([$sctive_flag,$deltermid,$spasid]);
         
          if($stnt){
                 $result =  true;
@@ -121,6 +122,83 @@ if(isset($_GET['delUserInfo'])){
             echo json_encode($result);
         
         }
+
+
+        // Delete Start of Term Standing
+
+    if(isset($_GET['delStartTerm'])){
+
+    
+        $deltermid = $_POST["deltermid"];
+        $spasid = $_POST["spasid"];
+        $sctive_flag = 0;
+        
+        
+        $stnt = $pdo->prepare("UPDATE standing_history SET active_flag = ? WHERE term_id = ? AND spas_id = ? AND start_end = 1");
+        $stnt->execute([$sctive_flag,$deltermid,$spasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+
+        // Delete Progress Status (END)
+
+    if(isset($_GET['delProgressEnd'])){
+
+    
+        $deltermid = $_POST["deltermid"];
+        $spasid = $_POST["spasid"];
+        $sctive_flag = 0;
+        
+        
+        $stnt = $pdo->prepare("UPDATE progress_status_history SET active_flag = ? WHERE term_id = ? AND spas_id = ? AND start_end = 2");
+        $stnt->execute([$sctive_flag,$deltermid,$spasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+        // Delete End of Term Standing
+
+    if(isset($_GET['delEndTerm'])){
+
+    
+        $deltermid = $_POST["deltermid"];
+        $spasid = $_POST["spasid"];
+        $sctive_flag = 0;
+        
+        
+        $stnt = $pdo->prepare("UPDATE standing_history SET active_flag = ? WHERE term_id = ? AND spas_id = ? AND start_end = 2");
+        $stnt->execute([$sctive_flag,$deltermid,$spasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
 
 
 
