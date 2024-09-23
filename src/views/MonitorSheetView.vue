@@ -1,9 +1,46 @@
 <template>
   <ScInfo />
+  <!-- <div class="q-pa-lg" v-if="rows.length > 0">
+    <q-card flat class="my-card surface-container rounded-borders-20">
+      <div class="q-pa-md text-center text-bold primary-text text-h4">
+        Monitoring Sheet
+      </div>
+
+      <ShowGrades />
+      <q-card-actions class="row fit justify-start q-pt-xs">
+        <q-btn
+          rounded
+          outline
+          label="Add Enrollment Info"
+          style="color: goldenrod"
+          @click="openEnrollment"
+        />
+      </q-card-actions>
+    </q-card>
+  </div> -->
+
   <div class="q-pa-lg">
     <q-card flat class="my-card surface-container rounded-borders-20">
       <div class="q-pa-md text-center text-bold primary-text text-h4">
-        <IconTool :size="30" stroke-width="2" />
+        Monitoring Sheet
+      </div>
+
+      <ShowGrades />
+      <q-card-actions class="row fit justify-start q-pt-xs">
+        <q-btn
+          rounded
+          outline
+          label="Add Enrollment Info"
+          style="color: goldenrod"
+          @click="openEnrollment"
+        />
+      </q-card-actions>
+    </q-card>
+  </div>
+
+  <!-- <div class="q-pa-lg" v-else>
+    <q-card flat class="my-card surface-container rounded-borders-20">
+      <div class="q-pa-md text-center text-bold primary-text text-h4">
         Monitoring Sheet
       </div>
 
@@ -26,8 +63,8 @@
         />
       </q-card-actions>
     </q-card>
-  </div>
-
+  </div> -->
+  <!-- 
   <q-dialog
     v-model="showEnrollment"
     persistent
@@ -140,9 +177,9 @@
         </q-card-actions>
       </form>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 
-  <q-dialog v-model="showEnrollment" persistent v-else>
+  <!-- <q-dialog v-model="showEnrollment" persistent v-else>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
       <form id="UpReplyForm" @submit.prevent.stop="UpdateReplyNow">
         <q-toolbar>
@@ -196,10 +233,11 @@
         </q-card-actions>
       </form>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 </template>
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
+import ShowGrades from "../components/ShowGrades.vue";
 
 import { ref, onMounted, reactive, computed, inject } from "vue";
 import router from "../router";
@@ -240,6 +278,7 @@ const newcurriculum = ref("NO");
 // Variables
 
 const reftermRec = ref(null);
+const rows = ref([]);
 
 const state = reactive({
   termRec: "Add New Term Record",
@@ -257,6 +296,7 @@ onMounted(() => {
 
 var syOptions2 = [];
 const syOptions = ref(syOptions2);
+const spas_result = ref();
 const globalSPAS = ref();
 const populateAll = () => {
   globalSPAS.value = route.params.id;
@@ -281,8 +321,13 @@ const populateAll = () => {
     syList.value = processedData.map((item) => item.sy);
     nameList.value = processedData.map((item) => item.name);
   });
+
   axios.get("/read.php?school_years").then((response) => {
     syOptions2 = response.data;
+  });
+
+  axios.post("/read.php?readGrades", formData).then((response) => {
+    rows.value = response.data;
   });
 };
 

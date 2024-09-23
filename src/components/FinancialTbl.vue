@@ -389,7 +389,7 @@ const downloadCSV = () => {
 
 const showMonitor = (props) => {
   router.push({
-    path: "/editgrades/" + props.row.spas_id,
+    path: "/monitorsheet/" + props.row.spas_id,
   });
 };
 </script>

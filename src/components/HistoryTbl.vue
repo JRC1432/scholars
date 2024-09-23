@@ -1,5 +1,4 @@
 <template>
-  <div class="primary-text">SPAS ID: {{ props.spasid.spas_id }}</div>
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-8 q-pa-sm">
       <q-card
@@ -105,6 +104,15 @@
                 >
                   N/A
                 </q-badge>
+                <q-badge
+                  v-else-if="props.row.verify1 === false"
+                  color="orange-4"
+                  :label="props.row.pstart + '  (Unverified)'"
+                  @click="openpstart(props)"
+                  class="pointer-class"
+                >
+                  <span style="display: none">{{ props.row.term_id }} </span>
+                </q-badge>
 
                 <q-badge
                   v-else
@@ -129,6 +137,17 @@
                 >
                   N/A
                 </q-badge>
+
+                <q-badge
+                  v-else-if="props.row.verify3 === false"
+                  color="orange-4"
+                  :label="props.row.sstanding + '  (Unverified)'"
+                  @click="opensstanding(props)"
+                  class="pointer-class"
+                >
+                  <span style="display: none">{{ props.row.term_id }} </span>
+                </q-badge>
+
                 <q-badge
                   v-else
                   @click="opensstanding(props)"
@@ -155,6 +174,16 @@
                 </q-badge>
 
                 <q-badge
+                  v-else-if="props.row.verify2 === false"
+                  color="orange-4"
+                  :label="props.row.pend + '  (Unverified)'"
+                  @click="openpend(props)"
+                  class="pointer-class"
+                >
+                  <span style="display: none">{{ props.row.term_id }} </span>
+                </q-badge>
+
+                <q-badge
                   v-else
                   @click="openpend(props)"
                   color="light-green-4"
@@ -176,6 +205,17 @@
                 >
                   N/A
                 </q-badge>
+
+                <q-badge
+                  v-else-if="props.row.verify4 === false"
+                  color="orange-4"
+                  :label="props.row.send + '  (Unverified)'"
+                  @click="opensend(props)"
+                  class="pointer-class"
+                >
+                  <span style="display: none">{{ props.row.term_id }} </span>
+                </q-badge>
+
                 <q-badge
                   v-else
                   @click="opensend(props)"
@@ -478,11 +518,20 @@
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
             <q-btn
+              v-if="pstartVerified_flag === false"
+              outline
+              style="color: goldenrod"
+              label="Verify"
+              @click="verifyPStart"
+            />
+            <q-btn
+              v-else
               outline
               style="color: goldenrod"
               label="Disallow"
               @click="disPStart"
             />
+
             <q-btn
               outline
               style="color: goldenrod"
@@ -662,6 +711,14 @@
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
             <q-btn
+              v-if="startTermVerified_flag === false"
+              outline
+              style="color: goldenrod"
+              label="Verify"
+              @click="verifyStartTerm"
+            />
+            <q-btn
+              v-else
               outline
               style="color: goldenrod"
               label="Disallow"
@@ -829,6 +886,14 @@
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
             <q-btn
+              v-if="pendVerified_flag === false"
+              outline
+              style="color: goldenrod"
+              label="Verify"
+              @click="verifyPSEnd"
+            />
+            <q-btn
+              v-else
               outline
               style="color: goldenrod"
               label="Disallow"
@@ -1014,6 +1079,15 @@
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
             <q-btn
+              v-if="endTermVerified_flag === false"
+              outline
+              style="color: goldenrod"
+              label="Verify"
+              @click="verifyEndTerm"
+            />
+
+            <q-btn
+              v-else
               outline
               style="color: goldenrod"
               label="Disallow"
@@ -1915,6 +1989,7 @@ const pstartUpdate = ref();
 const pstartVerified = ref();
 const pstartCreated_at = ref();
 const pstartUpdated_at = ref();
+const pstartVerified_flag = ref();
 
 // View progress End
 
@@ -1928,6 +2003,7 @@ const pendUpdate = ref();
 const pendVerified = ref();
 const pendCreated_at = ref();
 const pendUpdated_at = ref();
+const pendVerified_flag = ref();
 
 // View Start Term Standing
 
@@ -1942,6 +2018,7 @@ const startTermUpdate = ref();
 const startTermVerified_by = ref();
 const startTermCreated_at = ref();
 const startTermUpdated_at = ref();
+const startTermVerified_flag = ref();
 
 // View End Term Standing
 
@@ -1956,6 +2033,7 @@ const endTermUpdate = ref();
 const endTermVerified_by = ref();
 const endTermCreated_at = ref();
 const endTermUpdated_at = ref();
+const endTermVerified_flag = ref();
 
 // Validataions
 
@@ -2036,7 +2114,7 @@ const simulateLoad = () => {
   }, 2000); // Delay of 3 seconds
 };
 
-const globalSPAS = props.spasid.spas_id;
+const globalSPAS = route.params.id;
 
 // Select Statements
 
@@ -2060,7 +2138,7 @@ onMounted(() => {
 
 const readHistoryRec = () => {
   var formData = new FormData();
-  formData.append("id", props.spasid.spas_id);
+  formData.append("id", globalSPAS);
 
   axios.post("/read.php?historyRecID", formData).then((response) => {
     rows.value = response.data;
@@ -2208,6 +2286,8 @@ const openSC = async (props) => {
     const formData = new FormData();
     formData.append("termid", props.row.term_id);
 
+    console.log(props.row.term_id);
+
     const response = await axios.post("/read.php?viewCourseID", formData);
 
     sy.value = response.data.sy;
@@ -2235,6 +2315,18 @@ const openpstart = async (props) => {
     return;
   }
 
+  // router.push({
+  //   path:
+  //     "/historyrec/" +
+  //     globalSPAS +
+  //     "/" +
+  //     props.row.term_id +
+  //     "/" +
+  //     "1" +
+  //     "/" +
+  //     "progress",
+  // });
+
   pstart.value = !pstart.value;
   viewcourse.value = false;
   standstart.value = false;
@@ -2260,6 +2352,8 @@ const openpstart = async (props) => {
     pstartVerified.value = response.data.verified_by;
     pstartCreated_at.value = response.data.created_at;
     pstartUpdated_at.value = response.data.updated_at;
+    pstartVerified_flag.value = response.data.verified_flag;
+
     termid_PStart.value = response.data.term_id;
   } catch (error) {
     console.error("Error during axios request:", error);
@@ -2302,6 +2396,9 @@ const opensstanding = async (props) => {
     startTermVerified_by.value = response.data.verified_by;
     startTermCreated_at.value = response.data.created_at;
     startTermUpdated_at.value = response.data.updated_at;
+    startTermVerified_flag.value = response.data.verified_flag;
+
+    console.log(startTermVerified_flag.value);
   } catch (error) {
     console.error("Error during axios request:", error);
   }
@@ -2343,6 +2440,7 @@ const openpend = async (props) => {
     pendVerified.value = response.data.verified_by;
     pendCreated_at.value = response.data.created_at;
     pendUpdated_at.value = response.data.updated_at;
+    pendVerified_flag.value = response.data.verified_flag;
   } catch (error) {
     console.error("Error during axios request:", error);
   }
@@ -2384,6 +2482,7 @@ const opensend = async (props) => {
     endTermVerified_by.value = response.data.verified_by;
     endTermCreated_at.value = response.data.created_at;
     endTermUpdated_at.value = response.data.updated_at;
+    endTermVerified_flag.value = response.data.verified_flag;
   } catch (error) {
     console.error("Error during axios request:", error);
   }
@@ -2499,6 +2598,40 @@ const updatePSstart = () => {
     })
     .onDismiss(() => {
       // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Verify Progress Status (Start)
+
+const verif_termid_PS_start = ref();
+const verifyPStart = () => {
+  verif_termid_PS_start.value = termid_PStart.value;
+
+  var formData = new FormData();
+  formData.append("termid", verif_termid_PS_start.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  axios
+    .post("/update.php?verifyProgressStart", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        readHistoryRec();
+        pstart.value = false;
+
+        Swal.fire({
+          icon: "success",
+          title: "Verified Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to verify Progress Status(Start)",
+        });
+      }
     });
 };
 
@@ -2745,6 +2878,40 @@ const updatePSend = () => {
     });
 };
 
+// Verify Progress Status (End)
+
+const verif_termid_PS_end = ref();
+const verifyPSEnd = () => {
+  verif_termid_PS_end.value = termid_Pend.value;
+
+  var formData = new FormData();
+  formData.append("termid", verif_termid_PS_end.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  axios
+    .post("/update.php?verifyProgressEnd", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        readHistoryRec();
+        pend.value = false;
+
+        Swal.fire({
+          icon: "success",
+          title: "Verified Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to verify Progress Status(Start)",
+        });
+      }
+    });
+};
+
 // Delete & Disallow Progress Status (End)
 
 const dis_termid_PS_end = ref();
@@ -2794,7 +2961,7 @@ const disPSEnd = () => {
             .then(function (response) {
               if (response.data == true) {
                 readHistoryRec();
-                pstart.value = false;
+                pend.value = false;
                 clearInterval(interval);
                 dialog.update({
                   title: "Done!",
@@ -2867,7 +3034,7 @@ const delPSEnd = () => {
             .then(function (response) {
               if (response.data == true) {
                 readHistoryRec();
-                pstart.value = false;
+                pend.value = false;
                 clearInterval(interval);
                 dialog.update({
                   title: "Done!",
@@ -2990,6 +3157,40 @@ const updateStartTerm = () => {
     })
     .onDismiss(() => {
       // console.log('I am triggered on both OK and Cancel')
+    });
+};
+
+// Verify Start of Term Standing
+
+const verif_termid_StartTerm = ref();
+const verifyStartTerm = () => {
+  verif_termid_StartTerm.value = startTermid.value;
+
+  var formData = new FormData();
+  formData.append("termid", verif_termid_StartTerm.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  axios
+    .post("/update.php?verifyStartTermStanding", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        readHistoryRec();
+        standstart.value = false;
+
+        Swal.fire({
+          icon: "success",
+          title: "Verified Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to verify Progress Status(Start)",
+        });
+      }
     });
 };
 
@@ -3238,6 +3439,40 @@ const updateEndTerm = () => {
     });
 };
 
+// Verify End Of Term Standing
+
+const verif_termid_EndTerm = ref();
+const verifyEndTerm = () => {
+  verif_termid_EndTerm.value = termid_endTerm.value;
+
+  var formData = new FormData();
+  formData.append("termid", verif_termid_EndTerm.value);
+  formData.append("spasid", globalSPAS);
+  formData.append("user", user.username);
+
+  axios
+    .post("/update.php?verifyEndTermStanding", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        readHistoryRec();
+        standend.value = false;
+
+        Swal.fire({
+          icon: "success",
+          title: "Verified Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to verify Progress Status(Start)",
+        });
+      }
+    });
+};
+
 // Delete & Disallow End of Term Standing
 
 const dis_termid_EndTerm = ref();
@@ -3287,7 +3522,7 @@ const disEndTerm = () => {
             .then(function (response) {
               if (response.data == true) {
                 readHistoryRec();
-                pstart.value = false;
+                standend.value = false;
                 clearInterval(interval);
                 dialog.update({
                   title: "Done!",
@@ -3361,7 +3596,7 @@ const delEndTerm = () => {
             .then(function (response) {
               if (response.data == true) {
                 readHistoryRec();
-                pstart.value = false;
+                standend.value = false;
                 clearInterval(interval);
                 dialog.update({
                   title: "Done!",

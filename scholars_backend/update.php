@@ -530,6 +530,36 @@ if(isset($_GET['updateReplySlip'])){
                     
                     }
 
+                    // Verify Progress Status start
+
+
+                if(isset($_GET['verifyProgressStart'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 1;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
 
                     // Disallow Progress Status start
 
@@ -546,6 +576,36 @@ if(isset($_GET['updateReplySlip'])){
     
     
                     $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+                    // Verify Start of Term Standing
+
+
+                if(isset($_GET['verifyStartTermStanding'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 1;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
                     WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
                     $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
                     
@@ -593,6 +653,36 @@ if(isset($_GET['updateReplySlip'])){
                     }
 
 
+                    // Verify Progress Status start
+
+
+                if(isset($_GET['verifyProgressEnd'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 1;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
 
 
                     // Disallow Progress Status end
@@ -610,6 +700,37 @@ if(isset($_GET['updateReplySlip'])){
     
     
                     $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+                    // Verify Start of Term Standing
+
+
+                if(isset($_GET['verifyEndTermStanding'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verify_flag = 1;
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
                     WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
                     $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
                     

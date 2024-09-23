@@ -642,12 +642,16 @@ if(isset($_GET['historyRecID'])){
     CONCAT(s.name, ', ', c.name) AS schoolcourse, 
     p1.progress_status AS pstart,
     p1.active_flag AS actflag1,
+    p1.verified_flag AS verify1,
     p2.progress_status AS pend,
     p2.active_flag AS actflag2,
+    p2.verified_flag AS verify2,
     s1.standing AS sstanding,
     s1.active_flag AS actflag3,
+    s1.verified_flag AS verify3,
     s2.standing AS send,
-    s2.active_flag AS actflag4
+    s2.active_flag AS actflag4,
+    s2.verified_flag AS verify4
 
 FROM 
     term_record t
@@ -754,7 +758,7 @@ if(isset($_GET['viewStartStatID'])){
     {
     
         $stnt = $pdo->prepare("SELECT id, term_id, sy, term, start_end, progress_status,
-created_by, updated_by, verified_by, latest_flag,
+created_by, updated_by, verified_by, latest_flag, verified_flag,
 to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
 to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 
@@ -804,7 +808,7 @@ if(isset($_GET['viewEndID'])){
     {
     
         $stnt = $pdo->prepare("SELECT term_id, sy, term, start_end, progress_status,
-created_by, updated_by, verified_by, latest_flag,
+created_by, updated_by, verified_by, latest_flag, verified_flag,
 to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
 to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 
@@ -849,23 +853,18 @@ if(isset($_GET['viewSTRTStandID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT sh.id, sh.term_id, sh.sy, sh.term, sh.start_end,
-sh.standing, ms.list_name, sh.created_by, sh.updated_by, 
-sh.verified_by, sh.latest_flag,
-to_char(sh.created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
-to_char(sh.updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
+        $stnt = $pdo->prepare("SELECT id, term_id, sy, term, start_end,
+standing, created_by, updated_by, verified_flag, verified_by, latest_flag,
+to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
+to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 
-FROM standing_history as sh
-
-
-LEFT JOIN monitored_scholars as m ON sh.spas_id = m.spas_id
-LEFT JOIN monitored_scholars_list_generation_history as ms ON m.list_id = ms.id
+FROM standing_history 
 
 
-WHERE sh.spas_id = ?
-AND sh.standing = ?
-AND sh.term_id = ?
-AND sh.start_end = 1
+WHERE spas_id = ?
+AND standing = ?
+AND term_id = ?
+AND start_end = 1
 ");
         $params = array($id,$progress,$termid);
         $stnt->execute($params);
@@ -901,7 +900,7 @@ if(isset($_GET['viewENDStandID'])){
     {
     
         $stnt = $pdo->prepare("SELECT term_id, sy, term, start_end,
-standing, created_by, updated_by, 
+standing, created_by, updated_by, verified_flag,
 verified_by, latest_flag,
 to_char(created_at, 'MONTH DD, YYYY on HH12:MI AM') as created_at,
 to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
@@ -2157,11 +2156,12 @@ if(isset($_GET['readEditGrades'])){
 	 t.grades_verified_by,
     p1.progress_status AS pstart,
     s1.standing AS sstanding,
-	t.latest_flag
+	t.latest_flag,
+    g.verified_flag
     
 
 FROM 
-    term_record t
+    term_record as t
 LEFT JOIN 
     course_record cr ON t.course_id = cr.id
 LEFT JOIN 
@@ -2178,9 +2178,10 @@ LEFT JOIN
     standing_history s2 ON t.standing_end = s2.id
 LEFT JOIN 
 	semestral as se ON t.term = se.id
+LEFT JOIN
+    grades as g ON t.term_id = g.term_id
 WHERE 
-    t.spas_id = ?
-	AND t.latest_flag = 1
+    t.term_id = ?
 ");
         $params = array($id);
         $stnt->execute($params);
@@ -2869,8 +2870,209 @@ WHERE p.progress_status = 'FOR APPEAL'");
     $pdo = null;
     
     }
+
+
+
+
+    // Read Unvalidated Status List
+
+if(isset($_GET['readUnvalidated'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT scholars_record.full_name, scholarship_info.spas_id, scholarship_info.yr_awarded, u.*
+FROM (
+    SELECT s2.spas_id, s2.term_id, s2.sy, s2.term, s2.term_type, s2.start_end, progress_status, standing 
+    FROM (
+        SELECT * FROM progress_status_history
+        WHERE verified_flag = false
+    ) p2
+    RIGHT JOIN (
+        SELECT * FROM standing_history
+        WHERE verified_flag = false
+    ) s2
+    ON p2.term_id = s2.term_id AND p2.start_end = s2.start_end
+
+    UNION
+
+    SELECT p.spas_id, p.term_id, p.sy, p.term, p.term_type, p.start_end, progress_status, standing 
+    FROM (
+        SELECT * FROM progress_status_history
+        WHERE verified_flag = false
+    ) p
+    LEFT JOIN (
+        SELECT * FROM standing_history
+        WHERE verified_flag = false
+    ) s
+    ON p.term_id = s.term_id AND p.start_end = s.start_end
+) u
+JOIN scholarship_info ON scholarship_info.spas_id = u.spas_id
+JOIN scholars_record ON scholarship_info.primary_spas_id = scholars_record.spas_id
+ORDER BY yr_awarded ASC, full_name ASC;
+");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    if(isset($_GET['readTermIds'])){
+
+
+
+        $data = array();
+        $id = $_POST["id"];
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT t.term_id
+                FROM term_record as t
+                WHERE t.spas_id = ?
+                GROUP BY t.term_id
+                        ");
+            $params = array($id);
+            $stnt -> execute($params);
+        
+
+
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        // http_response_code(200);
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){          
+          $termId[] = $row;
+        }
+   
+        $final = [];
+        foreach ($termId as $key => $value) {
+
+
+            $stntss = $pdo->prepare("SELECT DISTINCT t.spas_id, t.term_id, t.sy, t.term, t.term_required,
+                t.course_id, t.grade_ave, t.reg_form_submitted,t.reg_verified_flag, t.grades_verified_flag,
+                t.progress_status_start, t.progress_status_end,
+                c.name as courses, s.name as school
+
+                FROM term_record as t
+
+                LEFT OUTER JOIN grades as g ON t.term_id = g.term_id
+                LEFT OUTER JOIN course_record as cr ON t.course_id = cr.id
+
+                LEFT JOIN 
+                    courses c ON cr.course_code = c.id::text
+                LEFT JOIN 
+                    colleges s ON cr.school_code = s.id::text
+
+                WHERE t.term_id = ? AND t.latest_flag =0");
+            $params = array($value['term_id']);
+            $stntss->execute($params);
+           
+         
+            while ($rowss = $stntss->fetch(PDO::FETCH_ASSOC)){
+                $distinct[] = $rowss;
+            }
+            foreach ($distinct as $key => $valuess) {
+                $final[$value['term_id']] = $valuess;
+            }
+           
+            $stnts = $pdo->prepare("SELECT t.spas_id, t.term_id, t.sy, t.term, t.term_required,
+                t.course_id, t.grade_ave, t.reg_form_submitted,t.reg_verified_flag, t.grades_verified_flag, g.term_id as g_termid,
+                g.subj_code, g.unit, g.grade, g.completion, c.name as courses, s.name as school
+
+                FROM term_record as t
+
+                LEFT OUTER JOIN grades as g ON t.term_id = g.term_id
+                LEFT OUTER JOIN course_record as cr ON t.course_id = cr.id
+
+                LEFT JOIN 
+                    courses c ON cr.course_code = c.id::text
+                LEFT JOIN 
+                    colleges s ON cr.school_code = s.id::text
+
+                WHERE t.term_id = ? AND t.latest_flag =0");
+            $params = array($value['term_id']);
+            $stnts->execute($params);
+           
+         
+            while ($rows = $stnts->fetchAll(PDO::FETCH_ASSOC)){
+                $readGradres[] = $rows;
+            }
+       
+             foreach ($readGradres as $keys => $values) {
+               $final[$value['term_id']]['term_id'] = $values;
+             
+             }
+          
+            
+        }
+
     
 
+      echo json_encode($final);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+
+
+
+
+
+
+        // Read Grades
+
+if(isset($_GET['readGrades'])){
+
+    $data = array();
+
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM grades WHERE term_id = ? ORDER BY subj_id");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+    
 
 
 

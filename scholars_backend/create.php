@@ -550,7 +550,7 @@ if(isset($_GET['createReplySlip'])){
 if(isset($_GET['printGradesPDF'])){
 
     // 
-    $scholarids = $_POST["id"];
+    $termids = $_POST["id"];
     $grades = json_decode($_POST['grades'], true);
 
 
@@ -573,20 +573,23 @@ if(isset($_GET['printGradesPDF'])){
 
     
     
-        $stnt = $pdo->prepare("SELECT * FROM scholars_record WHERE spas_id = ?");
-        $stnt->execute([$scholarids]);
-    
-        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
-            
-             $fname = $row['full_name'];
-           
-    }
-    
-   
-    
-    
-    
-    
+     $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, s.full_name
+
+     FROM term_record as t
+     
+     LEFT OUTER JOIN scholars_record AS s ON t.spas_id = s.spas_id
+     
+     WHERE term_id = ?");
+             $stnt->execute([$termids]);
+         
+             while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+                 
+                  $fname = $row['full_name'];
+                  $spas = $row['spas_id'];
+                
+         }
+
+
     
     // create new PDF document
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -637,7 +640,7 @@ if(isset($_GET['printGradesPDF'])){
 
 
     $pdf->ln(3);
-    $pdf->Cell(90,10,'SPAS ID: '.$scholarids, 0, 0, 'L', 0, '', 0, false, 'M', 'M');
+    $pdf->Cell(90,10,'SPAS ID: '.$spas, 0, 0, 'L', 0, '', 0, false, 'M', 'M');
     $pdf->Cell(90,10,'Name: '.$fname, 0, 1, 'R', 0, '', 0, false, 'M', 'M');
 
 

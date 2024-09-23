@@ -94,7 +94,7 @@
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
 import HistoryTbl from "../components/HistoryTbl.vue";
-import TestMode from "../components/TestMode.vue";
+
 import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
@@ -194,8 +194,13 @@ const populateAll = () => {
 const spasid = ref("test");
 const showSpas = (props) => {
   // console.log(props.row);
-  showSpasDetail.value = true;
-  spasid.value = props.row;
+  // showSpasDetail.value = true;
+  spasid.value = props.row.spas_id;
+  router.push({
+    path: "/historyrec/" + spasid.value,
+  });
+
+  console.log(spasid.value);
 };
 </script>
 

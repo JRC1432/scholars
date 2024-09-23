@@ -1,12 +1,16 @@
 <template>
-  <ScInfo />
+  <div class="q-mb-md q-px-lg">
+    <q-btn
+      color="primary"
+      icon="reply"
+      label="BACK"
+      rounded
+      flat
+      @click="showMonitor"
+    />
+  </div>
   <div class="q-pa-lg">
     <q-card flat class="my-card surface-container rounded-borders-20">
-      <div class="q-pa-md text-center text-bold primary-text text-h4">
-        <IconTool :size="30" stroke-width="2" />
-        Monitoring Sheet
-      </div>
-
       <q-card-section
         ><div class="q-pa-md text-center">
           <q-banner
@@ -43,4 +47,19 @@ const q$ = useQuasar();
 const $q = useQuasar();
 const axios = inject("$axios");
 const route = useRoute();
+
+// Session Storage
+const spasids = ref();
+
+const spasItem = sessionStorage.getItem("spasid");
+
+if (spasItem) {
+  spasids.value = JSON.parse(spasItem);
+}
+
+const showMonitor = () => {
+  router.push({
+    path: "/monitorsheet/" + spasids.value,
+  });
+};
 </script>

@@ -17,16 +17,20 @@
 
                     <div class="q-pa-xs q-gutter-sm">
                       <q-btn
+                        v-if="verif === false"
                         color="positive"
                         label="Verify Grades"
                         icon="verified"
+                        @click="verifyBtn"
                         rounded
                       />
                       <q-btn
+                        v-else
                         color="negative"
                         label="Disallow Grades"
                         icon="cancel"
                         rounded
+                        @click="disAllowBtn"
                       />
                       <q-btn
                         color="warning"
@@ -51,7 +55,14 @@
                     Grades Verified by: {{ gradeVerified }}
                   </div>
                   <div class="text-h6">
-                    Status (Start of Term): {{ statStart }} - {{ statEnd }}
+                    Status (Start of Term):
+                    <q-btn rounded flat color="blue" @click="startBtn">
+                      {{ statStart }}
+                    </q-btn>
+                    -
+                    <q-btn rounded flat color="blue" @click="endBtn">
+                      {{ statEnd }}
+                    </q-btn>
                   </div>
 
                   <div class="q-gutter-sm row items-start">
@@ -216,7 +227,7 @@
                     flat
                     icon="delete"
                     color="negative"
-                    @click="removeTodo(props.row.id)"
+                    @click="removeTodo(props.row.id, props.row.subject_id)"
                   />
                 </q-td>
               </template>
@@ -332,6 +343,7 @@ const regVerified = ref("");
 const gradeVerified = ref("");
 const statStart = ref("");
 const statEnd = ref("");
+const verif = ref();
 
 const addTodo = () => {
   if (
@@ -359,9 +371,27 @@ const addTodo = () => {
   }
 };
 
-const removeTodo = (id) => {
+const removeTodo = (id, subject_id) => {
+  var formData = new FormData();
+  formData.append("subjectid", subject_id);
   const index = todos.value.findIndex((todo) => todo.id === id);
-  todos.value.splice(index, 1);
+
+  if (index !== -1) {
+    console.log(subject_id); // Log subject_id
+    todos.value.splice(index, 1);
+
+    axios.post("/delete.php?delGrades", formData).then(function (response) {
+      if (response.data == true) {
+        populateEditGrades();
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to removed Grade",
+        });
+      }
+    });
+  }
 };
 
 const resetTodos = () => {
@@ -450,38 +480,14 @@ const computedGwa = computed(() => {
   return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(3) : "0.000";
 });
 
-// Method to export table data to CSV
-const exportToCSV = () => {
-  const headers = columns.map((col) => col.label);
-  const rows = todos.value.map((todo) => [
-    todo.scode,
-    todo.academic ? "Yes" : "No",
-    todo.units,
-    todo.grade,
-    todo.completion,
-    todo.remarks,
-  ]);
-
-  let csvContent =
-    "data:text/csv;charset=utf-8," +
-    [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "grades.csv");
-  document.body.appendChild(link);
-
-  link.click();
-  document.body.removeChild(link);
-};
-
 // Grades Info
 
 var stat2options2 = [];
 const stat2options = ref(stat2options2);
 var stat1options2 = [];
 const stat1options = ref(stat1options2);
+
+const data = ref();
 const id = ref();
 onMounted(() => {
   populateEditGrades();
@@ -505,6 +511,7 @@ const populateEditGrades = () => {
     statStart.value = response.data.pstart;
     statEnd.value = response.data.sstanding;
     toggle.value = response.data.latest_flag == 1 ? true : false;
+    verif.value = response.data.verified_flag == 1 ? true : false;
 
     watchEffect(() => {
       termreq.value = term_required.value === 1 ? "YES" : "NO";
@@ -517,6 +524,21 @@ const populateEditGrades = () => {
 
   axios.get("/read.php?readstat1").then((response) => {
     stat1options2 = response.data;
+  });
+
+  axios.post("/read.php?readGrades", formData).then((response) => {
+    data.value = response.data;
+
+    todos.value = data.value.map((grade) => ({
+      id: uid(), // Generate a unique id
+      subject_id: grade.subj_id || "",
+      scode: grade.subj_code || "", // Subject code from response
+      academic: grade.academic_type, // Convert "Yes"/"No" to boolean
+      units: grade.unit || "", // Units from response
+      grade: grade.grade || "", // Grade from response
+      completion: grade.completion || "", // Completion from response
+      remarks: grade.remarks || "", // Remarks from response
+    }));
   });
 };
 
@@ -589,5 +611,44 @@ const printGrades = () => {
       var fileURL = URL.createObjectURL(file);
       window.open(fileURL);
     });
+};
+
+const verifyBtn = () => {
+  Swal.fire({
+    icon: "success",
+    title: "Verified",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+};
+
+const disAllowBtn = () => {
+  Swal.fire({
+    icon: "error",
+    title: "Disalllowed Successfully",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+};
+
+// Session Storage
+const spasids = ref();
+
+const spasItem = sessionStorage.getItem("spasid");
+
+if (spasItem) {
+  spasids.value = JSON.parse(spasItem);
+}
+
+const startBtn = () => {
+  router.push({
+    path: "/historyrec/" + spasids.value,
+  });
+};
+
+const endBtn = () => {
+  router.push({
+    path: "/historyrec/" + spasids.value,
+  });
 };
 </script>

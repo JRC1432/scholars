@@ -147,6 +147,33 @@
                 <q-item-section>Quick Report</q-item-section>
               </q-item>
             </q-list>
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="">
+                <q-item-section avatar>
+                  <IconBuildingBank :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Scholars By Municipality</q-item-section>
+              </q-item>
+            </q-list>
+            <q-separator />
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="/validate">
+                <q-item-section avatar>
+                  <IconRosetteDiscountCheck :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Validate Status</q-item-section>
+              </q-item>
+            </q-list>
+
+            <q-separator />
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="">
+                <q-item-section avatar>
+                  <IconRotateClockwise2 :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Ongoing Scholars</q-item-section>
+              </q-item>
+            </q-list>
           </q-expansion-item>
         </q-list>
       </q-scroll-area>
@@ -168,6 +195,9 @@ import {
   IconCertificate,
   IconUsers,
   IconUserStar,
+  IconRosetteDiscountCheck,
+  IconBuildingBank,
+  IconRotateClockwise2,
 } from "@tabler/icons-vue";
 
 import router from "../router";
@@ -181,6 +211,9 @@ function toggleLeftDrawer() {
 
 <style lang="sass" scoped>
 
+
+
+
 .my-menu-link
   color: white
   background: #27ADE4
@@ -189,6 +222,8 @@ function toggleLeftDrawer() {
   max-width: 350px
   .rounded-borders-40
   border-radius: 40px !important // Adjust the radius as needed
+  .overflow-hidden
+  overflow: hidden
 
 
   .example-item

@@ -52,6 +52,11 @@ const router = createRouter({
           component: () => import("../views/ForAppealView.vue"),
         },
         {
+          path: "/validate",
+          name: "validate",
+          component: () => import("../views/ValidateView.vue"),
+        },
+        {
           path: "/test/",
           name: "test",
           component: () => import("../views/TestView.vue"),
@@ -81,6 +86,12 @@ const router = createRouter({
           name: "statsrecord",
           component: () => import("../views/StatusRecordView.vue"),
         },
+        {
+          path: "/historyrec/:id",
+          name: "historyrec",
+          component: () => import("../views/HistoryView.vue"),
+        },
+
         {
           path: "/highschoolrec/:id",
           name: "highschoolrec",

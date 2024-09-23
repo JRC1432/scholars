@@ -202,4 +202,29 @@ if(isset($_GET['delUserInfo'])){
 
 
 
+         // Delete Defer Contract 
+
+    if(isset($_GET['delGrades'])){
+
+    
+        $delSpasid = $_POST["subjectid"];
+        
+        
+        $stnt = $pdo->prepare("DELETE FROM grades WHERE subj_id = ?");
+        $stnt->execute([$delSpasid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+
+
 ?>
