@@ -55,7 +55,14 @@
                     Grades Verified by: {{ gradeVerified }}
                   </div>
                   <div class="text-h6">
-                    Status (Start of Term): {{ statStart }} - {{ statEnd }}
+                    Status (Start of Term):
+                    <q-btn rounded flat color="blue" @click="startBtn">
+                      {{ statStart }}
+                    </q-btn>
+                    -
+                    <q-btn rounded flat color="blue" @click="endBtn">
+                      {{ statEnd }}
+                    </q-btn>
                   </div>
 
                   <div class="q-gutter-sm row items-start">
@@ -229,7 +236,7 @@
             <div class="q-pa-md">
               <div class="col-12">
                 <div class="q-col-gutter-md row items-start">
-                  <div class="col-xs-12 col-sm-3 col-md-6">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
                     <q-input
                       filled
                       v-model="computedTotalUnits"
@@ -237,7 +244,7 @@
                       readonly
                     />
                   </div>
-                  <div class="col-xs-12 col-sm-3 col-md-6">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
                     <q-input
                       filled
                       v-model="computedGwa"
@@ -250,7 +257,9 @@
             </div>
           </q-card-section>
           <q-card-actions align="around">
-            <q-btn rounded style="width: 40%" color="primary">SAVE</q-btn>
+            <q-btn rounded style="width: 40%" color="primary" @click="saveBtn"
+              >SAVE</q-btn
+            >
             <q-btn
               rounded
               style="width: 40%"
@@ -298,6 +307,7 @@ const toggle = ref("");
 const todos = ref([
   {
     id: uid(),
+    subject_id: "",
     scode: "",
     academic: false,
     units: "",
@@ -307,6 +317,7 @@ const todos = ref([
   },
   {
     id: uid(),
+    subject_id: "",
     scode: "",
     academic: false,
     units: "",
@@ -316,6 +327,7 @@ const todos = ref([
   },
   {
     id: uid(),
+    subject_id: "",
     scode: "",
     academic: false,
     units: "",
@@ -355,13 +367,19 @@ const addTodo = () => {
       completion: completion.value,
       remarks: remarks.value,
     });
-    scode.value = "";
-    academic.value = false;
-    units.value = "";
-    grade.value = "";
-    completion.value = "";
-    remarks.value = "";
   }
+
+  $q.notify({
+    type: "positive",
+    message: "Grade Added Successfully",
+  });
+
+  scode.value = "";
+  academic.value = false;
+  units.value = "";
+  grade.value = "";
+  completion.value = "";
+  remarks.value = "";
 };
 
 const removeTodo = (id, subject_id) => {
@@ -621,6 +639,77 @@ const disAllowBtn = () => {
     title: "Disalllowed Successfully",
     showConfirmButton: false,
     timer: 1500,
+  });
+};
+
+// Session Storage
+const spasids = ref();
+
+const spasItem = sessionStorage.getItem("spasid");
+
+if (spasItem) {
+  spasids.value = JSON.parse(spasItem);
+}
+
+const startBtn = () => {
+  router.push({
+    path: "/historyrec/" + spasids.value,
+  });
+};
+
+const endBtn = () => {
+  router.push({
+    path: "/historyrec/" + spasids.value,
+  });
+};
+
+const term_IDs = ref();
+
+const saveBtn = () => {
+  term_IDs.value = route.params.id;
+
+  var formData = new FormData();
+
+  formData.append("termid", term_IDs.value);
+
+  formData.append("user", user.username);
+
+  todos.value.forEach((todo, index) => {
+    formData.append(`todos[${index}][subj_id]`, todo.subject_id);
+    formData.append(`todos[${index}][scode]`, todo.scode);
+    formData.append(`todos[${index}][academic]`, todo.academic ? 1 : 0);
+    formData.append(`todos[${index}][units]`, todo.units);
+    formData.append(`todos[${index}][grade]`, todo.grade);
+    formData.append(`todos[${index}][completion]`, todo.completion);
+    formData.append(`todos[${index}][remarks]`, todo.remarks);
+  });
+
+  Swal.fire({
+    title: "Do you want to save the changes?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      axios
+        .post("/update.php?updateGrades", formData)
+        .then(function (response) {
+          if (response.data == true) {
+            Swal.fire("Saved!", "", "success");
+            populateEditGrades();
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Grades not Updated",
+            });
+          }
+        });
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
   });
 };
 </script>

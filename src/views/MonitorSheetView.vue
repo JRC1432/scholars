@@ -1,77 +1,43 @@
 <template>
   <ScInfo />
-  <!-- <div class="q-pa-lg" v-if="rows.length > 0">
-    <q-card flat class="my-card surface-container rounded-borders-20">
-      <div class="q-pa-md text-center text-bold primary-text text-h4">
-        Monitoring Sheet
-      </div>
-
-      <ShowGrades />
-      <q-card-actions class="row fit justify-start q-pt-xs">
-        <q-btn
-          rounded
-          outline
-          label="Add Enrollment Info"
-          style="color: goldenrod"
-          @click="openEnrollment"
-        />
-      </q-card-actions>
-    </q-card>
-  </div> -->
-
   <div class="q-pa-lg">
     <q-card flat class="my-card surface-container rounded-borders-20">
       <div class="q-pa-md text-center text-bold primary-text text-h4">
         Monitoring Sheet
       </div>
+      <q-card-section>
+        <ShowGrades />
+      </q-card-section>
 
-      <ShowGrades />
-      <q-card-actions class="row fit justify-start q-pt-xs">
-        <q-btn
-          rounded
-          outline
-          label="Add Enrollment Info"
-          style="color: goldenrod"
-          @click="openEnrollment"
-        />
-      </q-card-actions>
+      <q-card-section v-if="grades === false">
+        <q-banner dense class="rounded-borders-20 banner">
+          <template v-slot:avatar>
+            <q-icon name="error" color="negative" size="40px" />
+          </template>
+          <text class="text-h6"> No Records Found !!!</text>
+          <template v-slot:action>
+            <q-btn
+              rounded
+              outline
+              style="color: goldenrod"
+              @click="openEnrollment"
+              label="Add New Enrollment Information"
+            />
+          </template>
+        </q-banner>
+      </q-card-section>
+
+      <q-card-section v-else> </q-card-section>
     </q-card>
   </div>
 
-  <!-- <div class="q-pa-lg" v-else>
-    <q-card flat class="my-card surface-container rounded-borders-20">
-      <div class="q-pa-md text-center text-bold primary-text text-h4">
-        Monitoring Sheet
-      </div>
-
-      <q-card-section>
-        <q-banner inline-actions class="banner rounded-borders-10">
-          <template v-slot:avatar>
-            <q-icon name="error" color="negative" />
-          </template>
-
-          No Records Found
-        </q-banner>
-      </q-card-section>
-      <q-card-actions class="row fit justify-start q-pt-xs">
-        <q-btn
-          rounded
-          outline
-          label="Add Enrollment Info"
-          style="color: goldenrod"
-          @click="openEnrollment"
-        />
-      </q-card-actions>
-    </q-card>
-  </div> -->
-  <!-- 
   <q-dialog
     v-model="showEnrollment"
     persistent
     v-if="state.termRec === 'Add New Term Record'"
   >
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
-      <form id="UpReplyForm" @submit.prevent.stop="UpdateReplyNow">
+      <form id="addNavEnrollForm" @submit.prevent.stop="addNavEnroll">
         <q-toolbar>
           <IconClipboardPlus :size="30" stroke-width="2" />
 
@@ -88,10 +54,10 @@
             <span class="text-bold">Term Record:</span>
             <q-select
               ref="reftermRec"
+              name="termRec"
               :options="termRecoptions"
               v-model="state.termRec"
               emit-value
-              name="termRec"
               outlined
               dense
               hide-bottom-space
@@ -102,6 +68,10 @@
             <span class="text-bold">School Year</span>
             <q-select
               ref="refsy"
+              :options="syOptions"
+              @filter="filtersy"
+              v-model="state.sy"
+              name="sy"
               outlined
               dense
               hide-bottom-space
@@ -112,10 +82,6 @@
               input-debounce="0"
               mask="#### - ####"
               clearable
-              :options="syOptions"
-              @filter="filtersy"
-              v-model="state.sy"
-              name="sy"
               :rules="[myRule]"
             />
           </div>
@@ -171,17 +137,17 @@
             outline
             label="Continue"
             style="color: goldenrod"
-            @click="addNavEnroll"
+            type="submit"
           />
           <q-btn outline label="Reset" style="color: goldenrod" />
         </q-card-actions>
       </form>
     </q-card>
-  </q-dialog> -->
+  </q-dialog>
 
-  <!-- <q-dialog v-model="showEnrollment" persistent v-else>
+  <q-dialog v-model="showEnrollment" persistent v-else>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
-      <form id="UpReplyForm" @submit.prevent.stop="UpdateReplyNow">
+      <form id="addOldTermRecForm" @submit.prevent.stop="addOldTermRec">
         <q-toolbar>
           <IconClipboardPlus :size="30" stroke-width="2" />
 
@@ -197,11 +163,14 @@
           <div class="q-px-sm">
             <span class="text-bold">Term Record:</span>
             <q-select
-              ref="reftermRec"
+              ref="reftermwthRec"
               :options="termRecoptions"
-              v-model="state.termRec"
+              v-model="state.termwthRec"
+              name="termwthRec"
               emit-value
-              name="termRec"
+              map-options
+              use-input
+              input-debounce="0"
               outlined
               dense
               hide-bottom-space
@@ -213,12 +182,12 @@
             <q-toggle
               :label="curriculum"
               v-model="curriculum"
+              name="curriculum"
               checked-icon="check"
               color="green"
               unchecked-icon="clear"
               false-value="NO"
               true-value="YES"
-              name="curriculum"
             />
           </div>
         </q-card-section>
@@ -227,13 +196,13 @@
             outline
             label="Continue"
             style="color: goldenrod"
-            @click="navEnroll"
+            type="submit"
           />
           <q-btn outline label="Reset" style="color: goldenrod" />
         </q-card-actions>
       </form>
     </q-card>
-  </q-dialog> -->
+  </q-dialog>
 </template>
 <script setup>
 import ScInfo from "../components/ScInfo.vue";
@@ -243,7 +212,7 @@ import { ref, onMounted, reactive, computed, inject } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
-import { IconTool, IconClipboardPlus } from "@tabler/icons-vue";
+import { IconTool, IconClipboardPlus, IconFilesOff } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
 
@@ -278,7 +247,10 @@ const newcurriculum = ref("NO");
 // Variables
 
 const reftermRec = ref(null);
-const rows = ref([]);
+const refsy = ref(null);
+const reftermtype = ref(null);
+const refterm = ref(null);
+const grades = ref();
 
 const state = reactive({
   termRec: "Add New Term Record",
@@ -287,6 +259,7 @@ const state = reactive({
   term: "",
   term1: "",
   term2: "",
+  termwthRec: "",
 });
 
 // Axios
@@ -297,11 +270,11 @@ onMounted(() => {
 var syOptions2 = [];
 const syOptions = ref(syOptions2);
 const spas_result = ref();
-const globalSPAS = ref();
+const globalSPAS = route.params.id;
+
 const populateAll = () => {
-  globalSPAS.value = route.params.id;
   var formData = new FormData();
-  formData.append("id", globalSPAS.value);
+  formData.append("id", globalSPAS);
 
   // Select Term Record
   axios.post("/read.php?readTermRec", formData).then((response) => {
@@ -326,8 +299,8 @@ const populateAll = () => {
     syOptions2 = response.data;
   });
 
-  axios.post("/read.php?readGrades", formData).then((response) => {
-    rows.value = response.data;
+  axios.post("/read.php?checkMonitor", formData).then((response) => {
+    grades.value = response.data.exists;
   });
 };
 
@@ -386,22 +359,80 @@ const openEnrollment = () => {
   showEnrollment.value = true;
 };
 
-const navEnroll = () => {
-  router.push(`/enrollmentinfo/${globalSPAS.value}`);
+const addNavEnroll = () => {
+  reftermRec.value.validate();
+  refsy.value.validate();
+  reftermtype.value.validate();
+  refterm.value.validate();
 
-  sessionStorage.setItem("syList", JSON.stringify(syList.value[0] || ""));
-  sessionStorage.setItem("nameList", JSON.stringify(nameList.value[0] || ""));
-  sessionStorage.setItem("curriculum", JSON.stringify(curriculum.value));
+  if (
+    reftermRec.value.hasError ||
+    refsy.value.hasError ||
+    reftermtype.value.hasError ||
+    refterm.value.hasError
+  ) {
+    $q.notify({
+      type: "negative",
+      message: "Please Complete All The Selection",
+    });
+  } else {
+    showEnrollment.value = false;
+
+    var formData = new FormData(document.getElementById("addNavEnrollForm"));
+    formData.append("spasid", globalSPAS);
+    formData.append("user", user.username);
+    formData.append("newcurriculum", newcurriculum.value);
+
+    Swal.fire({
+      title:
+        "You are about to create a new Term Record. Do you want to proceed?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Proceed",
+      denyButtonText: `Don't Proceed`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        axios
+          .post("/create.php?newTermRecord", formData)
+          .then(function (response) {
+            if (response.data == true) {
+              router.push(`/newenrollmentinfo/${globalSPAS}`);
+              sessionStorage.setItem("sy", JSON.stringify(state.sy));
+              sessionStorage.setItem(
+                "termtype",
+                JSON.stringify(state.termtype)
+              );
+              sessionStorage.setItem("term", JSON.stringify(state.term));
+              sessionStorage.setItem("term1", JSON.stringify(state.term1));
+              sessionStorage.setItem("term2", JSON.stringify(state.term2));
+              sessionStorage.setItem(
+                "newcurriculum",
+                JSON.stringify(newcurriculum.value)
+              );
+              $q.notify({
+                color: "positive",
+                textColor: "white",
+                message: "New Term Record Created Successfully",
+              });
+            } else {
+              $q.notify({
+                color: "red",
+                textColor: "white",
+                message: "Failed to create new Term Record",
+              });
+            }
+          });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  }
 };
 
-const addNavEnroll = () => {
-  router.push(`/newenrollmentinfo/${globalSPAS.value}`);
-
-  sessionStorage.setItem("sy", JSON.stringify(state.sy));
-  sessionStorage.setItem("termtype", JSON.stringify(state.termtype));
-  sessionStorage.setItem("term", JSON.stringify(state.term));
-  sessionStorage.setItem("term1", JSON.stringify(state.term1));
-  sessionStorage.setItem("term2", JSON.stringify(state.term2));
-  sessionStorage.setItem("newcurriculum", JSON.stringify(newcurriculum.value));
+const addOldTermRec = () => {
+  router.push(`/enrollmentinfo/${globalSPAS}`);
+  sessionStorage.setItem("termwthRec", JSON.stringify(state.termwthRec));
+  sessionStorage.setItem("curriculum", JSON.stringify(curriculum.value));
 };
 </script>

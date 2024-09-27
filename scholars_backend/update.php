@@ -778,6 +778,243 @@ if(isset($_GET['updateReplySlip'])){
 
 
 
+                     // Update Grades
+
+
+                     if (isset($_GET['updateGrades'])) {
+                        date_default_timezone_set('Asia/Manila');
+                        $date = date("Y-m-d h:i:s a");
+                    
+                        $updatedby = $_POST["user"];
+                        $termid = $_POST["termid"];
+                    
+                        // Initialize an empty array to hold todos
+                        $todos = [];
+                    
+                        // Loop through the posted 'todos' data and collect them into the array
+                        foreach ($_POST['todos'] as $index => $todo) {
+                            $subj_id = isset($todo['subj_id']) ? $todo['subj_id'] : null;
+                            $scode = isset($todo['scode']) ? $todo['scode'] : null;
+                            $academic = isset($todo['academic']) ? $todo['academic'] : null;
+                            $units = isset($todo['units']) ? $todo['units'] : null;
+                            $grade = isset($todo['grade']) ? $todo['grade'] : null;
+                            $completion = isset($todo['completion']) ? $todo['completion'] : null;
+                            $remarks = isset($todo['remarks']) ? $todo['remarks'] : null;
+                    
+                            // Add each todo to the $todos array
+                            $todos[] = [
+                                'subj_id' => $subj_id,
+                                'scode' => $scode,
+                                'academic' => $academic,
+                                'units' => $units,
+                                'grade' => $grade,
+                                'completion' => $completion,
+                                'remarks' => $remarks
+                            ];
+                            // Prepare the SQL statement for each item in the todos array
+                         $stnt = $pdo->prepare("UPDATE grades SET subj_code = ?, academic_type = ?, unit = ?, grade = ?, completion = ?, remarks = ?, updated_at = ?, updated_by = ?
+                        WHERE subj_id = ? AND term_id = ?");
+        
+                            // Execute the statement with the current todo's values
+                         $success = $stnt->execute([$scode, $academic, $units, $grade, $completion, $remarks, $date, $updatedby, $subj_id, $termid]);
+
+                            // Collect the result of each update
+                        $results[] = $success;
+                        }
+
+                        $result = in_array(false, $results) ? false : true;
+
+                        echo json_encode($result);
+
+                        
+                    }
+
+
+
+
+                     // Disallow Grades
+
+
+                if(isset($_GET['disGrades'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $verif = 0;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET grades_verified_flag = ?, updated_at = ?, updated_by = ? , grades_verified_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$verif,$date,$updatedby,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+                    // Verify Grades
+
+
+                if(isset($_GET['verifGrades'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $verif = 1;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET grades_verified_flag = ?, updated_at = ?, updated_by = ? , grades_verified_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$verif,$date,$updatedby,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+                    // Latest Grades
+
+
+                if(isset($_GET['latestGrades'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $latest = 1;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET latest_flag = ?, updated_at = ?, updated_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$latest,$date,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+
+                    // Latest-Old Grades
+
+
+                if(isset($_GET['falseLatestGrades'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $latest = 0;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET latest_flag = ?, updated_at = ?, updated_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$latest,$date,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+                    // Term Recquired YES
+
+
+                if(isset($_GET['termReqYes'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $term = 1;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET term_required = ?, updated_at = ?, updated_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$term,$date,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+                    // Term Recquired NO
+
+
+                if(isset($_GET['termReqNo'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $term = 0;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET term_required = ?, updated_at = ?, updated_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$term,$date,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+                    
+
+
+
+
 
 
 

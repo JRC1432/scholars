@@ -2157,7 +2157,7 @@ if(isset($_GET['readEditGrades'])){
     p1.progress_status AS pstart,
     s1.standing AS sstanding,
 	t.latest_flag,
-    g.verified_flag
+    t.grades_verified_flag
     
 
 FROM 
@@ -2651,7 +2651,7 @@ if (isset($_GET['readTermRec'])) {
     while ($row = $stnt->fetch()) {
         $data[] = array(
             "label" => $row['sy'] . " " . $row['name'],
-            "value" => $row['sy'] . " " . $row['name'] // Concatenate sy and name as value
+            "value" => $row['sy'] . " " . $row['name'] . " " . $row['term_id'] // Concatenate sy and name as value
         );
     }
 
@@ -2981,7 +2981,7 @@ ORDER BY yr_awarded ASC, full_name ASC;
                 LEFT JOIN 
                     colleges s ON cr.school_code = s.id::text
 
-                WHERE t.term_id = ? AND t.latest_flag =0");
+                WHERE t.term_id = ?");
             $params = array($value['term_id']);
             $stntss->execute($params);
            
@@ -3007,7 +3007,7 @@ ORDER BY yr_awarded ASC, full_name ASC;
                 LEFT JOIN 
                     colleges s ON cr.school_code = s.id::text
 
-                WHERE t.term_id = ? AND t.latest_flag =0");
+                WHERE t.term_id = ?");
             $params = array($value['term_id']);
             $stnts->execute($params);
            
@@ -3050,7 +3050,7 @@ if(isset($_GET['readGrades'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT * FROM grades WHERE term_id = ? ORDER BY subj_id");
+        $stnt = $pdo->prepare("SELECT * FROM grades WHERE term_id = ? ORDER BY subj_id DESC");
         $params = array($id);
         $stnt->execute($params);
     
@@ -3071,6 +3071,96 @@ if(isset($_GET['readGrades'])){
     $pdo = null;
     
     }
+
+
+
+
+        if (isset($_GET['checkMonitor'])) {
+            $data = array();
+            $id = $_POST["id"];
+        
+            try {
+                $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, g.subj_code
+                                        FROM term_record as t
+                                        LEFT JOIN grades as g ON t.term_id = g.term_id
+                                        WHERE spas_id = ?");
+                $stnt->execute([$id]);
+        
+            } catch (Exception $ex) {
+                die("Failed to run query: " . $ex->getMessage());
+            }
+        
+            http_response_code(200);
+        
+            // Check if any subject code exists
+            $hasSubjectCode = false;
+            while ($row = $stnt->fetch(PDO::FETCH_ASSOC)) {
+                if (!empty($row['subj_code'])) {
+                    $hasSubjectCode = true;
+                    break; // No need to continue looping if we found a subject code
+                }
+            }
+        
+            // Return true or false based on the presence of subject codes
+            echo json_encode(['exists' => $hasSubjectCode]);
+        
+            $stnt = null;
+            $pdo = null;
+        }
+
+
+
+
+
+        // Read School Course in Add New Enroll
+
+if(isset($_GET['readEnrollSC'])){
+    $data = array();
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT t.sy,  se.name, cr.spas_id, s.name as school,c.name as course, cr.id, t.latest_flag
+
+FROM 
+    course_record as cr
+	
+	
+LEFT JOIN term_record as t ON cr.term_id = t.term_id
+	
+LEFT JOIN 
+    courses c ON cr.course_code = c.id::text
+LEFT JOIN 
+    colleges s ON cr.school_code = s.id::text
+    
+LEFT JOIN 
+	semestral as se ON t.term = se.id
+	
+	
+WHERE cr.spas_id = ? ");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+        
+    
+    
 
     
 

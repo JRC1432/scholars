@@ -1,5 +1,14 @@
 <template>
-  <ScInfo />
+  <div class="q-mb-md q-px-lg">
+    <q-btn
+      color="primary"
+      icon="reply"
+      label="BACK"
+      rounded
+      flat
+      @click="backBtn"
+    />
+  </div>
   <div class="q-pa-lg">
     <q-card flat class="my-card surface-container rounded-borders-20">
       <q-card-section
@@ -10,7 +19,7 @@
             class="text-bold banner rounded-borders-20"
           >
             <div class="text-h3">
-              <IconClipboardPlus :size="40" stroke-width="2" />
+              <IconFileCertificate :size="40" stroke-width="2" />
               ADD ENROLLMENT INFORMATION
             </div>
           </q-banner>
@@ -281,7 +290,7 @@ import router from "../router";
 import { uid } from "quasar";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
-import { IconClipboardPlus } from "@tabler/icons-vue";
+import { IconClipboardPlus, IconFileCertificate } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
 
@@ -480,16 +489,19 @@ const newterm = ref(null);
 const newterm1 = ref(null);
 const newterm2 = ref(null);
 // Othere Variable
-const id = ref();
+const globalSPASid = route.params.id;
+
+const create_termid = { value: "" };
+
 onMounted(() => {
   populateEditGrades();
 });
 
 const populateEditGrades = () => {
   // console.log(toggle.value + "start");
-  id.value = route.params.id;
+
   var formData = new FormData();
-  formData.append("id", id.value);
+  formData.append("id", globalSPASid);
   axios.post("/read.php?readEditGrades", formData).then((response) => {
     // console.log(response.data);
 
@@ -535,7 +547,13 @@ const populateEditGrades = () => {
   if (storedterm2) {
     newterm2.value = JSON.parse(storedterm2);
   }
+  create_termid.value =
+    String(globalSPASid) +
+    String(newsy.value) +
+    String(newterm.value) +
+    String(newtermtype.value);
 };
+console.log(create_termid);
 
 // Transform to Terms
 
@@ -594,14 +612,12 @@ const filterstat1 = (val, update) => {
 
 // Export PDF Grades
 
-const spasid = ref();
 const printGrades = () => {
   alert("Please click OK to print PDF");
 
-  spasid.value = route.params.id;
   var formData = new FormData();
 
-  formData.append("id", id.value);
+  formData.append("id", globalSPASid);
   formData.append("grades", JSON.stringify(todos.value));
 
   // From Storage
@@ -656,5 +672,11 @@ const saveGrades = () => {
   console.log(newtermtype.value);
   console.log(newcurriculum.value);
   console.log(toggle.value);
+};
+
+const backBtn = () => {
+  router.push({
+    path: "/monitorsheet/" + globalSPASid,
+  });
 };
 </script>

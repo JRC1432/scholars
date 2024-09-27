@@ -1,5 +1,14 @@
 <template>
-  <ScInfo />
+  <div class="q-mb-md q-px-lg">
+    <q-btn
+      color="primary"
+      icon="reply"
+      label="BACK"
+      rounded
+      flat
+      @click="backBtn"
+    />
+  </div>
   <div class="q-pa-lg">
     <q-card flat class="my-card surface-container rounded-borders-20">
       <q-card-section
@@ -10,21 +19,27 @@
             class="text-bold banner rounded-borders-20"
           >
             <div class="text-h3">
-              <IconEdit :size="40" stroke-width="2" />
+              <IconFileCertificate :size="40" stroke-width="2" />
               ADD ENROLLMENT INFORMATION
             </div>
           </q-banner>
         </div></q-card-section
       >
+
       <q-card-section>
         <q-page class="q-pa-md">
+          <q-chip outline color="teal" text-color="white" icon="badge">
+            {{ termId }}
+          </q-chip>
           <q-card class="q-pa-md rounded-borders-20 banner-5">
             <q-card-section>
               <div class="col-12">
                 <div class="q-col-gutter-md row items-start">
                   <div class="col-xs-12 col-sm-6 col-md-3">
-                    <div class="text-h6">SY: {{ syList }}</div>
-                    <div class="text-h6">Term: {{ nameList }}</div>
+                    <div class="text-h6">SY: {{ termLists?.sy || "N/A" }}</div>
+                    <div class="text-h6">
+                      Term: {{ cleanTermName || "N/A" }}
+                    </div>
                     <div class="text-h6">Term Required: {{ curriculum }}</div>
 
                     <div>
@@ -41,8 +56,9 @@
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-8">
                     <div class="text-h6">
-                      School and Course Record: {{ school }},
-                      {{ course }} (Started {{ sy }} {{ sem }})
+                      School and Course Record: {{ school }}
+                      {{ course }} (Started {{ termLists?.sy || "N/A" }}
+                      {{ cleanTermName }})
                       <div class="row q-pa-md q-gutter-sm">
                         <span class="text-h6">Status (Start of Sem):</span>
                         <q-select
@@ -79,7 +95,10 @@
                   <div class="col-xs-12 col-sm-3 col-md-1">
                     <!-- <div class="float-right"> -->
                     <span class="text-bold primary-text">Latest?</span>
-                    <q-toggle v-model="toggle" />
+                    <q-toggle
+                      v-model="toggle"
+                      @update:model-value="handleToggle"
+                    />
                     <!-- </div> -->
                   </div>
                 </div>
@@ -94,11 +113,7 @@
                   <div class="q-col-gutter-md row items-start">
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">SUBJECT CODE:</span>
-                      <q-input
-                        v-model="scode"
-                        filled
-                        :rules="[(val) => !!val || 'Subject code is required']"
-                      />
+                      <q-input v-model="scode" filled :rules="inputRules" />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">ACADEMIC:</span>
@@ -113,34 +128,25 @@
                       <q-input
                         v-model="units"
                         filled
-                        :rules="[(val) => !!val || 'Unit is required']"
+                        :rules="inputRules"
                         mask="##.##"
                       />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">GRADE:</span>
-                      <q-input
-                        v-model="grade"
-                        filled
-                        :rules="[(val) => !!val || 'Grade is required']"
-                        mask="#.##"
-                      />
+                      <q-input v-model="grade" filled :rules="inputRules" />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">COMPLETION:</span>
                       <q-input
                         v-model="completion"
                         filled
-                        :rules="[(val) => !!val || 'Completion is required']"
+                        :rules="inputRules"
                       />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">REMARKS:</span>
-                      <q-input
-                        v-model="remarks"
-                        filled
-                        :rules="[(val) => !!val || 'Remarks is required']"
-                      />
+                      <q-input v-model="remarks" filled :rules="inputRules" />
                     </div>
                   </div>
                 </div>
@@ -184,7 +190,7 @@
 
                 <template v-slot:body-cell-grade="props">
                   <q-td :props="props">
-                    <q-input v-model="props.row.grade" mask="#.##" />
+                    <q-input v-model="props.row.grade" />
                   </q-td>
                 </template>
 
@@ -236,7 +242,9 @@
               </div>
             </q-card-section>
             <q-card-actions align="around">
-              <q-btn rounded style="width: 40%" color="primary">SAVE</q-btn>
+              <q-btn rounded style="width: 40%" color="primary" @click="saveBtn"
+                >SAVE</q-btn
+              >
               <q-btn
                 rounded
                 style="width: 40%"
@@ -260,6 +268,7 @@ import router from "../router";
 import { uid } from "quasar";
 import { useQuasar } from "quasar";
 import { useRoute, useRouter } from "vue-router";
+import { IconClipboardPlus, IconFileCertificate } from "@tabler/icons-vue";
 
 import Swal from "sweetalert2";
 
@@ -281,7 +290,13 @@ const grade = ref("");
 const completion = ref("");
 const remarks = ref("");
 
-const toggle = ref("");
+const toggle = ref();
+
+// Rules & Validations
+const inputRules = [
+  (val) => (val && val.length > 0) || "Please type something",
+];
+
 const todos = ref([
   {
     id: uid(),
@@ -312,15 +327,10 @@ const todos = ref([
   },
 ]);
 
-const term_required = ref(0);
-
 const sy = ref("");
 const sem = ref("");
 const school = ref("");
 const course = ref("");
-
-const regVerified = ref("");
-const gradeVerified = ref("");
 
 const addTodo = () => {
   if (
@@ -418,28 +428,31 @@ const columns = [
   { name: "action", label: "Action", field: "action", align: "center" },
 ];
 
+// Grades Computations
+
 const computedTotalUnits = computed(() => {
+  // Calculate total units for subjects where academic is checked and grades are valid
   return todos.value
-    .filter((todo) => todo.academic)
-    .reduce((total, todo) => total + parseFloat(todo.units || 0), 0)
-    .toFixed(3);
+    .filter((todo) => todo.academic && !isNaN(parseFloat(todo.grade))) // Only count academic subjects with valid grades
+    .reduce((total, todo) => total + parseFloat(todo.units), 0);
 });
 
 const computedGwa = computed(() => {
-  const academicTodos = todos.value.filter((todo) => todo.academic);
-  const totalUnits = academicTodos.reduce(
-    (total, todo) => total + parseFloat(todo.units || 0),
-    0
+  const validSubjects = todos.value.filter(
+    (todo) => todo.academic && !isNaN(parseFloat(todo.grade)) // Only count academic subjects with valid grades
   );
-  const totalGradePoints = academicTodos.reduce(
-    (total, todo) =>
-      total + parseFloat(todo.units || 0) * parseFloat(todo.grade || 0),
-    0
-  );
-  return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(3) : "0.000";
-});
 
-// Grades Info
+  const totalUnits = validSubjects.reduce(
+    (total, todo) => total + parseFloat(todo.units),
+    0
+  );
+
+  const totalWeightedGrades = validSubjects.reduce((total, todo) => {
+    return total + parseFloat(todo.grade) * parseFloat(todo.units);
+  }, 0);
+
+  return totalUnits > 0 ? (totalWeightedGrades / totalUnits).toFixed(2) : 0;
+});
 
 // Select
 var stat2options2 = [];
@@ -447,32 +460,29 @@ const stat2options = ref(stat2options2);
 var stat1options2 = [];
 const stat1options = ref(stat1options2);
 // Storage
-const syList = ref(null);
-const nameList = ref(null);
+const termLists = ref(null);
 const curriculum = ref(null);
-// Othere Variable
-const id = ref();
+// Other Variable
+
+const globalSPASid = route.params.id;
+
 onMounted(() => {
-  populateEditGrades();
+  populateGrades();
 });
 
-const populateEditGrades = () => {
+const populateGrades = () => {
   // console.log(toggle.value + "start");
-  id.value = route.params.id;
+
   var formData = new FormData();
-  formData.append("id", id.value);
-  axios.post("/read.php?readEditGrades", formData).then((response) => {
+  formData.append("id", globalSPASid);
+  axios.post("/read.php?readEnrollSC", formData).then((response) => {
     // console.log(response.data);
 
     sy.value = response.data.sy;
-    sem.value = response.data.sem;
+    sem.value = response.data.name;
     school.value = response.data.school;
     course.value = response.data.course;
-
-    regVerified.value = response.data.reg_verified_by;
-    gradeVerified.value = response.data.grades_verified_by;
-
-    toggle.value = response.data.latest_flag == 1 ? true : false;
+    toggle.value = response.data.latest_flag === 1 ? true : false;
   });
 
   axios.get("/read.php?readstat2").then((response) => {
@@ -482,24 +492,38 @@ const populateEditGrades = () => {
   axios.get("/read.php?readstat1").then((response) => {
     stat1options2 = response.data;
   });
-
-  // Storage
-
-  const storedsyList = sessionStorage.getItem("syList");
-  const storednameList = sessionStorage.getItem("nameList");
-  const storedCurriculum = sessionStorage.getItem("curriculum");
-
-  if (storedsyList) {
-    syList.value = JSON.parse(storedsyList);
-  }
-  if (storednameList) {
-    nameList.value = JSON.parse(storednameList);
-  }
-
-  if (storedCurriculum) {
-    curriculum.value = JSON.parse(storedCurriculum);
-  }
 };
+
+// Storage
+
+const storedtermLists = sessionStorage.getItem("termwthRec");
+const storedCurriculum = sessionStorage.getItem("curriculum");
+
+if (storedtermLists) {
+  termLists.value = JSON.parse(storedtermLists);
+}
+if (storedCurriculum) {
+  curriculum.value = JSON.parse(storedCurriculum);
+}
+
+const cleanTermName = computed(() => {
+  // Check if termLists has a name
+  if (termLists.value.name) {
+    // Use regex to remove the unwanted part
+    return termLists.value.name.replace(/U-\d{4}-[A-Z0-9-]+$/, "").trim();
+  }
+  return "N/A"; // Fallback if name doesn't exist
+});
+
+const termId = computed(() => {
+  // Check if termLists has a name
+  if (termLists.value.name) {
+    // Use regex to extract the ID part
+    const match = termLists.value.name.match(/U-\d{4}-[A-Z0-9-]+$/);
+    return match ? match[0] : "N/A"; // Return the matched ID or "N/A" if not found
+  }
+  return "N/A"; // Fallback if name doesn't exist
+});
 
 // Select Term
 
@@ -539,26 +563,21 @@ const filterstat1 = (val, update) => {
 
 // Export PDF Grades
 
-const spasid = ref();
 const printGrades = () => {
   alert("Please click OK to print PDF");
 
-  spasid.value = route.params.id;
   var formData = new FormData();
 
-  formData.append("id", id.value);
+  formData.append("id", globalSPASid);
   formData.append("grades", JSON.stringify(todos.value));
 
-  //
-  formData.append("sy", sy.value);
-  formData.append("sem", sem.value);
   formData.append("school", school.value);
   formData.append("course", course.value);
 
   // From Storage
 
-  formData.append("syList", syList.value);
-  formData.append("term", nameList.value);
+  formData.append("syList", termLists.value.sy);
+  formData.append("term", cleanTermName.value);
   formData.append("termreq", curriculum.value);
 
   formData.append("stat1", state.stat1);
@@ -574,5 +593,101 @@ const printGrades = () => {
       var fileURL = URL.createObjectURL(file);
       window.open(fileURL);
     });
+};
+
+const backBtn = () => {
+  router.push({
+    path: "/monitorsheet/" + globalSPASid,
+  });
+};
+
+const handleToggle = () => {
+  console.log(termId.value);
+  var formData = new FormData();
+
+  formData.append("termid", termId.value);
+
+  if (toggle.value === true) {
+    axios.post("/create.php?createLatest", formData).then(function (response) {
+      if (response.data == true) {
+        $q.notify({
+          color: "green",
+          textColor: "white",
+          message: "Latest grades has been set",
+        });
+        populateGrades();
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Error handling the toggle",
+        });
+      }
+    });
+  } else {
+    axios
+      .post("/create.php?createLatestFalse", formData)
+      .then(function (response) {
+        if (response.data == true) {
+          $q.notify({
+            color: "orange",
+            textColor: "white",
+            message: "Changes has been made",
+          });
+          populateGrades();
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "Error handling the toggle",
+          });
+        }
+      });
+  }
+};
+
+const saveBtn = () => {
+  var formData = new FormData();
+
+  formData.append("termid", termId.value);
+
+  formData.append("user", user.username);
+
+  todos.value.forEach((todo, index) => {
+    formData.append(`todos[${index}][scode]`, todo.scode);
+    formData.append(`todos[${index}][academic]`, todo.academic ? 1 : 0);
+    formData.append(`todos[${index}][units]`, todo.units);
+    formData.append(`todos[${index}][grade]`, todo.grade);
+    formData.append(`todos[${index}][completion]`, todo.completion);
+    formData.append(`todos[${index}][remarks]`, todo.remarks);
+  });
+
+  Swal.fire({
+    title: "Do you want to save the changes?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      axios
+        .post("/create.php?createGrades", formData)
+        .then(function (response) {
+          if (response.data == true) {
+            Swal.fire("Saved!", "", "success");
+            populateGrades();
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Grades not Updated",
+            });
+          }
+        });
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
+  });
 };
 </script>

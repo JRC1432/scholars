@@ -737,8 +737,7 @@ if(isset($_GET['printAddGradesPDF'])){
     $grades = json_decode($_POST['grades'], true);
 
 
-     $sy = $_POST["sy"];
-     $sem = $_POST["sem"];
+   
      $school = $_POST["school"];
      $course = $_POST["course"];
      $termreq = $_POST["termreq"];
@@ -1130,6 +1129,193 @@ if(isset($_GET['createUndergradRec'])){
 
 
 }
+
+
+
+
+// Add New Subject
+
+
+
+if(isset($_GET['createSubject'])){
+
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Y-m-d h:i:s a");
+    $created_by = $_POST["user"];
+
+    $term_id = $_POST["termid"];
+
+    $subj_code = strtoupper($_POST["scode"]);
+    $academic_type = $_POST["academic"];
+    $unit = $_POST["units"];
+    $grade = $_POST["grade"];
+    $completion = strtoupper($_POST["completion"]);
+    $remarks = strtoupper($_POST["remarks"]);
+    $verified = 0;
+
+    
+    $stnt = $pdo->prepare("INSERT INTO grades(term_id,subj_code,academic_type,unit,grade,completion,remarks,created_at,created_by,verified_flag) VALUES 
+    (?,?,?,?,?,?,?,?,?,?)");
+    $params = array($term_id,$subj_code,$academic_type,$unit,$grade,$completion,$remarks,$date,$created_by,$verified);
+    $stnt -> execute($params);
+
+    if($stnt){
+        $result =  true;
+    } else{
+
+        $result = false;
+    }
+
+    echo json_encode($result);
+
+
+}
+
+
+
+
+
+// Add New Term Record
+
+
+
+if(isset($_GET['newTermRecord'])){
+
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Y-m-d h:i:s a");
+    $created_by = $_POST["user"];
+
+    $spasid = $_POST["spasid"];
+    $sy = $_POST["sy"];
+    $term = $_POST["term"];
+    $termtype = $_POST['termtype'];
+
+
+    $termid = $spasid . $sy . $term . $termtype;
+
+    $termreq = $_POST["newcurriculum"] === 'YES' ? 1 : 0;
+    $act_flag = 1;
+
+
+
+    
+    $stnt = $pdo->prepare("INSERT INTO term_record(spas_id,term_id,sy,term,term_type,term_required,active_flag,created_at,created_by) VALUES 
+    (?,?,?,?,?,?,?,?,?)");
+    $params = array($spasid,$termid,$sy,$term,$termtype,$termreq,$act_flag,$date,$created_by);
+    $stnt -> execute($params);
+
+    if($stnt){
+        $result =  true;
+    } else{
+
+        $result = false;
+    }
+
+    echo json_encode($result);
+
+
+}
+
+
+
+
+
+
+
+
+if(isset($_GET['createLatest'])){
+    
+    $termid = $_POST["termid"];
+    $latest = 1;
+
+
+    $stnt = $pdo->prepare("UPDATE term_record SET latest_flag = ?
+    WHERE term_id = ?");
+    $stnt->execute([$latest,$termid]);
+    
+     if($stnt){
+            $result =  true;
+        } else{
+            
+            $result = false;
+        }
+    
+        echo json_encode($result);
+    
+    }
+
+
+    if(isset($_GET['createLatestFalse'])){
+    
+        $termid = $_POST["termid"];
+        $latest = 0;
+    
+    
+        $stnt = $pdo->prepare("UPDATE term_record SET latest_flag = ?
+        WHERE term_id = ?");
+        $stnt->execute([$latest,$termid]);
+        
+         if($stnt){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        }
+
+
+        // Create Grades
+
+
+
+        if (isset($_GET['createGrades'])) {
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+        
+            $createdby = $_POST["user"];
+            $termid = $_POST["termid"];
+            $act_flag = 1;
+        
+            // Initialize an empty array to hold todos
+            $todos = [];
+        
+            // Loop through the posted 'todos' data and collect them into the array
+            foreach ($_POST['todos'] as $index => $todo) {
+                $scode = isset($todo['scode']) ? $todo['scode'] : null;
+                $academic = isset($todo['academic']) ? $todo['academic'] : null;
+                $units = isset($todo['units']) ? $todo['units'] : null;
+                $grade = isset($todo['grade']) ? $todo['grade'] : null;
+                $completion = isset($todo['completion']) ? $todo['completion'] : null;
+                $remarks = isset($todo['remarks']) ? $todo['remarks'] : null;
+        
+                // Add each todo to the $todos array
+                $todos[] = [
+                    'scode' => $scode,
+                    'academic' => $academic,
+                    'units' => $units,
+                    'grade' => $grade,
+                    'completion' => $completion,
+                    'remarks' => $remarks
+                ];
+                // Prepare the SQL statement for each item in the todos array
+             $stnt = $pdo->prepare("INSERT INTO grades(term_id,subj_code,academic_type,unit,grade,completion,remarks,active_flag,created_at,created_by) VALUES (?,?,?,?,?,?,?,?,?,?)");
+
+                // Execute the statement with the current todo's values
+             $success = $stnt->execute([$termid, $scode, $academic, $units, $grade, $completion, $remarks, $act_flag, $date, $createdby]);
+
+                // Collect the result of each update
+            $results[] = $success;
+            }
+
+            $result = in_array(false, $results) ? false : true;
+
+            echo json_encode($result);
+
+            
+        }
 
 
 
