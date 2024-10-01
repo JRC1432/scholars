@@ -571,8 +571,7 @@ if(isset($_GET['printGradesPDF'])){
      $units = $_POST["computedTotalUnits"];
 
 
-    
-    
+
      $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, s.full_name
 
      FROM term_record as t
@@ -646,13 +645,20 @@ if(isset($_GET['printGradesPDF'])){
 
     
 
-    $pdf->Ln(0); // Set to 0 to remove extra space between lines
+    $pdf->Ln(0); // No extra space between lines
 $pdf->MultiCell(90, 5, 'School Year: '.$sy.', '.$sem, 0, 'L', 0, 0, '', '', true); // Adjust height to 5
 $pdf->MultiCell(90, 5, 'Term Required: '.$termreq, 0, 'R', 0, 1, '', '', true);
 $pdf->MultiCell(90, 5, 'Course: '.$course, 0, 'L', 0, 0, '', '', true);
 $pdf->MultiCell(90, 5, 'Status(Start): '.$statStart.'-'.$statEnd, 0, 'R', 0, 1, '', '', true);
+
+$pdf->Ln(3); // Add vertical space before the next section
+
 $pdf->MultiCell(90, 10, 'School: '.$school, 0, 'L', 0, 0, '', '', true);
-$pdf->MultiCell(90, 10, 'Status(END): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
+$pdf->MultiCell(90, 10, 'Status(END): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true); // No extra Ln() added here
+
+
+
+
 
 
 
@@ -825,13 +831,12 @@ if(isset($_GET['printAddGradesPDF'])){
     $pdf->Cell(90,10,'Name: '.$fname, 0, 1, 'R', 0, '', 0, false, 'M', 'M');
 
 
-    
-
     $pdf->Ln(0); // Set to 0 to remove extra space between lines
 $pdf->MultiCell(90, 5, 'School Year: '.$syList.', '.$term, 0, 'L', 0, 0, '', '', true); // Adjust height to 5
 $pdf->MultiCell(90, 5, 'Term Required: '.$termreq, 0, 'R', 0, 1, '', '', true);
 $pdf->MultiCell(90, 5, 'Course: '.$course, 0, 'L', 0, 0, '', '', true);
  $pdf->MultiCell(90, 5, 'Status(Start): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
+ $pdf->Ln(3); // Add vertical space before the next section
 $pdf->MultiCell(90, 5, 'School: '.$school, 0, 'L', 0, 0, '', '', true);
 // $pdf->MultiCell(90, 10, 'Status(START): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
 
@@ -1028,6 +1033,7 @@ $pdf->MultiCell(90, 5, 'School Year: '.$sy.', '.$termLabel, 0, 'L', 0, 0, '', ''
 $pdf->MultiCell(90, 5, 'Term Required: '.$termreq, 0, 'R', 0, 1, '', '', true);
 $pdf->MultiCell(90, 5, 'Course: '.$course, 0, 'L', 0, 0, '', '', true);
  $pdf->MultiCell(90, 5, 'Status(Start): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
+ $pdf->Ln(3); // Add vertical space before the next section
 $pdf->MultiCell(90, 5, 'School: '.$school, 0, 'L', 0, 0, '', '', true);
 // $pdf->MultiCell(90, 10, 'Status(START): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
 
@@ -1103,29 +1109,61 @@ if(isset($_GET['createUndergradRec'])){
 
     date_default_timezone_set('Asia/Manila');
     $date = date("Y-m-d h:i:s a");
-    $uploaded_by = $_POST["user"];
+    $user = $_POST["user"];
 
     $spasid = $_POST["spasid"];
     $school = $_POST["school"];
     $courses = $_POST["courses"];
     $sy = $_POST["sy"];
-    $courses = $_POST["termtype"];
-    $sy = $_POST["term"];
+    $sy_parts = explode(" - ", $sy);
+    $first_value = $sy_parts[0];
+    $termtype = $_POST["termtype"];
+    $term = $_POST["term"];
+    $term_id = $spasid . $sy . $term . $termtype;
+    $act_flag = 1;
+    $latest_flag = 1;
    
+    $pdo->beginTransaction();
+    $stnt = $pdo->prepare("INSERT INTO course_record(term_id,spas_id,course_code,school_code,sy_start,term_start,term_type,latest_flag,created_at,created_by) VALUES 
+    (?,?,?,?,?,?,?,?,?,?) RETURNING id");
+    $stnt2 = $pdo->prepare("INSERT INTO term_record(spas_id,term_id,sy,term,term_type,course_id,active_flag,created_at,created_by) VALUES 
+    (?,?,?,?,?,?,?,?,?)");
 
-    $stnt = $pdo->prepare("INSERT INTO course_record(spas_id,reply_slip,date_reply,reason,created_by,updated_by,verified_flag,verified_by) VALUES 
-    (?,?,?,?,?,?,?,?)");
-    $params = array($spasid,$reply,$daterep,$reply_reason2,$uploaded_by,$uploaded_by,$verified,$uploaded_by);
+    $params = array($term_id,$spasid,$courses,$school,$first_value,$term,$termtype,$latest_flag,$date,$user);
     $stnt -> execute($params);
 
     if($stnt){
-        $result =  true;
+        $errors[] =  true;
     } else{
 
-        $result = false;
+        $errors[] = false;
     }
 
-    echo json_encode($result);
+    $sid = "";
+    try{
+
+        $result = $stnt->fetch();
+        $sid = $result["id"];
+    }catch(Exception $e){
+        echo $e;
+    }
+
+    $params2 = array($spasid,$term_id,$sy,$term,$termtype,$sid,$act_flag,$date,$date);
+    $stnt2 -> execute($params2);
+    if($stnt2){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
+    if(in_array(false, $errors)){
+        echo "false";
+        $pdo->rollback();
+    } else{
+       echo "true";
+       $pdo->commit();
+   }
 
 
 }
@@ -1267,7 +1305,7 @@ if(isset($_GET['createLatest'])){
         }
 
 
-        // Create Grades
+        // Create Grades 
 
 
 
@@ -1316,6 +1354,12 @@ if(isset($_GET['createLatest'])){
 
             
         }
+
+
+
+       
+
+        
 
 
 

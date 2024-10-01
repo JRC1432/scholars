@@ -56,33 +56,29 @@
               <q-td key="schools" :props="props">
                 {{ props.row.schools }}
               </q-td>
-              <q-td key="sy_start" :props="props">
-                {{ props.row.sy_start }}
+              <q-td key="sy" :props="props">
+                {{ props.row.sy }}
               </q-td>
-              <q-td key="term_start" :props="props">
+              <q-td key="term" :props="props">
                 <template v-if="props.row.term_type === 2">
-                  <template v-if="props.row.term_start == 1">1st</template>
-                  <template v-else-if="props.row.term_start == 2">2nd</template>
-                  <template v-else-if="props.row.term_start == 3"
-                    >Summer</template
-                  >
+                  <template v-if="props.row.term == 1">1st</template>
+                  <template v-else-if="props.row.term == 2">2nd</template>
+                  <template v-else-if="props.row.term == 3">Summer</template>
                   <template v-else>--</template>
                 </template>
 
                 <template v-else-if="props.row.term_type === 3">
-                  <template v-if="props.row.term_start == 1">1st</template>
-                  <template v-else-if="props.row.term_start == 2">2nd</template>
-                  <template v-else-if="props.row.term_start == 3">3rd</template>
-                  <template v-else-if="props.row.term_start == 4"
-                    >Summer</template
-                  >
+                  <template v-if="props.row.term == 1">1st</template>
+                  <template v-else-if="props.row.term == 2">2nd</template>
+                  <template v-else-if="props.row.term == 3">3rd</template>
+                  <template v-else-if="props.row.term == 4">Summer</template>
                   <template v-else>--</template>
                 </template>
                 <template v-else-if="props.row.term_type === 4">
-                  <template v-if="props.row.term_start == 1">1st</template>
-                  <template v-else-if="props.row.term_start == 2">2nd</template>
-                  <template v-else-if="props.row.term_start == 3">3rd</template>
-                  <template v-else-if="props.row.term_start == 4">4th</template>
+                  <template v-if="props.row.term == 1">1st</template>
+                  <template v-else-if="props.row.term == 2">2nd</template>
+                  <template v-else-if="props.row.term == 3">3rd</template>
+                  <template v-else-if="props.row.term == 4">4th</template>
                   <template v-else>--</template>
                 </template>
               </q-td>
@@ -344,18 +340,18 @@ const columns = [
     sortable: true,
   },
   {
-    name: "sy_start",
+    name: "sy",
     align: "left",
     label: "School Year",
-    field: "sy_start",
+    field: "sy",
     sortable: true,
   },
 
   {
-    name: "term_start",
+    name: "term",
     align: "left",
     label: "Term",
-    field: "term_start",
+    field: "term",
     sortable: true,
   },
 
@@ -395,7 +391,7 @@ const populateAll = () => {
   spasid.value = route.params.id;
   var formData = new FormData();
   formData.append("id", spasid.value);
-
+  //
   // Read Undergrad Records
   axios.post("/read.php?readUndergradID", formData).then((response) => {
     rows.value = response.data;
@@ -538,11 +534,15 @@ const CreateUndergrad = () => {
   } else {
     var formData = new FormData(document.getElementById("CreateUndergradForm"));
 
+    formData.append("user", user.username);
+
     axios
       .post("/create.php?createUndergradRec", formData)
       .then(function (response) {
         if (response.data == true) {
           populateAll();
+          Swal.fire("Saved!", "", "success");
+          showUndegrad.value = false;
         } else {
           $q.notify({
             color: "red",

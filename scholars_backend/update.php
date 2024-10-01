@@ -283,13 +283,13 @@ if(isset($_GET['updateReplySlip'])){
          // Update Deferment Details
 
 
-        if(isset($_GET['updateDef'])){
+         if(isset($_GET['updateDef'])) {
             date_default_timezone_set('Asia/Manila');
             $date = date("Y-m-d h:i:s a");
-            
+        
             $updatedby = $_POST["user"];
             $spasid = $_POST["spasid"];
-
+        
             $defscholarDefer = ($_POST["defscholarDefer"] === 'YES') ? 1 : 0;
             $updefreason = $_POST["updefreason"];
             $upSyDef = $_POST["upSyDef"];
@@ -297,22 +297,33 @@ if(isset($_GET['updateReplySlip'])){
             $uptermDef = $_POST["uptermDef"];
             $statsLatest = ($_POST["statsLatest"] === 'YES') ? 1 : 0;
             $recActive = ($_POST["recActive"] === 'YES') ? true : false;
-    
-            
-            $stnt = $pdo->prepare("UPDATE deferment_details SET with_deferment_form = ?, reason = ?, sy_deferred = ?, term_type = ?, term_deferred = ?, verified_flag = ?,
-            updated_by = ?, updated_at = ? WHERE spas_id = ?");
-            $stnt->execute([$defscholarDefer,$updefreason,$upSyDef,$uptermtype,$uptermDef,$statsLatest,$updatedby,$date,$spasid]);
-            
-             if($stnt){
-                    $result =  true;
-                } else{
-                    
-                    $result = false;
-                }
-            
-                echo json_encode($result);
-            
+        
+            // First, check if the spas_id exists
+            $checkStmt = $pdo->prepare("SELECT spas_id FROM deferment_details WHERE spas_id = ?");
+            $checkStmt->execute([$spasid]);
+            $spasExists = $checkStmt->fetchColumn();
+        
+            if ($spasExists) {
+                // Update the record if spas_id exists
+                $stnt = $pdo->prepare("UPDATE deferment_details SET with_deferment_form = ?, reason = ?, sy_deferred = ?, term_type = ?, term_deferred = ?, verified_flag = ?,
+                updated_by = ?, updated_at = ? WHERE spas_id = ?");
+                $stnt->execute([$defscholarDefer, $updefreason, $upSyDef, $uptermtype, $uptermDef, $statsLatest, $updatedby, $date, $spasid]);
+            } else {
+                // Insert a new record if spas_id doesn't exist
+                $stnt = $pdo->prepare("INSERT INTO deferment_details (spas_id, with_deferment_form, reason, sy_deferred, term_type, term_deferred, verified_flag, updated_by, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stnt->execute([$spasid, $defscholarDefer, $updefreason, $upSyDef, $uptermtype, $uptermDef, $statsLatest, $updatedby, $date]);
             }
+        
+            if ($stnt) {
+                $result = true;
+            } else {
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        }
+        
 
             // Update Deferment Details Contract
 
@@ -1009,6 +1020,50 @@ if(isset($_GET['updateReplySlip'])){
                         echo json_encode($result);
                     
                     }
+
+
+
+                    // Update New Term Rec
+
+
+
+
+        if(isset($_GET['upTermRecordGrades'])){
+
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+            $user = $_POST["user"];
+        
+            $spasid = $_POST["spasid"];
+            $termid = $_POST['termid'];
+            $sy = $_POST["sy"];
+            $term = $_POST["term"];
+            $termtype = $_POST['termtype'];
+            $termreq = $_POST["newcurriculum"] === 'YES' ? 1 : 0;
+            $course_id = $_POST['schoolcourse'];
+            $act_flag = 1;
+        
+        
+        
+            
+            $stnt = $pdo->prepare("UPDATE term_record SET spas_id = ?, sy = ?, term = ?, term_type = ?, term_required = ?, course_id = ?, active_flag = ?, created_at = ?,
+            created_by = ? 
+            WHERE term_id = ?" );
+           
+            $params = array($spasid,$sy,$term,$termtype,$termreq,$course_id,$act_flag,$date,$user,$termid);
+            $stnt -> execute($params);
+        
+            if($stnt){
+                $result =  true;
+            } else{
+        
+                $result = false;
+            }
+        
+            echo json_encode($result);
+        
+        
+        }
 
                     
 

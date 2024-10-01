@@ -44,7 +44,7 @@
 
                     <div class="q-pa-xs q-gutter-sm">
                       <q-btn
-                        v-if="verif === 0"
+                        v-if="verif === 0 || verif === null"
                         color="positive"
                         label="Verify Grades"
                         icon="verified"
@@ -404,7 +404,7 @@ const addTodo = () => {
       scode: scode.value,
       academic: academic.value,
       units: parseFloat(units.value),
-      grade: parseFloat(grade.value),
+      grade: grade.value,
       completion: completion.value,
       remarks: remarks.value,
     });

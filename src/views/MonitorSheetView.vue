@@ -5,9 +5,7 @@
       <div class="q-pa-md text-center text-bold primary-text text-h4">
         Monitoring Sheet
       </div>
-      <q-card-section>
-        <ShowGrades />
-      </q-card-section>
+      <q-card-section> </q-card-section>
 
       <q-card-section v-if="grades === false">
         <q-banner dense class="rounded-borders-20 banner">
@@ -27,15 +25,20 @@
         </q-banner>
       </q-card-section>
 
-      <q-card-section v-else> </q-card-section>
+      <q-card-section v-else>
+        <ShowGrades />
+        <q-btn
+          rounded
+          outline
+          style="color: goldenrod"
+          @click="openEnrollment"
+          label="Add New Enrollment Information"
+        />
+      </q-card-section>
     </q-card>
   </div>
 
-  <q-dialog
-    v-model="showEnrollment"
-    persistent
-    v-if="state.termRec === 'Add New Term Record'"
-  >
+  <q-dialog v-model="showAddEnrollment" persistent>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
       <form id="addNavEnrollForm" @submit.prevent.stop="addNavEnroll">
         <q-toolbar>
@@ -50,20 +53,6 @@
         </q-toolbar>
 
         <q-card-section>
-          <div class="q-px-sm">
-            <span class="text-bold">Term Record:</span>
-            <q-select
-              ref="reftermRec"
-              name="termRec"
-              :options="termRecoptions"
-              v-model="state.termRec"
-              emit-value
-              outlined
-              dense
-              hide-bottom-space
-              :rules="[myRule]"
-            />
-          </div>
           <div class="q-px-sm">
             <span class="text-bold">School Year</span>
             <q-select
@@ -145,7 +134,38 @@
     </q-card>
   </q-dialog>
 
-  <q-dialog v-model="showEnrollment" persistent v-else>
+  <q-dialog v-model="showEnrollment" persistent>
+    <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
+      <q-toolbar>
+        <IconClipboardPlus :size="30" stroke-width="2" />
+
+        <q-toolbar-title
+          ><span class="text-weight-bold" color="primary">Enrollment</span>
+          Info
+        </q-toolbar-title>
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+      <q-card-section
+        ><div class="q-px-sm">
+          <span class="text-bold">Term Record:</span>
+          <q-select
+            ref="refselectTerm"
+            name="selectTerm"
+            :options="options"
+            v-model="state.selectTerm"
+            emit-value
+            outlined
+            dense
+            hide-bottom-space
+            :rules="[myRule]"
+            @update:model-value="newTermRec"
+          /></div
+      ></q-card-section>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="showExistEnrollment" persistent>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
       <form id="addOldTermRecForm" @submit.prevent.stop="addOldTermRec">
         <q-toolbar>
@@ -163,7 +183,7 @@
           <div class="q-px-sm">
             <span class="text-bold">Term Record:</span>
             <q-select
-              ref="reftermwthRec"
+              ref="reftermRec"
               :options="termRecoptions"
               v-model="state.termwthRec"
               name="termwthRec"
@@ -233,6 +253,8 @@ const myRule = (val) => {
 
 // Modal
 
+const showAddEnrollment = ref(false);
+const showExistEnrollment = ref(false);
 const showEnrollment = ref(false);
 
 // Select Items
@@ -253,13 +275,14 @@ const refterm = ref(null);
 const grades = ref();
 
 const state = reactive({
-  termRec: "Add New Term Record",
+  termRec: "",
   sy: "",
   termtype: "",
   term: "",
   term1: "",
   term2: "",
   termwthRec: "",
+  selectTerm: "Select Item Here....",
 });
 
 // Axios
@@ -279,7 +302,6 @@ const populateAll = () => {
   // Select Term Record
   axios.post("/read.php?readTermRec", formData).then((response) => {
     // Separation of value in sql select
-
     const processedData = response.data.map((item) => {
       const [sy, ...nameParts] = item.value.split(" ");
       const name = nameParts.join(" ");
@@ -289,6 +311,14 @@ const populateAll = () => {
         name,
       };
     });
+
+    // Add "Add New Term Rec" option
+    //   const addNewOption = {
+    // label: "Add New Term Record",
+    //    sy: "", // You can set this to a specific value if needed
+    //    name: "", // You can set this to a specific value if needed
+    //  };
+    //  processedData.push(addNewOption);
 
     termRecoptions.value = processedData;
     syList.value = processedData.map((item) => item.sy);
@@ -355,18 +385,19 @@ const computedTermOptions = computed(() => {
   return termOptions[state.termtype] || [];
 });
 
+const options = ["Add New Term Record", "Select Terms"];
+
 const openEnrollment = () => {
   showEnrollment.value = true;
 };
 
 const addNavEnroll = () => {
-  reftermRec.value.validate();
+  showAddEnrollment.value = false;
   refsy.value.validate();
   reftermtype.value.validate();
   refterm.value.validate();
 
   if (
-    reftermRec.value.hasError ||
     refsy.value.hasError ||
     reftermtype.value.hasError ||
     refterm.value.hasError
@@ -434,5 +465,15 @@ const addOldTermRec = () => {
   router.push(`/enrollmentinfo/${globalSPAS}`);
   sessionStorage.setItem("termwthRec", JSON.stringify(state.termwthRec));
   sessionStorage.setItem("curriculum", JSON.stringify(curriculum.value));
+};
+
+const newTermRec = () => {
+  if (state.selectTerm === "Add New Term Record") {
+    showAddEnrollment.value = true;
+    showEnrollment.value = false;
+  } else {
+    showExistEnrollment.value = true;
+    showEnrollment.value = false;
+  }
 };
 </script>

@@ -58,6 +58,9 @@
                         v-model="state.scrTerm"
                         emit-value
                         name="scrTerm"
+                        map-options
+                        use-input
+                        input-debounce="0"
                         outlined
                         dense
                         hide-bottom-space
@@ -99,7 +102,10 @@
                   <div class="col-xs-12 col-sm-3 col-md-1">
                     <!-- <div class="float-right"> -->
                     <span class="text-bold primary-text">Latest?</span>
-                    <q-toggle v-model="toggle" />
+                    <q-toggle
+                      v-model="toggle"
+                      @update:model-value="handleToggle"
+                    />
                     <!-- </div> -->
                   </div>
                 </div>
@@ -143,7 +149,6 @@
                         v-model="grade"
                         filled
                         :rules="[(val) => !!val || 'Grade is required']"
-                        mask="#.##"
                       />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
@@ -205,7 +210,7 @@
 
                   <template v-slot:body-cell-grade="props">
                     <q-td :props="props">
-                      <q-input v-model="props.row.grade" mask="#.##" />
+                      <q-input v-model="props.row.grade" />
                     </q-td>
                   </template>
 
@@ -238,7 +243,7 @@
               <div class="q-pa-md">
                 <div class="col-12">
                   <div class="q-col-gutter-md row items-start">
-                    <div class="col-xs-12 col-sm-3 col-md-6">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
                       <q-input
                         filled
                         v-model="computedTotalUnits"
@@ -246,7 +251,7 @@
                         readonly
                       />
                     </div>
-                    <div class="col-xs-12 col-sm-3 col-md-6">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
                       <q-input
                         filled
                         v-model="computedGwa"
@@ -354,8 +359,6 @@ const todos = ref([
   },
 ]);
 
-const term_required = ref(0);
-
 const addTodo = () => {
   if (
     scode.value &&
@@ -369,7 +372,7 @@ const addTodo = () => {
       scode: scode.value,
       academic: academic.value,
       units: parseFloat(units.value),
-      grade: parseFloat(grade.value),
+      grade: grade.value,
       completion: completion.value,
       remarks: remarks.value,
     });
@@ -452,25 +455,30 @@ const columns = [
   { name: "action", label: "Action", field: "action", align: "center" },
 ];
 
+// Total Grades Computation
+
 const computedTotalUnits = computed(() => {
+  // Calculate total units for subjects where academic is checked and grades are valid
   return todos.value
-    .filter((todo) => todo.academic)
-    .reduce((total, todo) => total + parseFloat(todo.units || 0), 0)
-    .toFixed(3);
+    .filter((todo) => todo.academic && !isNaN(parseFloat(todo.grade))) // Only count academic subjects with valid grades
+    .reduce((total, todo) => total + parseFloat(todo.units), 0);
 });
 
 const computedGwa = computed(() => {
-  const academicTodos = todos.value.filter((todo) => todo.academic);
-  const totalUnits = academicTodos.reduce(
-    (total, todo) => total + parseFloat(todo.units || 0),
+  const validSubjects = todos.value.filter(
+    (todo) => todo.academic && !isNaN(parseFloat(todo.grade)) // Only count academic subjects with valid grades
+  );
+
+  const totalUnits = validSubjects.reduce(
+    (total, todo) => total + parseFloat(todo.units),
     0
   );
-  const totalGradePoints = academicTodos.reduce(
-    (total, todo) =>
-      total + parseFloat(todo.units || 0) * parseFloat(todo.grade || 0),
-    0
-  );
-  return totalUnits > 0 ? (totalGradePoints / totalUnits).toFixed(3) : "0.000";
+
+  const totalWeightedGrades = validSubjects.reduce((total, todo) => {
+    return total + parseFloat(todo.grade) * parseFloat(todo.units);
+  }, 0);
+
+  return totalUnits > 0 ? (totalWeightedGrades / totalUnits).toFixed(2) : 0;
 });
 
 // Grades Info
@@ -494,18 +502,21 @@ const globalSPASid = route.params.id;
 const create_termid = { value: "" };
 
 onMounted(() => {
-  populateEditGrades();
+  populateTermGrades();
 });
 
-const populateEditGrades = () => {
+const populateTermGrades = () => {
   // console.log(toggle.value + "start");
 
   var formData = new FormData();
   formData.append("id", globalSPASid);
-  axios.post("/read.php?readEditGrades", formData).then((response) => {
+  formData.append("termids", create_termid.value);
+
+  axios.post("/read.php?readEnrollwthTerm", formData).then((response) => {
     // console.log(response.data);
 
-    toggle.value = response.data.latest_flag == 1 ? true : false;
+    toggle.value = response.data.latest_flag === 1 ? true : false;
+    console.log(toggle.value);
   });
 
   axios.get("/read.php?readstat2").then((response) => {
@@ -646,37 +657,117 @@ const printGrades = () => {
     });
 };
 
-const spasidgrade = ref();
-
-const saveGrades = () => {
-  spasidgrade.value = route.params.id;
-  const getTermValue = computed(() => {
-    const termValue = Math.max(newterm.value, newterm1.value, newterm2.value);
-
-    switch (termValue) {
-      case 1:
-        return 1;
-      case 2:
-        return 2;
-      case 3:
-        return 3;
-      case 4:
-        return 4;
-      default:
-        return 5;
-    }
-  });
-  console.log(spasidgrade.value);
-  console.log(newsy.value);
-  console.log(getTermValue.value);
-  console.log(newtermtype.value);
-  console.log(newcurriculum.value);
-  console.log(toggle.value);
-};
-
 const backBtn = () => {
   router.push({
     path: "/monitorsheet/" + globalSPASid,
   });
+};
+
+const saveGrades = () => {
+  var formData = new FormData();
+
+  formData.append("termid", create_termid.value);
+  formData.append("user", user.username);
+  formData.append("spasid", globalSPASid);
+  formData.append("sy", newsy.value);
+  formData.append("term", newterm.value);
+  formData.append("termtype", newtermtype.value);
+  formData.append("newcurriculum", newcurriculum.value);
+  formData.append("schoolcourse", state.scrTerm);
+
+  todos.value.forEach((todo, index) => {
+    formData.append(`todos[${index}][scode]`, todo.scode);
+    formData.append(`todos[${index}][academic]`, todo.academic ? 1 : 0);
+    formData.append(`todos[${index}][units]`, todo.units);
+    formData.append(`todos[${index}][grade]`, todo.grade);
+    formData.append(`todos[${index}][completion]`, todo.completion);
+    formData.append(`todos[${index}][remarks]`, todo.remarks);
+  });
+
+  Swal.fire({
+    title: "Do you want to save the changes?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      axios
+        .post("/create.php?createGrades", formData)
+        .then(function (response) {
+          if (response.data == true) {
+            Swal.fire("Saved!", "", "success");
+            populateTermGrades();
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Grades not Updated",
+            });
+          }
+        });
+      axios
+        .post("/update.php?upTermRecordGrades", formData)
+        .then(function (response) {
+          if (response.data == true) {
+            populateTermGrades();
+          } else {
+            $q.notify({
+              color: "red",
+              textColor: "white",
+              message: "Term not Updated",
+            });
+          }
+        });
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
+  });
+};
+
+const handleToggle = () => {
+  console.log(create_termid.value);
+  var formData = new FormData();
+
+  formData.append("termid", create_termid.value);
+
+  if (toggle.value === true) {
+    axios.post("/create.php?createLatest", formData).then(function (response) {
+      if (response.data == true) {
+        $q.notify({
+          color: "green",
+          textColor: "white",
+          message: "Latest grades has been set",
+        });
+        populateTermGrades();
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Error handling the toggle",
+        });
+      }
+    });
+  } else {
+    axios
+      .post("/create.php?createLatestFalse", formData)
+      .then(function (response) {
+        if (response.data == true) {
+          $q.notify({
+            color: "orange",
+            textColor: "white",
+            message: "Changes has been made",
+          });
+          populateTermGrades();
+        } else {
+          $q.notify({
+            color: "red",
+            textColor: "white",
+            message: "Error handling the toggle",
+          });
+        }
+      });
+  }
 };
 </script>
