@@ -475,6 +475,7 @@ const populateGrades = () => {
 
   var formData = new FormData();
   formData.append("id", globalSPASid);
+  formData.append("termid_coure", termId.value);
   axios.post("/read.php?readEnrollSC", formData).then((response) => {
     // console.log(response.data);
 

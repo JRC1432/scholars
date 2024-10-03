@@ -414,6 +414,37 @@ if(isset($_GET['updateReplySlip'])){
                     }
 
 
+
+
+                    // Allow Availing
+
+
+                if(isset($_GET['allowAvailing'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $spasid = $_POST["spasid"];
+                    $verified = 1;
+    
+    
+                    $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+                    $stnt->execute([$verified,$updatedby,$date,$spasid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+
                     // Update Progress Status start
 
 
@@ -1064,6 +1095,63 @@ if(isset($_GET['updateReplySlip'])){
         
         
         }
+
+
+
+        // Disallow Replyslip
+
+
+        if(isset($_GET['disReplySlip'])){
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+        
+            $updatedby = $_POST["user"];
+            $spasid = $_POST["spasid"];
+            $verified = 0;
+
+
+            $stnt = $pdo->prepare("UPDATE reply_slip_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+            $stnt->execute([$verified,$updatedby,$date,$spasid]);
+            
+             if($stnt){
+                    $result =  true;
+                } else{
+                    
+                    $result = false;
+                }
+            
+                echo json_encode($result);
+            
+            }
+
+
+
+            // Allow Replyslip
+
+
+        if(isset($_GET['allowReplySlip'])){
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+        
+            $updatedby = $_POST["user"];
+            $spasid = $_POST["spasid"];
+            $verified = 1;
+
+
+            $stnt = $pdo->prepare("UPDATE reply_slip_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
+            $stnt->execute([$verified,$updatedby,$date,$spasid]);
+            
+             if($stnt){
+                    $result =  true;
+                } else{
+                    
+                    $result = false;
+                }
+            
+                echo json_encode($result);
+            
+            }
+
 
                     
 

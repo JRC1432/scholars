@@ -299,10 +299,18 @@
           @click="UpdateContract"
         />
         <q-btn
+          v-if="vflag === 1"
           outline
           style="color: goldenrod"
           label="Disallow"
           @click="disAvailing"
+        />
+        <q-btn
+          v-else
+          outline
+          style="color: goldenrod"
+          label="Allow"
+          @click="allowAvailing"
         />
         <q-btn
           outline
@@ -544,7 +552,20 @@
 
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              v-if="reply_verified_flag === true"
+              outline
+              style="color: goldenrod"
+              label="Disallow"
+              @click="disReply"
+            />
+            <q-btn
+              v-else
+              outline
+              style="color: goldenrod"
+              label="Allow"
+              @click="allowReply"
+            />
             <q-btn
               outline
               style="color: goldenrod"
@@ -1221,6 +1242,7 @@ const reason = ref();
 const created = ref();
 const update = ref();
 const verified = ref();
+const vflag = ref();
 
 const defVerifiedFlag = ref();
 const defform = ref();
@@ -1235,6 +1257,7 @@ const reply_reason = ref();
 const reply_created = ref();
 const reply_updated = ref();
 const reply_verified = ref();
+const reply_verified_flag = ref();
 
 const refreply = ref(null);
 const refdaterep = ref(null);
@@ -1526,6 +1549,8 @@ const showReply = (props) => {
     reply_created.value = response.data.created_by;
     reply_updated.value = response.data.updated_by;
     reply_verified.value = response.data.verified_by;
+    reply_verified_flag.value = response.data.verified_flag;
+
     state.updaterep = response.data.date_reply;
     state.upreply_reason = response.data.reason;
   });
@@ -1663,6 +1688,63 @@ const Removereply = () => {
   });
 };
 
+// Disallow Reply
+
+const disReply = () => {
+  console.log(showReply.value);
+  showReplies.value = false;
+
+  var formData = new FormData();
+
+  formData.append("spasid", showReply.value);
+  formData.append("user", user.username);
+
+  axios.post("/update.php?disReplySlip", formData).then(function (response) {
+    if (response.data == true) {
+      Swal.fire({
+        icon: "error",
+        title: "Disallowed",
+      });
+      populateAll();
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to disallow reply Slip",
+      });
+    }
+  });
+};
+
+// Allow Reply
+
+const allowReply = () => {
+  console.log(showReply.value);
+  showReplies.value = false;
+
+  var formData = new FormData();
+
+  formData.append("spasid", showReply.value);
+  formData.append("user", user.username);
+
+  axios.post("/update.php?allowReplySlip", formData).then(function (response) {
+    if (response.data == true) {
+      Swal.fire({
+        title: "Success!",
+        text: "Reply Slip Updated.",
+        icon: "success",
+      });
+      populateAll();
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to allow reply Slip",
+      });
+    }
+  });
+};
+
 const resetBtn = () => {
   refupreply.value.resetValidation();
   refupdaterep.value.resetValidation();
@@ -1702,6 +1784,7 @@ const showContractStats = (props) => {
     otherScholarship.value = response.data.other_schp;
     contractLoc.value = response.data.contract_loc;
     duration.value = response.data.duration;
+    vflag.value = response.data.v_flag;
 
     etgMonth.value = response.data.etg_month;
     etg.value = response.data.etg;
@@ -1985,31 +2068,49 @@ const disAvailing = () => {
   formData.append("user", user.username);
   formData.append("spasid", spasid.value);
 
-  Swal.fire({
-    title: "Do you want to Disallow?",
-    showDenyButton: true,
-    showCancelButton: true,
-    confirmButtonText: "Save",
-    denyButtonText: `Don't save`,
-  }).then((result) => {
-    /* Read more about isConfirmed, isDenied below */
-    if (result.isConfirmed) {
-      axios
-        .post("/update.php?disallowAvailing", formData)
-        .then(function (response) {
-          if (response.data == true) {
-            populateAll();
-            Swal.fire("Saved!", "", "success");
-          } else {
-            $q.notify({
-              color: "red",
-              textColor: "white",
-              message: "Failed to update Contract",
-            });
-          }
+  axios
+    .post("/update.php?disallowAvailing", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        populateAll();
+        Swal.fire({
+          icon: "error",
+          title: "Disallowed",
         });
-    } else if (result.isDenied) {
-      Swal.fire("Changes are not saved", "", "info");
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to update Contract",
+        });
+      }
+    });
+};
+
+// Allow Availing
+
+const allowAvailing = () => {
+  showContractDetails.value = false;
+
+  var formData = new FormData();
+
+  formData.append("user", user.username);
+  formData.append("spasid", spasid.value);
+
+  axios.post("/update.php?allowAvailing", formData).then(function (response) {
+    if (response.data == true) {
+      Swal.fire({
+        title: "Success!",
+        text: "Allowed Contract Status Updated.",
+        icon: "success",
+      });
+      populateAll();
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to allow reply Slip",
+      });
     }
   });
 };

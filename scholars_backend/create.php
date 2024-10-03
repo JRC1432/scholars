@@ -444,11 +444,34 @@ if(!$b) {       //edited for accuracy
     $zipcodes = isset($emapData[34]) && is_numeric($emapData[34]) ? intval($emapData[34]) : 0;
 
 
+    $hs_name = $emapData[35] ?? '';
+    $hs_code = $emapData[36] ?? '';
+    $hs_grad = $emapData[37] ?? '';
+
+
+    $serial_no = $emapData[38] ?? '';
+    $tpr = $emapData[39] == '' ? 0.00 : $emapData[39];
+    $trs = $emapData[40] == '' ? 0.00 : $emapData[40];
+    $ztot = $emapData[41] == '' ? 0.00 : $emapData[41];
+    $prs = $emapData[42] == '' ? 0.00 : $emapData[42];
+    $priority = $emapData[43] == '' ? 0 : $emapData[43];
+
+
+    $income = $emapData[50] ?? '';
+    $father_occu = $emapData[51] ?? '';
+    $mother_occu = $emapData[52] ?? '';
+    $occu = $emapData[53] ?? '';
+
+
     $pdo->beginTransaction();
     $stnt = $pdo->prepare("INSERT INTO users(internal_id,username,password,account_type,region,school_code,date_added) VALUES (?,?,?,?,?,?,?) RETURNING ID");
     $stntp = $pdo->prepare("INSERT INTO scholars_record(spas_id,user_id,first_name,middle_name,last_name,suffix_name,full_name,sex,dob,pob,tribe,school_region,school_code,
     street,village,barangay,municipality,province,region,district,zipcode,email,contact_no,diff_curr_add) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $stnta = $pdo->prepare("INSERT INTO curr_add(spas_id,street,village,barangay,municipality,province,region,district,zipcode) VALUES (?,?,?,?,?,?,?,?,?)");
+    $stnth = $pdo->prepare("INSERT INTO hs_record(spas_id,hs_name,hs_code,hs_grad) VALUES (?,?,?,?)");
+    $stnte = $pdo->prepare("INSERT INTO exam_info(spas_id,serial_no,tpr,trs,ztot,prs,priority) VALUES (?,?,?,?,?,?,?)");
+    $stntsi = $pdo->prepare("INSERT INTO scholarship_info(spas_id,primary_spas_id,yr_awarded,program,sub_program,category,schp_award,remarks) VALUES (?,?,?,?,?,?,?,?)");
+    $stntf = $pdo->prepare("INSERT INTO family_info(spas_id,income,father_occu,mother_occu,occu) VALUES (?,?,?,?,?)");
 
     $params = array($emapData[0],$emapData[1],$password_sha1,$emapData[3],$emapData[4],$scode,$dates);
 
@@ -492,6 +515,48 @@ if(!$b) {       //edited for accuracy
 
         $errors[] = false;
     }
+
+    $hparams = array($spasid,$hs_name,$hs_code,$hs_grad);
+    $stnth -> execute($hparams);
+    if($stnth){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
+
+
+    $eparams = array($spasid,$serial_no,$tpr,$trs,$ztot,$prs,$priority);
+    $stnte -> execute($eparams);
+    if($stnte){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
+
+    $siparams = array($spasid,$spasid,$emapData[44],$emapData[45],$emapData[46],$emapData[47],$emapData[48],$emapData[49]);
+    $stntsi -> execute($siparams);
+    if($stntsi){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
+
+
+    $fparams = array($spasid,$income,$father_occu,$mother_occu,$occu);
+    $stntf -> execute($fparams);
+    if($stntf){
+        $errors[] =  true;
+    } else{
+
+        $errors[] = false;
+    }
+
 
 
     if(in_array(false, $errors)){
@@ -1357,13 +1422,52 @@ if(isset($_GET['createLatest'])){
 
 
 
+        // Add New Scholarship Information
+
+
+
+if(isset($_GET['newSCHInfo'])){
+
+ 
+    $primary_spas = $_POST["pspas"];
+    $pspasid_no_spaces = str_replace(' ', '', $primary_spas);
+    $newspas = $_POST["newspas"];
+    $newspasid_no_spaces = str_replace(' ', '', $newspas);
+    $yr_awarded = $_POST["yrawarded"];
+    $program = $_POST["program"];
+    $subprogram = $_POST["subprogram"];
+    $category = $_POST["category"];
+    $schpaward = $_POST["schpaward"];
+    $remarks = $_POST["remarks"];
+   
+    
+    $stnt = $pdo->prepare("INSERT INTO scholarship_info(spas_id,primary_spas_id,yr_awarded,program,sub_program,category,schp_award,remarks) VALUES 
+    (?,?,?,?,?,?,?,?)");
+    $params = array($newspasid_no_spaces,$pspasid_no_spaces,$yr_awarded,$program,$subprogram,$category,$schpaward,$remarks);
+    $stnt -> execute($params);
+
+    if($stnt){
+        $result =  true;
+    } else{
+
+        $result = false;
+    }
+
+    echo json_encode($result);
+
+
+}
+
+
+
+
        
 
         
 
 
 
-
+//
 
 
 

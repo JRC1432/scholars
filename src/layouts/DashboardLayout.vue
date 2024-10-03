@@ -148,7 +148,11 @@
               </q-item>
             </q-list>
             <q-list>
-              <q-item clickable active-class="my-menu-link" to="">
+              <q-item
+                clickable
+                active-class="my-menu-link"
+                to="/scholarmunicipality"
+              >
                 <q-item-section avatar>
                   <IconBuildingBank :size="30" stroke-width="2" />
                 </q-item-section>

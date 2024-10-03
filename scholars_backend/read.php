@@ -447,15 +447,15 @@ if(isset($_GET['readSCID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT c.contract_status, c.avail_award, c.other_schp,
-c.contract_loc, c.duration, c.etg_month, c.etg, c.deferment_status, c.reason,
-s.name as schools, p.name as course, t.sy, t.term_type, t.term, c.reason,
+        $stnt = $pdo->prepare("SELECT c.term_id, c.spas_id, c.contract_status, c.avail_award, c.other_schp,
+c.contract_loc, c.duration, c.etg_month, c.etg, c.deferment_status, c.reason, c.verified_flag as v_flag,
+s.name as schools, p.name as course, t.sy, t.term_type, t.term,
 c.created_by, c.updated_by, c.verified_by, d.with_deferment_form,
 d.reason as defer_reason, d.sy_deferred, d.term_type as defer_type, d.term_deferred,
 d.verified_flag
 FROM contract_status_details AS c
 
-LEFT OUTER JOIN course_record AS r ON c.spas_id = r.spas_id
+LEFT OUTER JOIN course_record AS r ON c.course_id = r.id
 LEFT OUTER JOIN colleges AS s ON r.school_code = s.id::text
 LEFT OUTER JOIN courses AS p ON r.course_code = p.id::text
 LEFT OUTER JOIN term_record AS t ON c.term_id = t.term_id
@@ -525,12 +525,17 @@ if(isset($_GET['readUndergradID'])){
     try
     {
     
-        $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, c.name as course, c.discipline, s.name as schools, s.id, t.sy, t.term, t.course_id, cr.term_type, t.latest_flag
-        FROM term_record AS t
+        $stnt = $pdo->prepare("SELECT sc.spas_id, t.spas_id, t.term_id, c.name as course, c.discipline, s.name as schools, s.id, t.sy, t.term,
+t.course_id, cr.term_type, t.latest_flag
+
+FROM scholarship_info as sc
+
+		LEFT OUTER JOIN term_record AS t ON sc.spas_id = t.spas_id 
 		LEFT OUTER JOIN course_record AS cr ON t.course_id = cr.id
 		LEFT OUTER JOIN courses AS c ON cr.course_code = c.id::text
 		LEFT OUTER JOIN colleges AS s ON cr.school_code = s.id::text 
-		WHERE t.spas_id = ?
+
+WHERE sc.primary_spas_id = ?
 		");
         $params = array($id);
         $stnt->execute($params);
@@ -2316,6 +2321,33 @@ if(isset($_GET['checkSpas'])){
 
     }
 
+    // SPAS ID Checker
+
+if(isset($_GET['newcheckSpas'])){
+
+    $data = array();
+    $checkSpas = $_POST['checkSpasid'];
+    $spasid_no_spaces = str_replace(' ', '', $checkSpas);
+    
+    
+    
+    
+        $stnt = $pdo->prepare("SELECT spas_id FROM scholarship_info  WHERE spas_id = ?");
+        $stnt->execute([$spasid_no_spaces]);
+        $count = $stnt->fetchColumn();
+    
+        if($count > 0){
+            $result =  false;
+        } else{
+            
+            $result = true;
+        }
+    
+        echo json_encode($result);
+    
+
+    }
+
 
     // Email Checker
 
@@ -2617,10 +2649,14 @@ if (isset($_GET['readTermRec'])) {
     $data = array();
     $spasid = $_POST['id'];
     try {
-        $stnt = $pdo->prepare("SELECT t.term_id, t.sy, s.name 
-            FROM term_record as t 
-            LEFT JOIN semestral as s ON t.term = s.id
-            WHERE t.spas_id = ?");
+        $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.term_id, t.sy, sm.name	
+
+FROM scholarship_info as s
+
+LEFT OUTER JOIN term_record as t ON s.spas_id = t.spas_id
+LEFT JOIN semestral as sm ON t.term = sm.id
+
+WHERE primary_spas_id = ?");
         $stnt->execute([$spasid]);
     } catch (Exception $ex) {
         die("Failed to run query" . $ex);
@@ -2922,11 +2958,17 @@ ORDER BY yr_awarded ASC, full_name ASC;
         try
         {
         
-            $stnt = $pdo->prepare("SELECT t.term_id
-                FROM term_record as t
-                WHERE t.spas_id = ?
-                GROUP BY t.term_id
-				ORDER BY t.term_id 
+            $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.spas_id, t.term_id
+
+FROM scholarship_info as s
+
+LEFT OUTER JOIN term_record as t ON s.spas_id = t.spas_id
+
+WHERE s.primary_spas_id = ?
+GROUP BY t.term_id, s.spas_id, t.spas_id, s.primary_spas_id
+ORDER BY t.term_id
+
+
                         ");
             $params = array($id);
             $stnt -> execute($params);
@@ -3065,10 +3107,17 @@ if(isset($_GET['readGrades'])){
             $id = $_POST["id"];
         
             try {
-                $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, g.subj_code
-                                        FROM term_record as t
-                                        LEFT JOIN grades as g ON t.term_id = g.term_id
-                                        WHERE spas_id = ?");
+                $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.spas_id, t.term_id, g.subj_code
+
+FROM scholarship_info as s
+
+LEFT OUTER JOIN term_record as t ON s.spas_id = t.spas_id
+LEFT OUTER JOIN grades as g ON t.term_id = g.term_id
+
+WHERE s.primary_spas_id = ?
+GROUP BY t.term_id, s.spas_id, t.spas_id, s.primary_spas_id, g.subj_code
+ORDER BY t.term_id
+");
                 $stnt->execute([$id]);
         
             } catch (Exception $ex) {
@@ -3101,7 +3150,7 @@ if(isset($_GET['readGrades'])){
 
 if(isset($_GET['readEnrollSC'])){
     $data = array();
-    $id = $_POST["id"];
+    $id = $_POST["termid_coure"];
     try
     {
     
@@ -3122,7 +3171,7 @@ LEFT JOIN
 	semestral as se ON t.term = se.id
 	
 	
-WHERE cr.spas_id = ? ");
+WHERE cr.term_id = ? ");
         $params = array($id);
         $stnt->execute($params);
     
