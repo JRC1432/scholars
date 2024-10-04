@@ -834,6 +834,7 @@
       >
         <q-tab name="scholar" label="Scholar Account informations" />
         <q-tab name="personal" label="Personal Informations" />
+        <q-tab name="scholarInform" label="Scholarship Informations" />
       </q-tabs>
 
       <q-separator />
@@ -1019,10 +1020,11 @@
                         outlined
                         dense
                         hide-bottom-space
+                        readonly
                         v-model="state.upspasid"
                         mask="A - #### - NN - #####"
                         name="upspasid"
-                        :rules="combinedRules"
+                        :rules="combinedupRules"
                       />
                     </div>
                   </div>
@@ -1531,6 +1533,148 @@
             </q-card-actions>
           </form>
         </q-tab-panel>
+
+        <q-tab-panel name="scholarInform">
+          <form
+            id="createScholarInfoForm"
+            @submit.prevent.stop="createScholarInfo"
+          >
+            <q-card-actions>
+              <div class="text-h6">Scholarship Informartions</div>
+              <div class="q-pa-md">
+                <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">PRIMARY SPAS ID</span>
+                      <q-input
+                        ref="refpspas"
+                        v-model="state.pspas"
+                        name="pspas"
+                        outlined
+                        dense
+                        readonly
+                        hide-bottom-space
+                        mask="A - #### - NN - #####"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">NEW SPAS ID</span>
+                      <q-input
+                        ref="refnewspas"
+                        v-model="state.newspas"
+                        name="newspas"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        mask="A - #### - NN - #####"
+                        :rules="combinednewRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Year Awarded</span>
+                      <q-input
+                        ref="refyrawarded"
+                        v-model="state.yrawarded"
+                        name="yrawarded"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        mask="####"
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Program</span>
+                      <q-input
+                        ref="refprogram"
+                        v-model="state.program"
+                        name="program"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Sub Program</span>
+                      <q-input
+                        ref="refsubprogram"
+                        v-model="state.subprogram"
+                        name="subprogram"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Category</span>
+                      <q-input
+                        ref="refcategory"
+                        v-model="state.category"
+                        name="category"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Scholarship Award</span>
+                      <q-input
+                        ref="refschpaward"
+                        v-model="state.schpaward"
+                        name="schpaward"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Remarks</span>
+                      <q-input
+                        ref="refremarks"
+                        v-model="state.remarks"
+                        name="remarks"
+                        outlined
+                        dense
+                        hide-bottom-space
+                        :rules="inputRules"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card-actions>
+            <q-card-actions>
+              <div class="row fit justify-center">
+                <q-btn
+                  rounded
+                  label="Add New Scholarship Information"
+                  color="primary"
+                  type="submit"
+                  class="q-mb-sm"
+                  style="width: 80%"
+                />
+              </div>
+            </q-card-actions>
+          </form>
+        </q-tab-panel>
       </q-tab-panels>
     </q-card>
   </q-dialog>
@@ -1746,13 +1890,65 @@ const checkSpasid = async (value) => {
 
 const combinedRules = [checkSpasid, ...inputRules];
 
+// SPAS ID Update Validations
+
+const upcheckSpasid = async (value) => {
+  const formData = new FormData(
+    document.getElementById("UpdateScholarInfoForm")
+  );
+  formData.append("checkSpasid", state.upspasid);
+  try {
+    const response = await axios.post("/read.php?checkSpas", formData);
+    if (response.data === true) {
+      // Do something if username is available
+    } else {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("This SPAS ID is already been taken!!!");
+        }, 1500);
+      });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error("Error:", error);
+  }
+};
+
+const combinedupRules = [upcheckSpasid, ...inputRules];
+
+// SPAS ID Update Validations
+
+const newcheckSpasid = async (value) => {
+  const formData = new FormData(
+    document.getElementById("createScholarInfoForm")
+  );
+  formData.append("checkSpasid", state.newspas);
+  try {
+    const response = await axios.post("/read.php?newcheckSpas", formData);
+    if (response.data === true) {
+      // Do something if username is available
+    } else {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("This SPAS ID is already been taken!!!");
+        }, 1500);
+      });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error("Error:", error);
+  }
+};
+
+const combinednewRules = [newcheckSpasid, ...inputRules];
+
 // Sweet Alerts
 
 const showalert = () => {
   let timerInterval;
   Swal.fire({
     title: "Creating New Scholar!",
-    html: "I will close in <b></b> milliseconds.",
+    html: "In Progress <b></b> milliseconds.",
     timer: 2000,
     timerProgressBar: true,
     didOpen: () => {
@@ -1904,6 +2100,15 @@ const refupreg2 = ref(null);
 const refupdist2 = ref(null);
 const refupzip2 = ref(null);
 
+const refpspas = ref(null);
+const refnewspas = ref(null);
+const refyrawarded = ref(null);
+const refprogram = ref(null);
+const refsubprogram = ref(null);
+const refcategory = ref(null);
+const refschpaward = ref(null);
+const refremarks = ref(null);
+
 // @state v-model
 const state = reactive({
   id: "",
@@ -1983,6 +2188,15 @@ const state = reactive({
   upregion2: "",
   updistrict2: "",
   upzip2: "",
+
+  pspas: "",
+  newspas: "",
+  yrawarded: "",
+  program: "",
+  subprogram: "",
+  category: "",
+  schpaward: "",
+  remarks: "",
 });
 
 // SWAL
@@ -1990,7 +2204,7 @@ const upUserAlert = () => {
   let timerInterval;
   Swal.fire({
     title: "Updating Scholar Information!",
-    html: "I will close in <b></b> milliseconds.",
+    html: "In Progress in <b></b> milliseconds.",
     timer: 2000,
     timerProgressBar: true,
     didOpen: () => {
@@ -2469,6 +2683,8 @@ const showUpdateScholar = (props) => {
   state.updistrict2 = props.row.adistrict;
   state.upzip2 = props.row.azipcode;
 
+  state.pspas = props.row.spas_id;
+
   // upprovinceZip.value = props.row.zip_id;
 
   upcuradd.value = props.row.diff_curr_add;
@@ -2697,6 +2913,78 @@ const batchUp = () => {
           });
         }
       });
+  }
+};
+
+// Creating new scholarship Informations
+
+const createScholarInfo = () => {
+  refpspas.value.validate();
+  refnewspas.value.validate();
+  refyrawarded.value.validate();
+  refprogram.value.validate();
+  refsubprogram.value.validate();
+  refcategory.value.validate();
+  refschpaward.value.validate();
+
+  if (
+    refpspas.value.hasError ||
+    refnewspas.value.hasError ||
+    refyrawarded.value.hasError ||
+    refprogram.value.hasError ||
+    refsubprogram.value.hasError ||
+    refcategory.value.hasError ||
+    refschpaward.value.hasError
+  ) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Failed to create new scholarship information.",
+    });
+  } else {
+    showedit.value = false;
+    var formData = new FormData(
+      document.getElementById("createScholarInfoForm")
+    );
+
+    let timerInterval;
+    Swal.fire({
+      title: "Creating New Scholarship Information.!",
+      html: "In Progress .... <b></b> milliseconds.",
+      timer: 2000,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+        const timer = Swal.getPopup().querySelector("b");
+        timerInterval = setInterval(() => {
+          timer.textContent = `${Swal.getTimerLeft()}`;
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    }).then((result) => {
+      /* Read more about handling dismissals below */
+      if (result.dismiss === Swal.DismissReason.timer) {
+        axios
+          .post("/create.php?newSCHInfo", formData)
+          .then(function (response) {
+            if (response.data == true) {
+              Swal.fire({
+                title: "Saved!",
+                text: "New Scholarship Information has been created.",
+                icon: "success",
+              });
+            } else {
+              $q.notify({
+                color: "red",
+                textColor: "white",
+                message: "New Scholarship Information not created",
+              });
+            }
+          });
+      }
+    });
   }
 };
 </script>

@@ -1,5 +1,14 @@
 <template>
-  <ScInfo />
+  <div class="q-mb-md q-px-lg">
+    <q-btn
+      color="primary"
+      icon="reply"
+      label="BACK"
+      rounded
+      flat
+      @click="goBack"
+    />
+  </div>
   <div class="q-pa-md">
     <q-card flat bordered class="my-card rounded-borders-40 banner-2">
       <q-card-section>
@@ -34,4 +43,8 @@ const user = inject("$user");
 const q$ = useQuasar();
 const $q = useQuasar();
 const axios = inject("$axios");
+
+function goBack() {
+  window.history.back();
+}
 </script>
