@@ -179,6 +179,36 @@
               </q-item>
             </q-list>
           </q-expansion-item>
+
+          <!-- Batch Update -->
+          <q-expansion-item label="Batch Updates" icon="cached">
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="/contractstats">
+                <q-item-section avatar>
+                  <IconFileDescription :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Contract Status</q-item-section>
+              </q-item>
+            </q-list>
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="">
+                <q-item-section avatar>
+                  <IconRosetteDiscountCheck :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Progress Status & Standing</q-item-section>
+              </q-item>
+            </q-list>
+
+            <q-separator />
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="">
+                <q-item-section avatar>
+                  <IconShieldCheck :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Insurance</q-item-section>
+              </q-item>
+            </q-list>
+          </q-expansion-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -195,13 +225,16 @@ import {
   IconSchool,
   IconStar,
   IconFiles,
+  IconFileDescription,
   IconReport,
   IconCertificate,
   IconUsers,
   IconUserStar,
   IconRosetteDiscountCheck,
   IconBuildingBank,
+  IconRefresh,
   IconRotateClockwise2,
+  IconShieldCheck,
 } from "@tabler/icons-vue";
 
 import router from "../router";

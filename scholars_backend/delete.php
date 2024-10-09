@@ -33,11 +33,11 @@ if(isset($_GET['delUserInfo'])){
     if(isset($_GET['delReplySlip'])){
 
     
-        $delSpasid = $_POST["delSpasid"];
+        $delScholarid = $_POST["delScholarid"];
         
         
-        $stnt = $pdo->prepare("DELETE FROM reply_slip_details WHERE spas_id = ?");
-        $stnt->execute([$delSpasid]);
+        $stnt = $pdo->prepare("DELETE FROM reply_slip_details WHERE scholar_id = ?");
+        $stnt->execute([$delScholarid]);
         
          if($stnt){
                 $result =  true;
@@ -57,10 +57,10 @@ if(isset($_GET['delUserInfo'])){
     if(isset($_GET['delContract'])){
 
     
-        $delSpasid = $_POST["delSpasid"];
+        $delSpasid = $_POST["delScholarid"];
         
         
-        $stnt = $pdo->prepare("DELETE FROM contract_status_details WHERE spas_id = ?");
+        $stnt = $pdo->prepare("DELETE FROM contract_status_details WHERE scholar_id = ?");
         $stnt->execute([$delSpasid]);
         
          if($stnt){

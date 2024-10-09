@@ -36,10 +36,8 @@
               <div class="col-12">
                 <div class="q-col-gutter-md row items-start">
                   <div class="col-xs-12 col-sm-6 col-md-3">
-                    <div class="text-h6">SY: {{ termLists?.sy || "N/A" }}</div>
-                    <div class="text-h6">
-                      Term: {{ cleanTermName || "N/A" }}
-                    </div>
+                    <div class="text-h6">SY: {{ sy }}</div>
+                    <div class="text-h6">Term: {{ sem }}</div>
                     <div class="text-h6">Term Required: {{ curriculum }}</div>
 
                     <div>
@@ -56,9 +54,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-8">
                     <div class="text-h6">
-                      School and Course Record: {{ school }}
-                      {{ course }} (Started {{ termLists?.sy || "N/A" }}
-                      {{ cleanTermName }})
+                      School and Course Record: {{ school }} , {{ course }}
                       <div class="row q-pa-md q-gutter-sm">
                         <span class="text-h6">Status (Start of Sem):</span>
                         <q-select
@@ -262,7 +258,6 @@
 </template>
 
 <script setup>
-import ScInfo from "../components/ScInfo.vue";
 import { ref, reactive, computed, onMounted, watch, inject } from "vue";
 import router from "../router";
 import { uid } from "quasar";
@@ -475,7 +470,7 @@ const populateGrades = () => {
 
   var formData = new FormData();
   formData.append("id", globalSPASid);
-  formData.append("termid_coure", termId.value);
+  formData.append("termid_course", termId);
   axios.post("/read.php?readEnrollSC", formData).then((response) => {
     // console.log(response.data);
 
@@ -507,24 +502,9 @@ if (storedCurriculum) {
   curriculum.value = JSON.parse(storedCurriculum);
 }
 
-const cleanTermName = computed(() => {
-  // Check if termLists has a name
-  if (termLists.value.name) {
-    // Use regex to remove the unwanted part
-    return termLists.value.name.replace(/U-\d{4}-[A-Z0-9-]+$/, "").trim();
-  }
-  return "N/A"; // Fallback if name doesn't exist
-});
+// Accesssing Term Id  from storage
 
-const termId = computed(() => {
-  // Check if termLists has a name
-  if (termLists.value.name) {
-    // Use regex to extract the ID part
-    const match = termLists.value.name.match(/U-\d{4}-[A-Z0-9-]+$/);
-    return match ? match[0] : "N/A"; // Return the matched ID or "N/A" if not found
-  }
-  return "N/A"; // Fallback if name doesn't exist
-});
+const termId = termLists?.value?.sy || "default value";
 
 // Select Term
 
@@ -577,8 +557,8 @@ const printGrades = () => {
 
   // From Storage
 
-  formData.append("syList", termLists.value.sy);
-  formData.append("term", cleanTermName.value);
+  formData.append("syList", sy.value);
+  formData.append("term", sem.value);
   formData.append("termreq", curriculum.value);
 
   formData.append("stat1", state.stat1);
@@ -603,10 +583,9 @@ const backBtn = () => {
 };
 
 const handleToggle = () => {
-  console.log(termId.value);
   var formData = new FormData();
 
-  formData.append("termid", termId.value);
+  formData.append("termid", termId);
 
   if (toggle.value === true) {
     axios.post("/create.php?createLatest", formData).then(function (response) {
@@ -650,7 +629,7 @@ const handleToggle = () => {
 const saveBtn = () => {
   var formData = new FormData();
 
-  formData.append("termid", termId.value);
+  formData.append("termid", termId);
 
   formData.append("user", user.username);
 

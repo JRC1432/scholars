@@ -134,7 +134,7 @@
     </q-card>
   </q-dialog>
 
-  <q-dialog v-model="showEnrollment" persistent>
+  <!-- <q-dialog v-model="showEnrollment" persistent>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
       <q-toolbar>
         <IconClipboardPlus :size="30" stroke-width="2" />
@@ -163,7 +163,7 @@
           /></div
       ></q-card-section>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 
   <q-dialog v-model="showExistEnrollment" persistent>
     <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
@@ -388,7 +388,7 @@ const computedTermOptions = computed(() => {
 const options = ["Add New Term Record", "Select Terms"];
 
 const openEnrollment = () => {
-  showEnrollment.value = true;
+  showExistEnrollment.value = true;
 };
 
 const addNavEnroll = () => {

@@ -1558,21 +1558,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-xs-12 col-sm-6 col-md-6">
-                    <div class="q-px-sm">
-                      <span class="text-bold">NEW SPAS ID</span>
-                      <q-input
-                        ref="refnewspas"
-                        v-model="state.newspas"
-                        name="newspas"
-                        outlined
-                        dense
-                        hide-bottom-space
-                        mask="A - #### - NN - #####"
-                        :rules="combinednewRules"
-                      />
-                    </div>
-                  </div>
+
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <div class="q-px-sm">
                       <span class="text-bold">Year Awarded</span>
@@ -1916,32 +1902,6 @@ const upcheckSpasid = async (value) => {
 
 const combinedupRules = [upcheckSpasid, ...inputRules];
 
-// SPAS ID Update Validations
-
-const newcheckSpasid = async (value) => {
-  const formData = new FormData(
-    document.getElementById("createScholarInfoForm")
-  );
-  formData.append("checkSpasid", state.newspas);
-  try {
-    const response = await axios.post("/read.php?newcheckSpas", formData);
-    if (response.data === true) {
-      // Do something if username is available
-    } else {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("This SPAS ID is already been taken!!!");
-        }, 1500);
-      });
-    }
-  } catch (error) {
-    // Handle any errors
-    console.error("Error:", error);
-  }
-};
-
-const combinednewRules = [newcheckSpasid, ...inputRules];
-
 // Sweet Alerts
 
 const showalert = () => {
@@ -2101,7 +2061,7 @@ const refupdist2 = ref(null);
 const refupzip2 = ref(null);
 
 const refpspas = ref(null);
-const refnewspas = ref(null);
+
 const refyrawarded = ref(null);
 const refprogram = ref(null);
 const refsubprogram = ref(null);
@@ -2190,7 +2150,7 @@ const state = reactive({
   upzip2: "",
 
   pspas: "",
-  newspas: "",
+
   yrawarded: "",
   program: "",
   subprogram: "",
@@ -2920,7 +2880,7 @@ const batchUp = () => {
 
 const createScholarInfo = () => {
   refpspas.value.validate();
-  refnewspas.value.validate();
+
   refyrawarded.value.validate();
   refprogram.value.validate();
   refsubprogram.value.validate();
@@ -2929,7 +2889,6 @@ const createScholarInfo = () => {
 
   if (
     refpspas.value.hasError ||
-    refnewspas.value.hasError ||
     refyrawarded.value.hasError ||
     refprogram.value.hasError ||
     refsubprogram.value.hasError ||

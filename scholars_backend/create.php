@@ -584,7 +584,7 @@ if(isset($_GET['createReplySlip'])){
     $date = date("Y-m-d h:i:s a");
     $uploaded_by = $_POST["user"];
 
-    $spasid = $_POST["spasid"];
+    $scholarid = $_POST["scholarid"];
     $reply = $_POST["reply"];
     $daterep = $_POST["daterep"];
     $reply_reason = $_POST["reply_reason"];
@@ -592,9 +592,9 @@ if(isset($_GET['createReplySlip'])){
     $verified = true;
 
 
-    $stnt = $pdo->prepare("INSERT INTO reply_slip_details(spas_id,reply_slip,date_reply,reason,created_by,updated_by,verified_flag,verified_by) VALUES 
+    $stnt = $pdo->prepare("INSERT INTO reply_slip_details(scholar_id,reply_slip,date_reply,reason,created_by,updated_by,verified_flag,verified_by) VALUES 
     (?,?,?,?,?,?,?,?)");
-    $params = array($spasid,$reply,$daterep,$reply_reason2,$uploaded_by,$uploaded_by,$verified,$uploaded_by);
+    $params = array($scholarid,$reply,$daterep,$reply_reason2,$uploaded_by,$uploaded_by,$verified,$uploaded_by);
     $stnt -> execute($params);
 
     if($stnt){
@@ -1431,8 +1431,6 @@ if(isset($_GET['newSCHInfo'])){
  
     $primary_spas = $_POST["pspas"];
     $pspasid_no_spaces = str_replace(' ', '', $primary_spas);
-    $newspas = $_POST["newspas"];
-    $newspasid_no_spaces = str_replace(' ', '', $newspas);
     $yr_awarded = $_POST["yrawarded"];
     $program = $_POST["program"];
     $subprogram = $_POST["subprogram"];
@@ -1443,7 +1441,7 @@ if(isset($_GET['newSCHInfo'])){
     
     $stnt = $pdo->prepare("INSERT INTO scholarship_info(spas_id,primary_spas_id,yr_awarded,program,sub_program,category,schp_award,remarks) VALUES 
     (?,?,?,?,?,?,?,?)");
-    $params = array($newspasid_no_spaces,$pspasid_no_spaces,$yr_awarded,$program,$subprogram,$category,$schpaward,$remarks);
+    $params = array($pspasid_no_spaces,$pspasid_no_spaces,$yr_awarded,$program,$subprogram,$category,$schpaward,$remarks);
     $stnt -> execute($params);
 
     if($stnt){

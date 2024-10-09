@@ -217,19 +217,17 @@ if(isset($_GET['updateReplySlip'])){
 
     $updatedby = $_POST["user"];
 
-    $upspasid = $_POST["upspasid"];
+    $upscholarid = $_POST["upscholarid"];
 
     $upreply = $_POST["upreply"];
     $updaterep = $_POST["updaterep"];
     $upreply_reason = $_POST["upreply_reason"];
-    $upspasid = $_POST["upspasid"];
 
-    
-    
-    
+
+
     $stnt = $pdo->prepare("UPDATE reply_slip_details SET reply_slip = ?, date_reply = ?, reason = ?, updated_at = ?, updated_by = ?, verified_by = ?
-    WHERE spas_id = ?");
-    $stnt->execute([$upreply,$updaterep,$upreply_reason,$date,$updatedby,$updatedby,$upspasid]);
+    WHERE scholar_id = ?");
+    $stnt->execute([$upreply,$updaterep,$upreply_reason,$date,$updatedby,$updatedby,$upscholarid]);
     
      if($stnt){
             $result =  true;
@@ -251,7 +249,7 @@ if(isset($_GET['updateReplySlip'])){
         $date = date("Y-m-d h:i:s a");
     
         $updatedby = $_POST["user"];
-        $spasid = $_POST["spasid"];
+        $scholarid = $_POST["scholarid"];
 
         $cntrctStatus = $_POST["cntrctStatus"];
         $availAward = $_POST["availAward"];
@@ -261,13 +259,17 @@ if(isset($_GET['updateReplySlip'])){
         $upetgMonth = $_POST["upetgMonth"];
         $upetg = $_POST["upetg"];
         $scholarDefer = ($_POST["scholarDefer"] === 'YES') ? 1 : 0;
+        $sc = $_POST["upscrTerm"];
+        $termid = $_POST["uptermRec"];
+
 
 
 
         
         $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, avail_award = ?, other_schp = ?, contract_loc = ?, duration = ?, etg_month = ?,
-        etg = ?, deferment_status = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-        $stnt->execute([$cntrctStatus,$availAward,$upotherScholarship,$clocations,$upduration,$upetgMonth,$upetg,$scholarDefer,$updatedby,$date,$spasid]);
+        etg = ?, deferment_status = ?, course_id = ?, term_id = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+        $stnt->execute([$cntrctStatus,$availAward,$upotherScholarship,$clocations,$upduration,$upetgMonth,$upetg,$scholarDefer,$sc,$termid,
+        $updatedby,$date,$scholarid]);
         
          if($stnt){
                 $result =  true;
@@ -288,7 +290,7 @@ if(isset($_GET['updateReplySlip'])){
             $date = date("Y-m-d h:i:s a");
         
             $updatedby = $_POST["user"];
-            $spasid = $_POST["spasid"];
+            $scholarid = $_POST["scholarid"];
         
             $defscholarDefer = ($_POST["defscholarDefer"] === 'YES') ? 1 : 0;
             $updefreason = $_POST["updefreason"];
@@ -298,21 +300,21 @@ if(isset($_GET['updateReplySlip'])){
             $statsLatest = ($_POST["statsLatest"] === 'YES') ? 1 : 0;
             $recActive = ($_POST["recActive"] === 'YES') ? true : false;
         
-            // First, check if the spas_id exists
-            $checkStmt = $pdo->prepare("SELECT spas_id FROM deferment_details WHERE spas_id = ?");
-            $checkStmt->execute([$spasid]);
+            // First, check if the scholar_id exists
+            $checkStmt = $pdo->prepare("SELECT scholar_id FROM deferment_details WHERE scholar_id = ?");
+            $checkStmt->execute([$scholarid]);
             $spasExists = $checkStmt->fetchColumn();
         
             if ($spasExists) {
-                // Update the record if spas_id exists
+                // Update the record if scholar_id exists
                 $stnt = $pdo->prepare("UPDATE deferment_details SET with_deferment_form = ?, reason = ?, sy_deferred = ?, term_type = ?, term_deferred = ?, verified_flag = ?,
-                updated_by = ?, updated_at = ? WHERE spas_id = ?");
-                $stnt->execute([$defscholarDefer, $updefreason, $upSyDef, $uptermtype, $uptermDef, $statsLatest, $updatedby, $date, $spasid]);
+                updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+                $stnt->execute([$defscholarDefer, $updefreason, $upSyDef, $uptermtype, $uptermDef, $statsLatest, $updatedby, $date, $scholarid]);
             } else {
-                // Insert a new record if spas_id doesn't exist
-                $stnt = $pdo->prepare("INSERT INTO deferment_details (spas_id, with_deferment_form, reason, sy_deferred, term_type, term_deferred, verified_flag, updated_by, updated_at)
+                // Insert a new record if scholar_id doesn't exist
+                $stnt = $pdo->prepare("INSERT INTO deferment_details (scholar_id, with_deferment_form, reason, sy_deferred, term_type, term_deferred, verified_flag, updated_by, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stnt->execute([$spasid, $defscholarDefer, $updefreason, $upSyDef, $uptermtype, $uptermDef, $statsLatest, $updatedby, $date]);
+                $stnt->execute([$scholarid, $defscholarDefer, $updefreason, $upSyDef, $uptermtype, $uptermDef, $statsLatest, $updatedby, $date]);
             }
         
             if ($stnt) {
@@ -334,12 +336,12 @@ if(isset($_GET['updateReplySlip'])){
                 $date = date("Y-m-d h:i:s a");
             
                 $updatedby = $_POST["user"];
-                $spasid = $_POST["spasid"];
+                $scholarid = $_POST["scholarid"];
                 $cntrctStatus = $_POST["cntrctStatus"];
     
                 
-                $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-                $stnt->execute([$cntrctStatus,$updatedby,$date,$spasid]);
+                $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+                $stnt->execute([$cntrctStatus,$updatedby,$date,$scholarid]);
                 
                  if($stnt){
                         $result =  true;
@@ -364,15 +366,15 @@ if(isset($_GET['updateReplySlip'])){
                 $date = date("Y-m-d h:i:s a");
             
                 $updatedby = $_POST["user"];
-                $spasid = $_POST["spasid"];
+                $scholarid = $_POST["scholarid"];
                 $cntrctStatus = $_POST["cntrctStatus"];
           
                 $didNotscholarDefer = ($_POST["didNotscholarDefer"] === 'YES') ? 1 : 0;
                 $didNotreason = $_POST["didNotreason"];
 
 
-                $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, deferment_status = ?, reason = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-                $stnt->execute([$cntrctStatus,$didNotscholarDefer,$didNotreason,$updatedby,$date,$spasid]);
+                $stnt = $pdo->prepare("UPDATE contract_status_details SET contract_status = ?, deferment_status = ?, reason = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+                $stnt->execute([$cntrctStatus,$didNotscholarDefer,$didNotreason,$updatedby,$date,$scholarid]);
                 
                  if($stnt){
                         $result =  true;
@@ -395,12 +397,12 @@ if(isset($_GET['updateReplySlip'])){
                     $date = date("Y-m-d h:i:s a");
                 
                     $updatedby = $_POST["user"];
-                    $spasid = $_POST["spasid"];
+                    $scholarid = $_POST["scholarid"];
                     $verified = 0;
     
     
-                    $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-                    $stnt->execute([$verified,$updatedby,$date,$spasid]);
+                    $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+                    $stnt->execute([$verified,$updatedby,$date,$scholarid]);
                     
                      if($stnt){
                             $result =  true;
@@ -424,12 +426,12 @@ if(isset($_GET['updateReplySlip'])){
                     $date = date("Y-m-d h:i:s a");
                 
                     $updatedby = $_POST["user"];
-                    $spasid = $_POST["spasid"];
+                    $scholarid = $_POST["scholarid"];
                     $verified = 1;
     
     
-                    $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-                    $stnt->execute([$verified,$updatedby,$date,$spasid]);
+                    $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+                    $stnt->execute([$verified,$updatedby,$date,$scholarid]);
                     
                      if($stnt){
                             $result =  true;
@@ -1106,12 +1108,12 @@ if(isset($_GET['updateReplySlip'])){
             $date = date("Y-m-d h:i:s a");
         
             $updatedby = $_POST["user"];
-            $spasid = $_POST["spasid"];
+            $scholarid = $_POST["scholarid"];
             $verified = 0;
 
 
-            $stnt = $pdo->prepare("UPDATE reply_slip_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-            $stnt->execute([$verified,$updatedby,$date,$spasid]);
+            $stnt = $pdo->prepare("UPDATE reply_slip_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+            $stnt->execute([$verified,$updatedby,$date,$scholarid]);
             
              if($stnt){
                     $result =  true;
@@ -1134,12 +1136,12 @@ if(isset($_GET['updateReplySlip'])){
             $date = date("Y-m-d h:i:s a");
         
             $updatedby = $_POST["user"];
-            $spasid = $_POST["spasid"];
+            $scholarid = $_POST["scholarid"];
             $verified = 1;
 
 
-            $stnt = $pdo->prepare("UPDATE reply_slip_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE spas_id = ?");
-            $stnt->execute([$verified,$updatedby,$date,$spasid]);
+            $stnt = $pdo->prepare("UPDATE reply_slip_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+            $stnt->execute([$verified,$updatedby,$date,$scholarid]);
             
              if($stnt){
                     $result =  true;
@@ -1151,6 +1153,36 @@ if(isset($_GET['updateReplySlip'])){
                 echo json_encode($result);
             
             }
+
+
+
+
+            // Allow Course
+
+
+            if(isset($_GET['allowCourse'])){
+                date_default_timezone_set('Asia/Manila');
+                $date = date("Y-m-d h:i:s a");
+            
+                $updatedby = $_POST["user"];
+                $scholarid = $_POST["scholarid"];
+                $verified = 1;
+
+
+                $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
+                $stnt->execute([$verified,$updatedby,$date,$scholarid]);
+                
+                 if($stnt){
+                        $result =  true;
+                    } else{
+                        
+                        $result = false;
+                    }
+                
+                    echo json_encode($result);
+                
+                }
+
 
 
                     

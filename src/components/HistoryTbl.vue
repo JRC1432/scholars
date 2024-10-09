@@ -356,7 +356,21 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn outline style="color: goldenrod" label="Disallow" />
+            <q-btn
+              v-if="verif_flag === 1"
+              outline
+              style="color: goldenrod"
+              label="Disallow"
+              @click="disCourse"
+            />
+            <q-btn
+              v-else
+              outline
+              style="color: goldenrod"
+              label="Allow"
+              @click="allowCourse"
+            />
+
             <q-btn
               outline
               style="color: goldenrod"
@@ -1976,6 +1990,7 @@ const update = ref();
 const verified = ref();
 const created_at = ref();
 const updated_at = ref();
+const verif_flag = ref();
 
 // View progress Status
 
@@ -2299,6 +2314,7 @@ const openSC = async (props) => {
     verified.value = response.data.verified_by;
     created_at.value = response.data.created_at;
     updated_at.value = response.data.updated_at;
+    verif_flag.value = response.data.verified_flag;
   } catch (error) {
     console.error("Error occurred while fetching course data:", error);
   }
@@ -3621,6 +3637,38 @@ const delEndTerm = () => {
     .onDismiss(() => {
       // console.log('I am triggered on both OK and Cancel')
     });
+};
+
+const allowCourse = () => {
+  var formData = new FormData();
+
+  formData.append("user", user.username);
+
+  axios.post("/update.php?allowCourse", formData).then(function (response) {
+    if (response.data == true) {
+      readHistoryRec();
+
+      Swal.fire({
+        title: "SAVED!",
+        text: "Allow Successfully",
+        icon: "success",
+      });
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to verify Progress Status(Start)",
+      });
+    }
+  });
+};
+
+const disCourse = () => {
+  Swal.fire({
+    icon: "error",
+    title: "Disallowed...",
+    text: "Disallowed Successfully",
+  });
 };
 </script>
 <style scoped>

@@ -129,7 +129,8 @@
 import WelcomeBanner from "../components/WelcomeBanner.vue";
 import { ref, reactive, onMounted, inject, computed, watch } from "vue";
 import { useQuasar } from "quasar";
-import Vue3autocounter from "vue3-autocounter";
+// import vue3Autocounter from "vue3-autocounter";
+import Vue3Autocounter from "vue3-autocounter";
 
 import Swal from "sweetalert2";
 

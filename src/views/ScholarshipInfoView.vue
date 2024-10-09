@@ -413,7 +413,20 @@
           label="Update"
           @click="UpDeferContract"
         />
-        <q-btn outline style="color: goldenrod" label="Disallow" />
+        <q-btn
+          v-if="vflag === 1"
+          outline
+          style="color: goldenrod"
+          label="Disallow"
+          @click="disAvailing"
+        />
+        <q-btn
+          v-else
+          outline
+          style="color: goldenrod"
+          label="Allow"
+          @click="allowAvailing"
+        />
         <q-btn outline style="color: goldenrod" label="Delete" />
       </q-card-actions>
     </q-card>
@@ -482,10 +495,18 @@
           @click="UpDidnotContract"
         />
         <q-btn
+          v-if="vflag === 1"
           outline
           style="color: goldenrod"
           label="Disallow"
           @click="disAvailing"
+        />
+        <q-btn
+          v-else
+          outline
+          style="color: goldenrod"
+          label="Allow"
+          @click="allowAvailing"
         />
         <q-btn
           outline
@@ -868,6 +889,7 @@
               v-model="state.upetg"
               name="upetg"
               type="number"
+              :rules="[myRule]"
             />
           </div>
           <div class="q-px-sm text-bold">
@@ -886,6 +908,7 @@
           <div class="q-px-sm">
             <span class="text-bold">School And Course Record</span>
             <q-select
+              ref="refscid"
               :options="scrTermoptions"
               v-model="state.upscrTerm"
               name="upscrTerm"
@@ -895,11 +918,13 @@
               use-input
               map-options
               hide-bottom-space
+              :rules="[myRule]"
             />
           </div>
           <div class="q-px-sm">
             <span class="text-bold">SY and Term Started</span>
             <q-select
+              ref="refsyid"
               :options="termRecOptions"
               v-model="state.uptermRec"
               name="uptermRec"
@@ -909,6 +934,7 @@
               use-input
               map-options
               hide-bottom-space
+              :rules="[myRule]"
             />
           </div>
 
@@ -1275,6 +1301,8 @@ const refupetg = ref(null);
 const refupSyDef = ref(null);
 const refuptermtype = ref(null);
 const refuptermDef = ref(null);
+const refscid = ref(null);
+const refsyid = ref(null);
 
 const state = reactive({
   reply: "",
@@ -1307,15 +1335,6 @@ const state = reactive({
 });
 
 const columns = [
-  {
-    name: "spas_id",
-    required: true,
-    label: "SPAS ID",
-    align: "left",
-    field: "spas_id",
-    sortable: true,
-  },
-
   {
     name: "yr_awarded",
     required: true,
@@ -1533,14 +1552,18 @@ const filtersy = (val, update) => {
 
 // const spasReply = ref();
 
+const reply_scholar_id = ref();
+
 const showReply = (props) => {
   showReplies.value = true;
 
-  showReply.value = props.row.spas_id;
+  reply_scholar_id.value = props.row.scholar_id;
+
   state.upreply = props.row.reply_slip;
+  showReply.value = props.row.scholar_id;
 
   var formData = new FormData();
-  formData.append("id", showReply.value);
+  formData.append("id", reply_scholar_id.value);
 
   axios.post("/read.php?readReplyId", formData).then((response) => {
     replySlip.value = response.data.reply_slip;
@@ -1558,18 +1581,17 @@ const showReply = (props) => {
 
 // Add New Reply
 
-const spasreplyid = ref();
+const add_reply_scholarid = ref();
 
 const addReply = (props) => {
   addReplies.value = true;
-  spasreplyid.value = props.row.spas_id;
+  add_reply_scholarid.value = props.row.scholar_id;
 };
 
 const CreateReply = () => {
   refreply.value.validate();
   refdaterep.value.validate();
-  console.log(user.username);
-  console.log(spasreplyid.value);
+  console.log(add_reply_scholarid.value);
 
   if (refreply.value.hasError || refdaterep.value.hasError) {
     $q.notify({
@@ -1580,7 +1602,7 @@ const CreateReply = () => {
   } else {
     var formData = new FormData(document.getElementById("ReplyForm"));
 
-    formData.append("spasid", spasreplyid.value);
+    formData.append("scholarid", add_reply_scholarid.value);
     formData.append("user", user.username);
 
     axios
@@ -1607,8 +1629,6 @@ const CreateReply = () => {
 // Update Reply
 
 const Updatereply = () => {
-  console.log(showReply.value);
-  console.log(user.username);
   showReplies.value = false;
   updateReplies.value = true;
 };
@@ -1626,7 +1646,7 @@ const UpdateReplyNow = () => {
   } else {
     var formData = new FormData(document.getElementById("UpReplyForm"));
 
-    formData.append("upspasid", showReply.value);
+    formData.append("upscholarid", showReply.value);
     formData.append("user", user.username);
 
     axios
@@ -1650,11 +1670,9 @@ const UpdateReplyNow = () => {
 // Remove Reply
 
 const Removereply = () => {
-  console.log(showReply.value);
-
   showReplies.value = false;
   var formData = new FormData(document.getElementById("DForm"));
-  formData.append("delSpasid", showReply.value);
+  formData.append("delScholarid", showReply.value);
 
   Swal.fire({
     title: "Are you sure?",
@@ -1691,12 +1709,11 @@ const Removereply = () => {
 // Disallow Reply
 
 const disReply = () => {
-  console.log(showReply.value);
   showReplies.value = false;
 
   var formData = new FormData();
 
-  formData.append("spasid", showReply.value);
+  formData.append("scholarid", showReply.value);
   formData.append("user", user.username);
 
   axios.post("/update.php?disReplySlip", formData).then(function (response) {
@@ -1719,12 +1736,11 @@ const disReply = () => {
 // Allow Reply
 
 const allowReply = () => {
-  console.log(showReply.value);
   showReplies.value = false;
 
   var formData = new FormData();
 
-  formData.append("spasid", showReply.value);
+  formData.append("scholarid", showReply.value);
   formData.append("user", user.username);
 
   axios.post("/update.php?allowReplySlip", formData).then(function (response) {
@@ -1765,18 +1781,18 @@ const resetBtnrep = () => {
 
 // Availing
 
-const spasid = ref();
 const contract_Status = ref();
+const contract_scholarid = ref();
 
 const showContractStats = (props) => {
   showContractDetails.value = true;
+  contract_scholarid.value = props.row.scholar_id;
 
-  spasid.value = props.row.spas_id;
   contract_Status.value = props.row.contract_status;
 
   var formData = new FormData();
-  formData.append("id", spasid.value);
-
+  formData.append("scholarid", contract_scholarid.value);
+  //
   axios.post("/read.php?readSCID", formData).then((response) => {
     // Availing Status
     contractStats.value = response.data.contract_status;
@@ -1810,7 +1826,7 @@ const showContractStats = (props) => {
 // Update the contract
 
 const UpdateContract = () => {
-  console.log(spasid.value);
+  console.log(contract_scholarid.value);
   showContractDetails.value = false;
   upContract.value = true;
   state.cntrctStatus = contractStats.value;
@@ -1821,17 +1837,20 @@ const UpdateContract = () => {
   state.upetgMonth = etgMonth.value;
   state.upetg = etg.value;
   scholarDefer.value = scdefbef.value === 1 ? "YES" : "NO";
+  // state.upscrTerm =
+  //   school.value + ", " + course.value + " (Start " + scYearAvail.value + ")";
 };
 
 const SubmitContract = () => {
-  console.log(spasid.value);
-
+  console.log(contract_scholarid.value);
   refcntrctStatus.value.validate();
   refavailAward.value.validate();
   refclocations.value.validate();
   refupduration.value.validate();
   refupetgMonth.value.validate();
   refupetg.value.validate();
+  refscid.value.validate();
+  refsyid.value.validate();
 
   if (
     refcntrctStatus.value.hasError ||
@@ -1839,7 +1858,9 @@ const SubmitContract = () => {
     refclocations.value.hasError ||
     refupduration.value.hasError ||
     refupetgMonth.value.hasError ||
-    refupetg.value.hasError
+    refupetg.value.hasError ||
+    refscid.value.hasError ||
+    refsyid.value.hasError
   ) {
     $q.notify({
       color: "red",
@@ -1851,7 +1872,7 @@ const SubmitContract = () => {
     var formData = new FormData(document.getElementById("SubmitContractForm"));
 
     formData.append("user", user.username);
-    formData.append("spasid", spasid.value);
+    formData.append("scholarid", contract_scholarid.value);
     formData.append("scholarDefer", scholarDefer.value);
 
     Swal.fire({
@@ -1885,12 +1906,11 @@ const SubmitContract = () => {
 };
 
 const UpDeferContract = () => {
-  console.log(spasid.value);
+  console.log(contract_scholarid.value);
   upContract.value = true;
   showContractDetails.value = false;
   state.cntrctStatus = contractStats.value;
   // Deferment
-
   defscholarDefer.value = defform.value === true ? "YES" : "NO";
   state.updefreason = defreason.value;
   state.upSyDef = sydef.value;
@@ -1919,7 +1939,7 @@ const SubmitDefContract = () => {
     var formData = new FormData(document.getElementById("SubmitContractForm"));
 
     formData.append("user", user.username);
-    formData.append("spasid", spasid.value);
+    formData.append("scholarid", contract_scholarid.value);
     formData.append("defscholarDefer", defscholarDefer.value);
     formData.append("statsLatest", statsLatest.value);
     formData.append("recActive", recActive.value);
@@ -1985,7 +2005,7 @@ const SubmitDidNotContract = () => {
   var formData = new FormData(document.getElementById("SubmitDidNotForm"));
 
   formData.append("user", user.username);
-  formData.append("spasid", spasid.value);
+  formData.append("scholarid", contract_scholarid.value);
   formData.append("didNotscholarDefer", didNotscholarDefer.value);
   formData.append("cntrctStatus", state.cntrctStatus);
 
@@ -2024,7 +2044,7 @@ const delContract = () => {
   // console.log(spasid.value);
   showContractDetails.value = false;
   var formData = new FormData();
-  formData.append("delSpasid", spasid.value);
+  formData.append("delScholarid", contract_scholarid.value);
 
   Swal.fire({
     title: "Are you sure?",
@@ -2059,14 +2079,12 @@ const delContract = () => {
 // Disallow Availing
 
 const disAvailing = () => {
-  console.log(spasid.value);
-  console.log(user.username);
   showContractDetails.value = false;
 
   var formData = new FormData();
 
   formData.append("user", user.username);
-  formData.append("spasid", spasid.value);
+  formData.append("scholarid", contract_scholarid.value);
 
   axios
     .post("/update.php?disallowAvailing", formData)
@@ -2095,7 +2113,7 @@ const allowAvailing = () => {
   var formData = new FormData();
 
   formData.append("user", user.username);
-  formData.append("spasid", spasid.value);
+  formData.append("scholarid", contract_scholarid.value);
 
   axios.post("/update.php?allowAvailing", formData).then(function (response) {
     if (response.data == true) {

@@ -29,20 +29,25 @@
                   <div class="text-h6">Course: {{ course }}</div>
                   <div>
                     <span class="text-h6">Term Required: </span>
-                    <q-radio
+
+                    <q-btn-toggle
                       v-model="termreq"
-                      val="YES"
-                      label="YES"
-                      @update:model-value="handleTermChange"
-                    />
-                    <q-radio
-                      v-model="termreq"
-                      val="NO"
-                      label="NO"
+                      class="my-custom-toggle"
+                      no-caps
+                      rounded
+                      push
+                      toggle-color="primary"
+                      color="white"
+                      size="sm"
+                      text-color="primary"
+                      :options="[
+                        { label: 'YES', value: 'YES' },
+                        { label: 'NO', value: 'NO' },
+                      ]"
                       @update:model-value="handleTermChange"
                     />
 
-                    <div class="q-pa-xs q-gutter-sm">
+                    <div class="q-pa-sm q-gutter-sm">
                       <q-btn
                         v-if="verif === 0 || verif === null"
                         color="positive"

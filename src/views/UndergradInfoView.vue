@@ -127,7 +127,7 @@
         <q-card-section>
           <div class="q-px-sm">
             <span class="text-bold">SPAS ID:</span>
-            <q-select
+            <!-- <q-select
               ref="refspasid"
               v-model="state.spasid"
               name="spasid"
@@ -137,6 +137,16 @@
               hide-bottom-space
               :options="spasoptions"
               :rules="[myRule]"
+            /> -->
+            <q-input
+              ref="refspasid"
+              outlined
+              dense
+              readonly
+              hide-bottom-space
+              v-model="spasid"
+              name="spasid"
+              :rules="inputRules"
             />
           </div>
           <div class="q-px-sm">
@@ -290,6 +300,11 @@ const myRule = (val) => {
   return true;
 };
 
+// Rules & Validations
+const inputRules = [
+  (val) => (val && val.length > 0) || "Please type something",
+];
+
 const refspasid = ref(null);
 const refschool = ref(null);
 const refcourses = ref(null);
@@ -297,8 +312,9 @@ const refsy = ref(null);
 const reftermtype = ref(null);
 const refterm = ref(null);
 
+const spas_ids = ref();
+
 const state = reactive({
-  spasid: "",
   school: "",
   courses: "",
   sy: "",
@@ -535,6 +551,7 @@ const CreateUndergrad = () => {
     var formData = new FormData(document.getElementById("CreateUndergradForm"));
 
     formData.append("user", user.username);
+    formData.append("spasid", spasid.value);
 
     axios
       .post("/create.php?createUndergradRec", formData)
