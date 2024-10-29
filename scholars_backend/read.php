@@ -695,7 +695,7 @@ if(isset($_GET['viewCourseID'])){
     {
     
         $stnt = $pdo->prepare("SELECT t.spas_id, t.term_id, t.sy, t.term, s.name as school, c.name as course, r.created_by,
-r.updated_by, r.verified_by, r.created_at, r.updated_at
+r.updated_by, r.verified_by, r.verified_flag, r.created_at, r.updated_at
 
 
 FROM term_record as t
@@ -735,7 +735,7 @@ WHERE t.term_id = ?
 if(isset($_GET['viewStartStatID'])){
     $data = array();
     $id = $_POST["id"];
-    $progress = $_POST["progress"];
+
     $termid = $_POST["termid"];
 
     try
@@ -753,12 +753,176 @@ FROM progress_status_history
 
 WHERE spas_id = ?
 AND start_end = 1
-AND progress_status = ?
 AND term_id = ?
 
     
         ");
-        $params = array($id,$progress,$termid);
+        $params = array($id,$termid);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    // Read View Start  Progress Status
+
+if(isset($_GET['viewProgressStat1'])){
+    $data = array();
+    $id = $_POST["spasid"];
+    $termid = $_POST["id"];
+
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT progress_status FROM progress_status_history 
+
+                WHERE spas_id = ?
+                AND start_end = 1
+                AND active_flag = true
+                AND term_id = ?
+
+        ");
+        $params = array($id,$termid);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+     // Read View Start  Progress Status End
+
+if(isset($_GET['viewProgressStat2'])){
+    $data = array();
+    $id = $_POST["spasid"];
+    $termid = $_POST["id"];
+
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT progress_status FROM progress_status_history 
+
+                WHERE start_end = 2
+                AND spas_id = ?
+                AND active_flag = true
+                AND term_id = ?
+
+        ");
+        $params = array($id,$termid);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+
+    // Read View Start Term Standing
+
+if(isset($_GET['viewStartStat1'])){
+    $data = array();
+    $id = $_POST["spasid"];
+    $termid = $_POST["id"];
+
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT standing FROM standing_history
+
+                WHERE spas_id = ?
+                AND start_end = 1
+                AND active_flag = true
+                AND term_id = ?
+
+        ");
+        $params = array($id,$termid);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    // Read View End Term Standing
+
+if(isset($_GET['viewStartStat2'])){
+    $data = array();
+    $id = $_POST["spasid"];
+    $termid = $_POST["id"];
+
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT standing FROM standing_history
+
+                WHERE spas_id = ?
+                AND start_end = 2
+                AND active_flag = true
+                AND term_id = ?
+
+        ");
+        $params = array($id,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -785,7 +949,7 @@ AND term_id = ?
 if(isset($_GET['viewEndID'])){
     $data = array();
     $id = $_POST["id"];
-    $progress = $_POST["progress"];
+
     $termid = $_POST["termid"];
 
     try
@@ -801,10 +965,9 @@ FROM progress_status_history as p
 
 WHERE spas_id = ?
 AND start_end = 2
-AND progress_status = ?
 AND term_id = ?
         ");
-        $params = array($id,$progress,$termid);
+        $params = array($id,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -831,7 +994,6 @@ AND term_id = ?
 if(isset($_GET['viewSTRTStandID'])){
     $data = array();
     $id = $_POST["id"];
-    $progress = $_POST["progress"];
     $termid = $_POST["termid"];
     
     try
@@ -846,11 +1008,10 @@ FROM standing_history
 
 
 WHERE spas_id = ?
-AND standing = ?
 AND term_id = ?
 AND start_end = 1
 ");
-        $params = array($id,$progress,$termid);
+        $params = array($id,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -877,7 +1038,6 @@ AND start_end = 1
 if(isset($_GET['viewENDStandID'])){
     $data = array();
     $id = $_POST["id"];
-    $progress = $_POST["progress"];
     $termid = $_POST["termid"];
     
     try
@@ -892,13 +1052,12 @@ to_char(updated_at, 'MONTH DD, YYYY on HH12:MI AM') as updated_at
 FROM standing_history
 
 WHERE spas_id = ?
-AND standing = ?
 AND start_end = 2
 AND term_id = ?
 
     
         ");
-        $params = array($id,$progress,$termid);
+        $params = array($id,$termid);
         $stnt->execute($params);
     
     }catch (Exception $ex){
@@ -2141,7 +2300,8 @@ if(isset($_GET['readEditGrades'])){
     p1.progress_status AS pstart,
     s1.standing AS sstanding,
 	t.latest_flag,
-    t.grades_verified_flag
+    t.grades_verified_flag,
+    cr.id
     
 
 FROM 
@@ -2999,15 +3159,14 @@ ORDER BY yr_awarded ASC, full_name ASC;
         try
         {
         
-            $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.spas_id, t.term_id
-
+            $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.spas_id, t.term_id, g.term_id
 FROM scholarship_info as s
-
 LEFT OUTER JOIN term_record as t ON s.spas_id = t.spas_id
-
+LEFT OUTER JOIN grades as g ON t.term_id = g.term_id
 WHERE s.primary_spas_id = ?
-GROUP BY t.term_id, s.spas_id, t.spas_id, s.primary_spas_id
-ORDER BY t.term_id
+GROUP BY t.term_id, s.spas_id, t.spas_id, s.primary_spas_id, g.term_id
+HAVING g.term_id IS NOT NULL
+ORDER BY t.term_id;
 
 
                         ");
@@ -3032,20 +3191,25 @@ ORDER BY t.term_id
 
             $stntss = $pdo->prepare("SELECT DISTINCT t.spas_id, t.term_id, t.sy, t.term, t.term_required,
                 t.course_id, t.grade_ave, t.reg_form_submitted,t.reg_verified_flag, t.grades_verified_flag,
-                t.progress_status_start, t.progress_status_end,
+                pstart.progress_status as progress_status_start, sstart.standing as standing_start, pend.progress_status as progress_status_end,
+				send.standing as standing_end,
                 c.name as courses, s.name as school
 
                 FROM term_record as t
 
                 LEFT OUTER JOIN grades as g ON t.term_id = g.term_id
                 LEFT OUTER JOIN course_record as cr ON t.course_id = cr.id
+				LEFT OUTER JOIN progress_status_history as pstart ON t.progress_status_start = pstart.id
+				LEFT OUTER JOIN progress_status_history as pend ON t.progress_status_end = pend.id
+				LEFT OUTER JOIN standing_history as sstart ON t.standing_start = sstart.id
+				LEFT OUTER JOIN standing_history as send ON t.standing_end = send.id
 
                 LEFT JOIN 
                     courses c ON cr.course_code = c.id::text
                 LEFT JOIN 
                     colleges s ON cr.school_code = s.id::text
 
-                WHERE t.term_id = ?");
+                WHERE t.term_id = ? ");
             $params = array($value['term_id']);
             $stntss->execute($params);
            
@@ -3147,40 +3311,31 @@ if(isset($_GET['readGrades'])){
             $data = array();
             $id = $_POST["id"];
         
-            try {
-                $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.spas_id, t.term_id, g.subj_code
-
+       
+                $stnt = $pdo->prepare("SELECT s.primary_spas_id, s.spas_id, t.spas_id, t.term_id, g.term_id
 FROM scholarship_info as s
-
 LEFT OUTER JOIN term_record as t ON s.spas_id = t.spas_id
 LEFT OUTER JOIN grades as g ON t.term_id = g.term_id
-
 WHERE s.primary_spas_id = ?
-GROUP BY t.term_id, s.spas_id, t.spas_id, s.primary_spas_id, g.subj_code
-ORDER BY t.term_id
+GROUP BY t.term_id, s.spas_id, t.spas_id, s.primary_spas_id, g.term_id
+HAVING g.term_id IS NOT NULL
+ORDER BY t.term_id;
+
 ");
                 $stnt->execute([$id]);
-        
-            } catch (Exception $ex) {
-                die("Failed to run query: " . $ex->getMessage());
-            }
-        
-            http_response_code(200);
-        
-            // Check if any subject code exists
-            $hasSubjectCode = false;
-            while ($row = $stnt->fetch(PDO::FETCH_ASSOC)) {
-                if (!empty($row['subj_code'])) {
-                    $hasSubjectCode = true;
-                    break; // No need to continue looping if we found a subject code
+                $count = $stnt->fetchColumn();
+
+
+                if($count > 0){
+                    $result =  false;
+                } else{
+                    
+                    $result = true;
                 }
-            }
+            
+                echo json_encode($result);
         
-            // Return true or false based on the presence of subject codes
-            echo json_encode(['exists' => $hasSubjectCode]);
-        
-            $stnt = null;
-            $pdo = null;
+          
         }
 
 
@@ -3254,6 +3409,77 @@ FROM
 WHERE t.term_id = ? ");
         $params = array($id);
         $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+     // Read Allowances 
+
+     if(isset($_GET['readAllowance'])){
+        $data = array();
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT * FROM lu_allowances ORDER BY id");
+            $stnt->execute();
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch()){
+            $data[] = array(
+        
+                    "label" => $row['name'],
+        
+                    "value" => $row['id']
+                    // "amount" => $row['amount'], 
+                    // "id" => $row['id']
+        
+                );
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+         // Read Address Id
+
+if(isset($_GET['itemids'])){
+
+    $data = array();
+    $itemid = $_POST["itemid"];
+    
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM lu_allowances WHERE id = ?");
+        $stnt->execute([$itemid]);
+    
+    
     
     }catch (Exception $ex){
         die("Failed to run query". $ex);

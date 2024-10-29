@@ -58,6 +58,7 @@
                       <div class="row q-pa-md q-gutter-sm">
                         <span class="text-h6">Status (Start of Sem):</span>
                         <q-select
+                          ref="refstat1"
                           v-model="state.stat1"
                           name="stat1"
                           outlined
@@ -70,8 +71,10 @@
                           :options="stat1options"
                           @filter="filterstat1"
                           clearable
+                          :rules="[myRule]"
                         />
                         <q-select
+                          ref="refstat2"
                           v-model="state.stat2"
                           name="stat2"
                           outlined
@@ -81,13 +84,14 @@
                           map-options
                           use-input
                           input-debounce="0"
-                          :options="stat2options"
-                          @filter="filterstat2"
+                          :options="endTermProgressStatOptions"
                           clearable
+                          :rules="[myRule]"
                         />
                       </div>
                     </div>
                   </div>
+                  <!-- test -->
                   <div class="col-xs-12 col-sm-3 col-md-1">
                     <!-- <div class="float-right"> -->
                     <span class="text-bold primary-text">Latest?</span>
@@ -107,7 +111,7 @@
               <q-form @submit.prevent="addTodo">
                 <div class="col-12">
                   <div class="q-col-gutter-md row items-start">
-                    <div class="col-xs-12 col-sm-6 col-md-2">
+                    <!-- <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">SUBJECT CODE:</span>
                       <q-input v-model="scode" filled :rules="inputRules" />
                     </div>
@@ -127,23 +131,19 @@
                         :rules="inputRules"
                         mask="##.##"
                       />
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-2">
+                    </div> -->
+                    <!-- <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">GRADE:</span>
-                      <q-input v-model="grade" filled :rules="inputRules" />
+                      <q-input v-model="grade" filled readonly />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">COMPLETION:</span>
-                      <q-input
-                        v-model="completion"
-                        filled
-                        :rules="inputRules"
-                      />
+                      <q-input v-model="completion" filled readonly />
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-2">
                       <span class="text-bold primary-text">REMARKS:</span>
-                      <q-input v-model="remarks" filled :rules="inputRules" />
-                    </div>
+                      <q-input v-model="remarks" filled readonly />
+                    </div> -->
                   </div>
                 </div>
                 <q-btn
@@ -184,23 +184,23 @@
                   </q-td>
                 </template>
 
-                <template v-slot:body-cell-grade="props">
+                <!-- <template v-slot:body-cell-grade="props">
                   <q-td :props="props">
-                    <q-input v-model="props.row.grade" />
+                    <q-input v-model="props.row.grade" readonly />
                   </q-td>
                 </template>
 
                 <template v-slot:body-cell-completion="props">
                   <q-td :props="props">
-                    <q-input v-model="props.row.completion" />
+                    <q-input v-model="props.row.completion" readonly />
                   </q-td>
                 </template>
 
                 <template v-slot:body-cell-remarks="props">
                   <q-td :props="props">
-                    <q-input v-model="props.row.remarks" />
+                    <q-input v-model="props.row.remarks" readonly />
                   </q-td>
-                </template>
+                </template> -->
 
                 <template v-slot:body-cell-action="props">
                   <q-td :props="props">
@@ -273,6 +273,9 @@ const $q = useQuasar();
 const axios = inject("$axios");
 const route = useRoute();
 
+const refstat1 = ref(null);
+const refstat2 = ref(null);
+
 const state = reactive({
   term: "",
   stat1: "",
@@ -292,33 +295,40 @@ const inputRules = [
   (val) => (val && val.length > 0) || "Please type something",
 ];
 
+const myRule = (val) => {
+  if (val === null || val === undefined || val === "") {
+    return "You must make a selection!";
+  }
+  return true;
+};
+
 const todos = ref([
   {
     id: uid(),
     scode: "",
     academic: false,
     units: "",
-    grade: "",
-    completion: "",
-    remarks: "",
+    // grade: "",
+    // completion: "",
+    // remarks: "",
   },
   {
     id: uid(),
     scode: "",
     academic: false,
     units: "",
-    grade: "",
-    completion: "",
-    remarks: "",
+    // grade: "",
+    // completion: "",
+    // remarks: "",
   },
   {
     id: uid(),
     scode: "",
     academic: false,
     units: "",
-    grade: "",
-    completion: "",
-    remarks: "",
+    // grade: "",
+    // completion: "",
+    // remarks: "",
   },
 ]);
 
@@ -326,31 +336,16 @@ const sy = ref("");
 const sem = ref("");
 const school = ref("");
 const course = ref("");
+const course_id = ref("");
+const computedGwa = ref("0.00");
 
 const addTodo = () => {
-  if (
-    scode.value &&
-    units.value &&
-    grade.value &&
-    completion.value &&
-    remarks.value
-  ) {
-    todos.value.push({
-      id: uid(),
-      scode: scode.value,
-      academic: academic.value,
-      units: parseFloat(units.value),
-      grade: grade.value,
-      completion: completion.value,
-      remarks: remarks.value,
-    });
-    scode.value = "";
-    academic.value = false;
-    units.value = "";
-    grade.value = "";
-    completion.value = "";
-    remarks.value = "";
-  }
+  todos.value.push({
+    id: uid(),
+    scode: "",
+    academic: false,
+    units: "",
+  });
 };
 
 const removeTodo = (id) => {
@@ -365,45 +360,27 @@ const resetTodos = () => {
       scode: "",
       academic: false,
       units: "",
-      grade: "",
-      completion: "",
-      remarks: "",
+      // grade: "",
+      // completion: "",
+      // remarks: "",
     },
     {
       id: uid(),
       scode: "",
       academic: false,
       units: "",
-      grade: "",
-      completion: "",
-      remarks: "",
+      // grade: "",
+      // completion: "",
+      // remarks: "",
     },
     {
       id: uid(),
       scode: "",
       academic: false,
       units: "",
-      grade: "",
-      completion: "",
-      remarks: "",
-    },
-    {
-      id: uid(),
-      scode: "",
-      academic: false,
-      units: "",
-      grade: "",
-      completion: "",
-      remarks: "",
-    },
-    {
-      id: uid(),
-      scode: "",
-      academic: false,
-      units: "",
-      grade: "",
-      completion: "",
-      remarks: "",
+      // grade: "",
+      // completion: "",
+      // remarks: "",
     },
   ];
 };
@@ -412,41 +389,28 @@ const columns = [
   { name: "scode", label: "Subject Code", field: "scode", align: "left" },
   { name: "academic", label: "Academic", field: "academic", align: "center" },
   { name: "units", label: "Units", field: "units", align: "left" },
-  { name: "grade", label: "Grade", field: "grade", align: "left" },
-  {
-    name: "completion",
-    label: "Completion",
-    field: "completion",
-    align: "left",
-  },
-  { name: "remarks", label: "Remarks", field: "remarks", align: "left" },
+  // { name: "grade", label: "Grade", field: "grade", align: "left" },
+  // {
+  //   name: "completion",
+  //   label: "Completion",
+  //   field: "completion",
+  //   align: "left",
+  // },
+  // { name: "remarks", label: "Remarks", field: "remarks", align: "left" },
   { name: "action", label: "Action", field: "action", align: "center" },
 ];
 
-// Grades Computations
+// Total Units Computations
 
 const computedTotalUnits = computed(() => {
-  // Calculate total units for subjects where academic is checked and grades are valid
+  // Calculate total units for subjects where academic is checked
   return todos.value
-    .filter((todo) => todo.academic && !isNaN(parseFloat(todo.grade))) // Only count academic subjects with valid grades
-    .reduce((total, todo) => total + parseFloat(todo.units), 0);
-});
-
-const computedGwa = computed(() => {
-  const validSubjects = todos.value.filter(
-    (todo) => todo.academic && !isNaN(parseFloat(todo.grade)) // Only count academic subjects with valid grades
-  );
-
-  const totalUnits = validSubjects.reduce(
-    (total, todo) => total + parseFloat(todo.units),
-    0
-  );
-
-  const totalWeightedGrades = validSubjects.reduce((total, todo) => {
-    return total + parseFloat(todo.grade) * parseFloat(todo.units);
-  }, 0);
-
-  return totalUnits > 0 ? (totalWeightedGrades / totalUnits).toFixed(2) : 0;
+    .filter((todo) => todo.academic)
+    .reduce((total, todo) => {
+      const unit = parseFloat(todo.units);
+      return total + (isNaN(unit) ? 0 : unit);
+    }, 0)
+    .toFixed(2);
 });
 
 // Select
@@ -454,6 +418,7 @@ var stat2options2 = [];
 const stat2options = ref(stat2options2);
 var stat1options2 = [];
 const stat1options = ref(stat1options2);
+const endTermProgressStatOptions = ref();
 // Storage
 const termLists = ref(null);
 const curriculum = ref(null);
@@ -479,6 +444,7 @@ const populateGrades = () => {
     school.value = response.data.school;
     course.value = response.data.course;
     toggle.value = response.data.latest_flag === 1 ? true : false;
+    course_id.value = response.data.id;
   });
 
   axios.get("/read.php?readstat2").then((response) => {
@@ -487,6 +453,9 @@ const populateGrades = () => {
 
   axios.get("/read.php?readstat1").then((response) => {
     stat1options2 = response.data;
+  });
+  axios.post("/read.php?standing", formData).then((response) => {
+    endTermProgressStatOptions.value = response.data;
   });
 };
 
@@ -627,47 +596,86 @@ const handleToggle = () => {
 };
 
 const saveBtn = () => {
-  var formData = new FormData();
+  refstat1.value.validate();
+  refstat2.value.validate();
 
-  formData.append("termid", termId);
+  if (refstat1.value.hasError || refstat2.value.hasError) {
+    $q.notify({
+      color: "red",
+      textColor: "white",
+      message: "Please Complete All the required fields",
+    });
+  } else {
+    var formData = new FormData();
+    let term = termId[termId.length - 2];
+    let termtype = termId[termId.length - 1];
 
-  formData.append("user", user.username);
+    formData.append("termid", termId);
+    formData.append("spasid", globalSPASid);
+    formData.append("sy", sy.value);
+    formData.append("term", term);
+    formData.append("termtype", termtype);
+    formData.append("course_id", course_id.value);
+    formData.append("pstatus", state.stat1);
+    formData.append("standing", state.stat2);
+    formData.append("user", user.username);
 
-  todos.value.forEach((todo, index) => {
-    formData.append(`todos[${index}][scode]`, todo.scode);
-    formData.append(`todos[${index}][academic]`, todo.academic ? 1 : 0);
-    formData.append(`todos[${index}][units]`, todo.units);
-    formData.append(`todos[${index}][grade]`, todo.grade);
-    formData.append(`todos[${index}][completion]`, todo.completion);
-    formData.append(`todos[${index}][remarks]`, todo.remarks);
-  });
-
-  Swal.fire({
-    title: "Do you want to save the changes?",
-    showDenyButton: true,
-    showCancelButton: true,
-    confirmButtonText: "Save",
-    denyButtonText: `Don't save`,
-  }).then((result) => {
-    /* Read more about isConfirmed, isDenied below */
-    if (result.isConfirmed) {
-      axios
-        .post("/create.php?createGrades", formData)
-        .then(function (response) {
-          if (response.data == true) {
-            Swal.fire("Saved!", "", "success");
-            populateGrades();
-          } else {
-            $q.notify({
-              color: "red",
-              textColor: "white",
-              message: "Grades not Updated",
-            });
-          }
-        });
-    } else if (result.isDenied) {
-      Swal.fire("Changes are not saved", "", "info");
-    }
-  });
+    todos.value.forEach((todo, index) => {
+      formData.append(`todos[${index}][scode]`, todo.scode);
+      formData.append(`todos[${index}][academic]`, todo.academic ? 1 : 0);
+      formData.append(`todos[${index}][units]`, todo.units);
+      formData.append(`todos[${index}][grade]`, todo.grade);
+      formData.append(`todos[${index}][completion]`, todo.completion);
+      formData.append(`todos[${index}][remarks]`, todo.remarks);
+    });
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        axios
+          .post("/create.php?createGrades", formData)
+          .then(function (response) {
+            if (response.data == true) {
+              $q.notify({
+                type: "positive",
+                message: "Grades and Term Status are Saved.",
+                position: "top-right",
+              });
+              populateGrades();
+            } else {
+              $q.notify({
+                color: "red",
+                textColor: "white",
+                message: "Grades not Updated",
+              });
+            }
+          });
+        axios
+          .post("/create.php?createStatStartsem", formData)
+          .then(function (response) {
+            if (response.data == true) {
+              Swal.fire("Saved!", "", "success");
+              populateGrades();
+              router.push({
+                path: "/monitorsheet/" + globalSPASid,
+              });
+            } else {
+              $q.notify({
+                color: "red",
+                textColor: "white",
+                message: "Grades Info not Updated",
+              });
+            }
+          });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  }
 };
 </script>

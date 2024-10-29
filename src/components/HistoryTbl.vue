@@ -31,7 +31,7 @@
             </q-input>
           </template>
 
-          <template v-slot:top-left>
+          <!-- <template v-slot:top-left>
             <q-btn rounded outline style="color: goldenrod" icon="add">
               <q-tooltip>
                 Add Status, Course and School & Verify All
@@ -59,7 +59,7 @@
                 </q-list>
               </q-menu>
             </q-btn>
-          </template>
+          </template> -->
 
           <template v-slot:body="props">
             <q-tr :prop="props">
@@ -356,7 +356,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn
+            <!-- <q-btn
               v-if="verif_flag === 1"
               outline
               style="color: goldenrod"
@@ -376,6 +376,12 @@
               style="color: goldenrod"
               label="Update"
               @click="editCourse"
+            /> -->
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="View On Monitoring Sheet"
+              :to="`/editgrades/${sc_termid}`"
             />
           </div>
         </q-card-actions>
@@ -531,7 +537,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn
+            <!-- <q-btn
               v-if="pstartVerified_flag === false"
               outline
               style="color: goldenrod"
@@ -557,6 +563,13 @@
               style="color: goldenrod"
               label="Delete"
               @click="delPStart"
+            /> -->
+
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="View On Monitoring Sheet"
+              :to="`/editgrades/${ps_termid}`"
             />
           </div>
         </q-card-actions>
@@ -653,7 +666,7 @@
                   ></text>
                 </td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <td class="primary-text text-bold">Monitoring Status:</td>
                 <td v-if="loading">
                   <q-skeleton animation="blink" type="text" width="300px" />
@@ -663,7 +676,7 @@
                     startTermMonitor
                   }}</text>
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
                 <td v-if="loading">
@@ -724,7 +737,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn
+            <!-- <q-btn
               v-if="startTermVerified_flag === false"
               outline
               style="color: goldenrod"
@@ -749,6 +762,12 @@
               style="color: goldenrod"
               label="Delete"
               @click="delStartTerm"
+            /> -->
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="View On Monitoring Sheet"
+              :to="`/editgrades/${sTerm_termid}`"
             />
           </div>
         </q-card-actions>
@@ -899,7 +918,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn
+            <!-- <q-btn
               v-if="pendVerified_flag === false"
               outline
               style="color: goldenrod"
@@ -924,6 +943,12 @@
               style="color: goldenrod"
               label="Delete"
               @click="delPSEnd"
+            /> -->
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="View On Monitoring Sheet"
+              :to="`/editgrades/${psEnd_termid}`"
             />
           </div>
         </q-card-actions>
@@ -1021,7 +1046,7 @@
                   ></text>
                 </td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <td class="primary-text text-bold">Monitoring Status:</td>
                 <td v-if="loading">
                   <q-skeleton animation="blink" type="text" width="300px" />
@@ -1031,7 +1056,7 @@
                     endTermMonitor
                   }}</text>
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <td class="primary-text text-bold">Created By:</td>
                 <td v-if="loading">
@@ -1092,7 +1117,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <div class="q-pa-md q-gutter-sm">
-            <q-btn
+            <!-- <q-btn
               v-if="endTermVerified_flag === false"
               outline
               style="color: goldenrod"
@@ -1118,6 +1143,13 @@
               style="color: goldenrod"
               label="Delete"
               @click="delEndTerm"
+            /> -->
+
+            <q-btn
+              outline
+              style="color: goldenrod"
+              label="View On Monitoring Sheet"
+              :to="`/editgrades/${endTerm_termid}`"
             />
           </div>
         </q-card-actions>
@@ -1991,6 +2023,7 @@ const verified = ref();
 const created_at = ref();
 const updated_at = ref();
 const verif_flag = ref();
+const sc_termid = ref();
 
 // View progress Status
 
@@ -2005,6 +2038,7 @@ const pstartVerified = ref();
 const pstartCreated_at = ref();
 const pstartUpdated_at = ref();
 const pstartVerified_flag = ref();
+const ps_termid = ref();
 
 // View progress End
 
@@ -2019,6 +2053,7 @@ const pendVerified = ref();
 const pendCreated_at = ref();
 const pendUpdated_at = ref();
 const pendVerified_flag = ref();
+const psEnd_termid = ref();
 
 // View Start Term Standing
 
@@ -2034,6 +2069,7 @@ const startTermVerified_by = ref();
 const startTermCreated_at = ref();
 const startTermUpdated_at = ref();
 const startTermVerified_flag = ref();
+const sTerm_termid = ref();
 
 // View End Term Standing
 
@@ -2049,6 +2085,7 @@ const endTermVerified_by = ref();
 const endTermCreated_at = ref();
 const endTermUpdated_at = ref();
 const endTermVerified_flag = ref();
+const endTerm_termid = ref();
 
 // Validataions
 
@@ -2315,6 +2352,7 @@ const openSC = async (props) => {
     created_at.value = response.data.created_at;
     updated_at.value = response.data.updated_at;
     verif_flag.value = response.data.verified_flag;
+    sc_termid.value = response.data.term_id;
   } catch (error) {
     console.error("Error occurred while fetching course data:", error);
   }
@@ -2369,6 +2407,7 @@ const openpstart = async (props) => {
     pstartCreated_at.value = response.data.created_at;
     pstartUpdated_at.value = response.data.updated_at;
     pstartVerified_flag.value = response.data.verified_flag;
+    ps_termid.value = response.data.term_id;
 
     termid_PStart.value = response.data.term_id;
   } catch (error) {
@@ -2413,6 +2452,7 @@ const opensstanding = async (props) => {
     startTermCreated_at.value = response.data.created_at;
     startTermUpdated_at.value = response.data.updated_at;
     startTermVerified_flag.value = response.data.verified_flag;
+    sTerm_termid.value = response.data.term_id;
 
     console.log(startTermVerified_flag.value);
   } catch (error) {
@@ -2441,6 +2481,7 @@ const openpend = async (props) => {
   formData.append("termstanding", props.row.term);
   formData.append("progress", props.row.pend);
   formData.append("termid", props.row.term_id);
+  console.log(props.row.term_id);
 
   try {
     const response = await axios.post("/read.php?viewEndID", formData);
@@ -2457,6 +2498,7 @@ const openpend = async (props) => {
     pendCreated_at.value = response.data.created_at;
     pendUpdated_at.value = response.data.updated_at;
     pendVerified_flag.value = response.data.verified_flag;
+    psEnd_termid.value = response.data.term_id;
   } catch (error) {
     console.error("Error during axios request:", error);
   }
@@ -2499,6 +2541,7 @@ const opensend = async (props) => {
     endTermCreated_at.value = response.data.created_at;
     endTermUpdated_at.value = response.data.updated_at;
     endTermVerified_flag.value = response.data.verified_flag;
+    endTerm_termid.value = response.data.term_id;
   } catch (error) {
     console.error("Error during axios request:", error);
   }
@@ -2936,7 +2979,7 @@ const disPSEnd = () => {
   console.log(dis_termid_PS_end.value);
 
   var formData = new FormData();
-  formData.append("termid", dis_termid_PS_end.value);
+  formData.ap("termid", dis_termid_PS_end.value);
   formData.append("spasid", globalSPAS);
   formData.append("user", user.username);
 
@@ -3640,14 +3683,16 @@ const delEndTerm = () => {
 };
 
 const allowCourse = () => {
+  console.log(sc_termid.value);
   var formData = new FormData();
 
   formData.append("user", user.username);
+  formData.append("sc_termid", sc_termid.value);
 
   axios.post("/update.php?allowCourse", formData).then(function (response) {
     if (response.data == true) {
       readHistoryRec();
-
+      viewcourse.value = false;
       Swal.fire({
         title: "SAVED!",
         text: "Allow Successfully",
@@ -3657,17 +3702,35 @@ const allowCourse = () => {
       $q.notify({
         color: "red",
         textColor: "white",
-        message: "Failed to verify Progress Status(Start)",
+        message: "Failed to verify School & Course",
       });
     }
   });
 };
 
 const disCourse = () => {
-  Swal.fire({
-    icon: "error",
-    title: "Disallowed...",
-    text: "Disallowed Successfully",
+  console.log(sc_termid.value);
+  var formData = new FormData();
+
+  formData.append("user", user.username);
+  formData.append("sc_termid", sc_termid.value);
+
+  axios.post("/update.php?disallowCourse", formData).then(function (response) {
+    if (response.data == true) {
+      readHistoryRec();
+      viewcourse.value = false;
+      Swal.fire({
+        icon: "error",
+        title: "Disallowed...",
+        text: "Disallowed Successfully",
+      });
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to verify School & Course",
+      });
+    }
   });
 };
 </script>

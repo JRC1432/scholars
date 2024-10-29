@@ -55,14 +55,21 @@
 
       <q-card-section>
         <div>
-          <text class="text-subtitle1"
-            >Start of Term Status: {{ term_fors.progress_status_start }}</text
-          >
+          <text class="text-subtitle1">
+            Start of Term Status: {{ term_fors.progress_status_start }} -
+            {{ term_fors.standing_start }}
+          </text>
         </div>
         <div>
-          <text class="text-subtitle1"
-            >End of Term Status: {{ term_fors.progress_status_end }}</text
-          >
+          <text class="text-subtitle1">
+            End of Term Status: {{ term_fors.progress_status_end }} -
+            {{ term_fors.standing_end }}
+          </text>
+        </div>
+        <div class="q-ml-auto text-right">
+          <q-chip color="amber-8" icon="grade">
+            General Weighted Average: {{ term_fors.grade_ave }}
+          </q-chip>
         </div>
       </q-card-section>
     </q-card>

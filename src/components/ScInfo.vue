@@ -119,6 +119,16 @@
                 : 'primary-text text-bold '
             "
           />
+          <q-breadcrumbs-el
+            label="Financial Statement "
+            icon="volunteer_activism"
+            :to="'/financeassists/' + scids"
+            :class="
+              route.name == 'financeassists'
+                ? 'primary-text text-bold on-primary q-px-md rounded-borders-10'
+                : 'primary-text text-bold '
+            "
+          />
         </q-breadcrumbs>
       </q-toolbar>
     </div>

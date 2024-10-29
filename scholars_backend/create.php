@@ -1390,24 +1390,20 @@ if(isset($_GET['createLatest'])){
                 $scode = isset($todo['scode']) ? $todo['scode'] : null;
                 $academic = isset($todo['academic']) ? $todo['academic'] : null;
                 $units = isset($todo['units']) ? $todo['units'] : null;
-                $grade = isset($todo['grade']) ? $todo['grade'] : null;
-                $completion = isset($todo['completion']) ? $todo['completion'] : null;
-                $remarks = isset($todo['remarks']) ? $todo['remarks'] : null;
+               
         
                 // Add each todo to the $todos array
                 $todos[] = [
                     'scode' => $scode,
                     'academic' => $academic,
-                    'units' => $units,
-                    'grade' => $grade,
-                    'completion' => $completion,
-                    'remarks' => $remarks
+                    'units' => $units
+                   
                 ];
                 // Prepare the SQL statement for each item in the todos array
-             $stnt = $pdo->prepare("INSERT INTO grades(term_id,subj_code,academic_type,unit,grade,completion,remarks,active_flag,created_at,created_by) VALUES (?,?,?,?,?,?,?,?,?,?)");
+             $stnt = $pdo->prepare("INSERT INTO grades(term_id,subj_code,academic_type,unit,active_flag,created_at,created_by) VALUES (?,?,?,?,?,?,?)");
 
                 // Execute the statement with the current todo's values
-             $success = $stnt->execute([$termid, $scode, $academic, $units, $grade, $completion, $remarks, $act_flag, $date, $createdby]);
+             $success = $stnt->execute([$termid, $scode, $academic, $units, $act_flag, $date, $createdby]);
 
                 // Collect the result of each update
             $results[] = $success;
@@ -1419,6 +1415,245 @@ if(isset($_GET['createLatest'])){
 
             
         }
+
+
+        // Create Progress Status History
+       // Start Status Standing History
+
+
+        if(isset($_GET['createStatStartsem'])){
+
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+    
+            $termid = $_POST["termid"];
+            $spas_id = $_POST["spasid"];
+            $sy = $_POST["sy"];
+            $term = $_POST["term"];
+            $termtype = $_POST["termtype"];
+            $startEnd = 1;
+            $course_id = $_POST["course_id"];
+            $progressStat = $_POST["pstatus"];
+            $standing = $_POST["standing"];
+            $act_flag = true;
+            $created_by = $_POST["user"];
+
+
+            $pdo->beginTransaction();
+              
+            $stnt1 = $pdo->prepare("INSERT INTO progress_status_history(term_id,spas_id,sy,term,term_type,start_end,course_id,progress_status,active_flag,created_at,created_by) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?) RETURNING id");
+
+            $stnt2 = $pdo->prepare("INSERT INTO standing_history(term_id,spas_id,sy,term,term_type,start_end,standing,active_flag,created_at,created_by) 
+            VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id");
+
+            $stnt3 = $pdo->prepare("UPDATE term_record SET progress_status_start = ?, standing_start = ? WHERE term_id = ?");
+
+                $params1 = array($termid,$spas_id,$sy,$term,$termtype,$startEnd,$course_id,$progressStat,$act_flag,$date,$created_by);
+                $stnt1 -> execute($params1);
+             
+                 
+                if($stnt1){
+                    $errors[] =  true;
+                } else{
+            
+                    $errors[] = false;
+                }
+
+
+                $params2 = array($termid,$spas_id,$sy,$term,$termtype,$startEnd,$standing,$act_flag,$date,$created_by);
+                $stnt2 -> execute($params2);
+
+                if($stnt2){
+                    $errors[] =  true;
+                } else{
+            
+                    $errors[] = false;
+                }
+
+
+
+                $sid = "";
+                try{
+
+                    $result = $stnt1->fetch();
+                    $sid = $result["id"];
+                   }catch(Exception $e){
+                    echo $e;
+                    }
+
+
+                    $sid2 = "";
+                try{
+
+                    $result2 = $stnt2->fetch();
+                    $sid2 = $result2["id"];
+                   }catch(Exception $e){
+                    echo $e;
+                    }
+
+                    $params3 = array($sid,$sid2,$termid);
+                    $stnt3 -> execute($params3);
+                    if($stnt3){
+                        $errors[] =  true;
+                    } else{
+
+                     $errors[] = false;
+                    }
+
+                
+
+                if(in_array(false, $errors)){
+                    echo "false";
+                    $pdo->rollback();
+                } else{
+                   echo "true";
+                   $pdo->commit();
+               }
+           
+        
+            }
+
+ 
+            // Create Progress Status End History
+
+
+        if(isset($_GET['createPStatusEnd'])){
+
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+    
+            $termid = $_POST["termid"];
+            $spas_id = $_POST["spasid"];
+            $sy = $_POST["endPSsy"];
+            $term = $_POST["endPSterm"];
+            $termtype = $_POST["termtypes"];
+            $startEnd = $_POST["endPStartEnd"];;
+            $course_id = $_POST["courseid"];
+            $progress_status = $_POST["endProgressStats"];
+            $latest = $_POST["latest"] === 'YES' ? 1 : 0;
+            $act_flag = true;
+            $created_by = $_POST["user"];
+
+
+        
+            $pdo->beginTransaction();
+            $stnt = $pdo->prepare("INSERT INTO progress_status_history(term_id,spas_id,sy,term,term_type,start_end,course_id,progress_status,active_flag,latest_flag,created_at,created_by) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id");
+
+            $stnt2 = $pdo->prepare("UPDATE term_record SET progress_status_end = ? WHERE term_id = ?");
+
+            $params = array($termid,$spas_id,$sy,$term,$termtype,$startEnd,$course_id,$progress_status,$act_flag,$latest,$date,$created_by);
+            $stnt -> execute($params);
+
+
+             if($stnt){
+                    $result =  true;
+                } else{
+                    
+                    $result = false;
+                }
+            
+            $sid = "";
+                try{
+
+                    $result = $stnt->fetch();
+                    $sid = $result["id"];
+                   }catch(Exception $e){
+                    echo $e;
+                    }
+
+                    $params1 = array($sid,$termid);
+                    $stnt2 -> execute($params1);
+                    if($stnt2){
+                        $errors[] =  true;
+                    } else{
+
+                     $errors[] = false;
+                    }
+
+
+                    if(in_array(false, $errors)){
+                        echo "false";
+                        $pdo->rollback();
+                    } else{
+                       echo "true";
+                       $pdo->commit();
+                   }
+            
+            }
+
+
+
+             // Create Start Status Standing History
+
+
+
+             if(isset($_GET['createEndStanding'])){
+
+                date_default_timezone_set('Asia/Manila');
+                $date = date("Y-m-d h:i:s a");
+        
+                $termid = $_POST["termid"];
+                $spas_id = $_POST["spasid"];
+                $sy = $_POST["endTermScholyear"];
+                $term = $_POST["endTermstate"];
+                $termtype = $_POST["termtypes"];
+                $startEnd = 2;   
+                $standing = $_POST["endTermStandingSelect"];
+                $act_flag = true;
+                $latest = $_POST["latest"] === 'YES' ? 1 : 0;
+                $created_by = $_POST["user"];
+    
+    
+                $pdo->beginTransaction();
+                $stnt = $pdo->prepare("INSERT INTO standing_history(term_id,spas_id,sy,term,term_type,start_end,standing,latest_flag,active_flag,created_at,created_by) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?) RETURNING id");
+
+                $stnt2 = $pdo->prepare("UPDATE term_record SET standing_end = ? WHERE term_id = ?");
+
+                $params = array($termid,$spas_id,$sy,$term,$termtype,$startEnd,$standing,$latest,$act_flag,$date,$created_by);
+                $stnt -> execute($params);
+        
+                
+                 if($stnt){
+                        $result =  true;
+                    } else{
+                        
+                        $result = false;
+                    }
+
+
+                    $sid = "";
+                    try{
+    
+                        $result = $stnt->fetch();
+                        $sid = $result["id"];
+                       }catch(Exception $e){
+                        echo $e;
+                        }
+                        
+                        $params1 = array($sid,$termid);
+                        $stnt2 -> execute($params1);
+                        if($stnt2){
+                            $errors[] =  true;
+                        } else{
+    
+                         $errors[] = false;
+                        }
+                        
+                        
+
+                        if(in_array(false, $errors)){
+                            echo "false";
+                            $pdo->rollback();
+                        } else{
+                           echo "true";
+                           $pdo->commit();
+                       }
+                
+                            
+                }
 
 
 

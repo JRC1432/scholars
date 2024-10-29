@@ -111,12 +111,12 @@
                 </q-item-section>
                 <q-item-section>Grades For Validation</q-item-section>
               </q-item>
-              <q-item clickable active-class="my-menu-link" to="/forappeal">
+              <!-- <q-item clickable active-class="my-menu-link" to="/forappeal">
                 <q-item-section avatar>
                   <IconCertificate :size="30" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>List of Scholars "FOR APPEAL"</q-item-section>
-              </q-item>
+              </q-item> -->
             </q-list>
           </q-expansion-item>
 

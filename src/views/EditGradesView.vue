@@ -6,7 +6,7 @@
       label="BACK"
       rounded
       flat
-      @click="showMonitor"
+      @click="goBack"
     />
   </div>
   <div class="q-pa-lg">
@@ -62,4 +62,8 @@ const showMonitor = () => {
     path: "/monitorsheet/" + spasids.value,
   });
 };
+
+function goBack() {
+  window.history.back();
+}
 </script>

@@ -1,13 +1,15 @@
 <template>
   <ScInfo />
   <div class="q-pa-lg">
-    <q-card flat class="my-card surface-container rounded-borders-20">
+    <q-card
+      flat
+      class="my-card surface-container rounded-borders-20"
+      v-if="grades"
+    >
       <div class="q-pa-md text-center text-bold primary-text text-h4">
         Monitoring Sheet
       </div>
-      <q-card-section> </q-card-section>
-
-      <q-card-section v-if="grades === false">
+      <q-card-section>
         <q-banner dense class="rounded-borders-20 banner">
           <template v-slot:avatar>
             <q-icon name="error" color="negative" size="40px" />
@@ -24,17 +26,44 @@
           </template>
         </q-banner>
       </q-card-section>
-
-      <q-card-section v-else>
-        <ShowGrades />
+    </q-card>
+    <q-card flat class="my-card surface-container rounded-borders-20" v-else>
+      <div class="q-pa-md text-center text-bold primary-text text-h4">
+        Monitoring Sheet
+      </div>
+      <q-card-section>
         <q-btn
+          push
           rounded
-          outline
-          style="color: goldenrod"
+          color="primary"
           @click="openEnrollment"
+          icon="add"
           label="Add New Enrollment Information"
         />
       </q-card-section>
+      <q-card-section>
+        <ShowGrades />
+      </q-card-section>
+      <q-card-actions align="around">
+        <q-btn
+          rounded
+          push
+          color="accent"
+          @click="printPDF"
+          icon="print"
+          label="Print Overall Grades"
+          style="width: 40%"
+        />
+        <q-btn
+          rounded
+          push
+          color="warning"
+          @click="sendMail"
+          icon="send"
+          label="Send E-MAIL MEMO to SCHOLARS "
+          style="width: 40%"
+        />
+      </q-card-actions>
     </q-card>
   </div>
 
@@ -272,7 +301,7 @@ const reftermRec = ref(null);
 const refsy = ref(null);
 const reftermtype = ref(null);
 const refterm = ref(null);
-const grades = ref();
+const grades = ref(true);
 
 const state = reactive({
   termRec: "",
@@ -285,24 +314,19 @@ const state = reactive({
   selectTerm: "Select Item Here....",
 });
 
-// Axios
-onMounted(() => {
-  populateAll();
-});
-
 var syOptions2 = [];
 const syOptions = ref(syOptions2);
 const spas_result = ref();
 const globalSPAS = route.params.id;
 
-const populateAll = () => {
+const populateAll = async () => {
   var formData = new FormData();
   formData.append("id", globalSPAS);
 
-  // Select Term Record
-  axios.post("/read.php?readTermRec", formData).then((response) => {
-    // Separation of value in sql select
-    const processedData = response.data.map((item) => {
+  try {
+    // Select Term Record
+    const termRecResponse = await axios.post("/read.php?readTermRec", formData);
+    const processedData = termRecResponse.data.map((item) => {
       const [sy, ...nameParts] = item.value.split(" ");
       const name = nameParts.join(" ");
       return {
@@ -312,27 +336,29 @@ const populateAll = () => {
       };
     });
 
-    // Add "Add New Term Rec" option
-    //   const addNewOption = {
-    // label: "Add New Term Record",
-    //    sy: "", // You can set this to a specific value if needed
-    //    name: "", // You can set this to a specific value if needed
-    //  };
-    //  processedData.push(addNewOption);
-
     termRecoptions.value = processedData;
     syList.value = processedData.map((item) => item.sy);
     nameList.value = processedData.map((item) => item.name);
-  });
 
-  axios.get("/read.php?school_years").then((response) => {
-    syOptions2 = response.data;
-  });
+    // Get School Years
+    const syResponse = await axios.get("/read.php?school_years");
+    syOptions2 = syResponse.data;
 
-  axios.post("/read.php?checkMonitor", formData).then((response) => {
-    grades.value = response.data.exists;
-  });
+    // Check Monitor
+    const monitorResponse = await axios.post(
+      "/read.php?checkMonitor",
+      formData
+    );
+    grades.value = monitorResponse.data;
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
 };
+
+// Axios
+onMounted(() => {
+  populateAll();
+});
 
 // School Year Filters
 

@@ -123,6 +123,11 @@ const router = createRouter({
           component: () => import("../views/GradObTrackInfoView.vue"),
         },
         {
+          path: "/financeassists/:id",
+          name: "financeassists",
+          component: () => import("../views/FinancialsView.vue"),
+        },
+        {
           path: "/monitorsheet/:id",
           name: "monitorsheet",
           component: () => import("../views/MonitorSheetView.vue"),

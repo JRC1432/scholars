@@ -588,9 +588,9 @@ if(isset($_GET['updateReplySlip'])){
 
     
     
-                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ?, verified_by = ?
                     WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
-                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    $stnt->execute([$verify_flag,$date,$updatedby,$updatedby,$spasid,$termid]);
                     
                      if($stnt){
                             $result =  true;
@@ -649,9 +649,9 @@ if(isset($_GET['updateReplySlip'])){
 
     
     
-                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ?, verified_by = ? 
                     WHERE spas_id = ? AND start_end = 1 AND term_id = ?");
-                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    $stnt->execute([$verify_flag,$date,$updatedby,$updatedby,$spasid,$termid]);
                     
                      if($stnt){
                             $result =  true;
@@ -711,9 +711,9 @@ if(isset($_GET['updateReplySlip'])){
 
     
     
-                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    $stnt = $pdo->prepare("UPDATE progress_status_history SET verified_flag = ?, updated_at = ?, updated_by = ?, verified_by = ? 
                     WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
-                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    $stnt->execute([$verify_flag,$date,$updatedby,$updatedby,$spasid,$termid]);
                     
                      if($stnt){
                             $result =  true;
@@ -774,9 +774,9 @@ if(isset($_GET['updateReplySlip'])){
 
     
     
-                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ? 
+                    $stnt = $pdo->prepare("UPDATE standing_history SET verified_flag = ?, updated_at = ?, updated_by = ?, verified_by = ? 
                     WHERE spas_id = ? AND start_end = 2 AND term_id = ?");
-                    $stnt->execute([$verify_flag,$date,$updatedby,$spasid,$termid]);
+                    $stnt->execute([$verify_flag,$date,$updatedby,$updatedby,$spasid,$termid]);
                     
                      if($stnt){
                             $result =  true;
@@ -872,6 +872,42 @@ if(isset($_GET['updateReplySlip'])){
 
                         
                     }
+
+
+
+
+                    if (isset($_GET['updateGWAGrades'])){
+
+                        $termid = $_POST["termid"];
+                        $computedGwa = $_POST["computedGwa"];
+
+
+                        $stnt = $pdo->prepare("UPDATE term_record SET grade_ave = ? WHERE term_id = ?");
+                        $stnt->execute([$computedGwa,$termid]);
+
+
+                        if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1155,8 +1191,6 @@ if(isset($_GET['updateReplySlip'])){
             }
 
 
-
-
             // Allow Course
 
 
@@ -1165,12 +1199,12 @@ if(isset($_GET['updateReplySlip'])){
                 $date = date("Y-m-d h:i:s a");
             
                 $updatedby = $_POST["user"];
-                $scholarid = $_POST["scholarid"];
+                $sc_termid = $_POST["sc_termid"];
                 $verified = 1;
 
 
-                $stnt = $pdo->prepare("UPDATE contract_status_details SET verified_flag = ?, updated_by = ?, updated_at = ? WHERE scholar_id = ?");
-                $stnt->execute([$verified,$updatedby,$date,$scholarid]);
+                $stnt = $pdo->prepare("UPDATE course_record SET verified_flag = ?, updated_by = ?, verified_by = ?, updated_at = ? WHERE term_id = ?");
+                $stnt->execute([$verified,$updatedby,$updatedby,$date,$sc_termid]);
                 
                  if($stnt){
                         $result =  true;
@@ -1182,6 +1216,62 @@ if(isset($_GET['updateReplySlip'])){
                     echo json_encode($result);
                 
                 }
+
+
+
+                // Disallow Course
+
+
+            if(isset($_GET['disallowCourse'])){
+                date_default_timezone_set('Asia/Manila');
+                $date = date("Y-m-d h:i:s a");
+            
+                $updatedby = $_POST["user"];
+                $sc_termid = $_POST["sc_termid"];
+                $verified = 0;
+
+
+                $stnt = $pdo->prepare("UPDATE course_record SET verified_flag = ?, updated_by = ?, verified_by = ?, updated_at = ? WHERE term_id = ?");
+                $stnt->execute([$verified,$updatedby,$updatedby,$date,$sc_termid]);
+                
+                 if($stnt){
+                        $result =  true;
+                    } else{
+                        
+                        $result = false;
+                    }
+                
+                    echo json_encode($result);
+                
+                }
+
+
+
+                if(isset($_GET['upTermRecProgress'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $pStart = $_POST[""];
+                    $sStart = $_POST[""];
+                   
+                    $termid = $_POST["termid"];
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET progress_status_start = ?, standing_start = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$verify_flag,$date,$updatedby,$updatedby,$spasid,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
 
 
 
