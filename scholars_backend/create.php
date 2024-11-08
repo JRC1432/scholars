@@ -1700,17 +1700,253 @@ if(isset($_GET['newSCHInfo'])){
 
 
 
-//
+// Print Receipt
+
+
+if(isset($_GET['printReceipt'])){
+
+    // 
+    $spasid = $_POST["spasid"];
+     $sy = $_POST["sy"];
+
+     $amount = (string)$_POST["amount"];
+
+     $cards = json_decode($_POST['cards'], true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        echo 'JSON error: ' . json_last_error_msg();
+        exit;
+    }
+
+    // Debugging: Check if cards are being received properly
+    print_r($cards);
+
+     $stnt = $pdo->prepare("SELECT * FROM scholars_record WHERE spas_id = ?");
+        $stnt->execute([$spasid]);
+    
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            
+             $fname = $row['full_name'];
+           
+    }
+    
+   
+    
+    
+    
+    
+    
+    // create new PDF document
+    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' ', PDF_HEADER_STRING, array(0,64,255), array(0,64,128));
+    $pdf->setFooterData(array(0,64,0), array(0,64,128));
+    
+    // set header and footer fonts
+    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    
+    
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    
+    // set margins
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+    
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    
+    // set some language-dependent strings (optional)
+    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+        require_once(dirname(__FILE__).'/lang/eng.php');
+        $pdf->setLanguageArray($l);
+    }
+    
+    // ---------------------------------------------------------
+
+
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Your Name');
+    $pdf->SetTitle('Financial Statement');
+    $pdf->SetSubject('Financial Records');
+    $pdf->SetKeywords('TCPDF, PDF, table, CSS');
+    
+    $pdf->AddPage();
+   
+    $pdf->SetFont('courier', 'B', 14); // Set font to bold (B) with size 14
+    $pdf->Cell(0, 22, 'Financial Statement', 0, 1, 'C', 0, '', 0, false, 'M', 'M');
+    $pdf->SetFont('courier', '', 10, '', true);
+
+
+    $pdf->ln(3);
+    $pdf->Cell(90,10,'SPAS ID: '.$spasid, 0, 0, 'L', 0, '', 0, false, 'M', 'M');
+    $pdf->Cell(90,10,'Name: '.$fname, 0, 1, 'R', 0, '', 0, false, 'M', 'M');
+
+
+    $pdf->Ln(0); // Set to 0 to remove extra space between lines
+    $pdf->MultiCell(90, 5, 'School Year: '.$sy, 0, 'L', 0, 0, '', '', true); // Adjust height to 5
+    $pdf->Ln(3); // Add vertical space before the next section
+
+// $pdf->MultiCell(90, 10, 'Status(START): '.$stat1.'-'.$stat2, 0, 'R', 0, 1, '', '', true);
+
+    $pdf->Ln(10); // Add extra line spacing
+
+    // Set table header
+    $html = '<style>
+    th {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    td {
+      text-align: center;
+    }
+  </style>
+    <h3>Financial Records</h3>';
+    $html .= '<table border="0" cellpadding="4">
+                <thead>
+                    <tr>
+                    <th>School Year / Sem</th>
+                        <th>Category</th>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Date Process</th>
+                        <th>Amount</th>
+                        <th>Date Deposit</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+
+
+                // Populate table rows
+                foreach ($cards as $item) {
+                    $html .= '<tr>
+                    <td>' . htmlspecialchars($item['termwthRec'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['itemType'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['year'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['month'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['dateProcess'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['amount'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['dateDeposit'] ?? '') . '</td>
+                            <td>' . htmlspecialchars($item['remarks'] ?? '') . '</td>
+                          </tr>';
+                }
+
+    $html .= '</tbody></table>';
+
+    $pdf->writeHTML($html, true, false, false, false, '');
+    // $pdf->writeHTML($html);
+
+    $pdf->ln(3);
+    $pdf->Cell(90,10,'Total Amount: '.$amount, 0, 0, 'L', 0, '', 0, false, 'M', 'M');
+
+
+
+
+    // OutPDF
+    
+    ob_end_clean();
+$pdf->Output('Financial_Statement.pdf', 'I');
+
+
+    
+         }
+
+
+
+
+
+         // Create Financial Records 
+
+
+         if (isset($_GET['createFinancialRec'])) {
+            date_default_timezone_set('Asia/Manila');
+            $date = date("Y-m-d h:i:s a");
+        
+            // Check if necessary POST data exists
+            if (isset($_POST["user"], $_POST["spasid"], $_POST["sy"], $_POST["cards"])) {
+                $createdby = $_POST["user"];
+                $spasid = $_POST["spasid"];
+                $sy = $_POST["sy"];
+                $total_amt = $_POST["totalAmount"];
+        
+                $results = []; // Initialize the results array before the loop
+        
+                try {
+                    $pdo->beginTransaction();
+        
+                    // Insert into financial_r
+                    $stnt0 = $pdo->prepare("INSERT INTO financial_r(spas_id, sy, total_amt, created_at, created_by) VALUES (?,?,?,?,?)");
+                    if ($stnt0->execute([$spasid, $sy, $total_amt, $date, $createdby])) {
+                        $sid = $pdo->lastInsertId();
+        
+                        foreach ($_POST['cards'] as $card) {
+                            // Ensure 'termwthRec' exists within each card
+                            if (isset($card['termwthRec'], $card['items'])) {
+                                $termwthRec = $card['termwthRec'];
+                                
+                                foreach ($card['items'] as $item) {
+                                    // Check that all necessary fields are set
+                                    if (isset($item['itemType'], $item['year'], $item['month'], $item['dateProcess'], $item['amount'], $item['dateDeposit'], $item['remarks'])) {
+                                        $itemType = (int)$item['itemType'];
+                                        $year = $item['year'];
+                                        $month = (int)$item['month'];
+                                        $dateProcess = $item['dateProcess'];
+                                        $amount = $item['amount'];
+                                        $dateDeposit = $item['dateDeposit'];
+                                        $remarks = $item['remarks'];
+        
+                                        // Prepare and execute the SQL statement
+                                        $stnt = $pdo->prepare("INSERT INTO financial_s(financial_release_id, term_id, category, year, month, date_process, amount, date_deposit, remarks, created_by, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+                                        $success = $stnt->execute([$sid, $termwthRec, $itemType, $year, $month, $dateProcess, $amount, $dateDeposit, $remarks, $createdby, $date]);
+        
+                                        // Collect the result of each update
+                                        $results[] = $success;
+                                    } else {
+                                        // If any required item data is missing, add `false` to results and break the loop
+                                        $results[] = false;
+                                        break 2; // Exit both loops
+                                    }
+                                }
+                            } else {
+                                $results[] = false; // Missing 'termwthRec' or 'items' in a card
+                                break;
+                            }
+                        }
+        
+                        // Commit the transaction if all queries were successful
+                        if (!in_array(false, $results)) {
+                            $pdo->commit();
+                            echo json_encode(true); // Success response as JSON-encoded true
+                        } else {
+                            $pdo->rollBack();
+                            echo json_encode(false); // Failure response as JSON-encoded false
+                        }
+                    } else {
+                        throw new Exception('Failed to insert into financial_r.');
+                    }
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    echo json_encode(false); // Error response as JSON-encoded false
+                }
+            } else {
+                echo json_encode(false); // Missing required POST data response as JSON-encoded false
+            }
+        }
+        
 
 
 
 
 
 
-
-
-
-
-
-
+// Developed By: CASTAÑARES, JONATHAN R.
 ?>

@@ -35,5 +35,8 @@ try {
   die($e->getMessage());
 } 
 session_start();
+
+
+// Developed By: CASTAÑARES, JONATHAN R.
 ?>
 

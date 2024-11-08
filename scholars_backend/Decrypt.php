@@ -20,3 +20,5 @@ class Decrypt {
         return substr($hash, 0, $size);
     }
 }
+
+// Developed By: CASTAÑARES, JONATHAN R.

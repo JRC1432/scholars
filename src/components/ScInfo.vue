@@ -120,7 +120,7 @@
             "
           />
           <q-breadcrumbs-el
-            label="Financial Statement "
+            label="Financial Assistance "
             icon="volunteer_activism"
             :to="'/financeassists/' + scids"
             :class="

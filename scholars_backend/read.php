@@ -2941,16 +2941,11 @@ if(isset($_GET['school_years'])){
     {
     
         $stnt = $pdo->prepare("SELECT yr_awarded,
-       next_year,
-       CONCAT(yr_awarded, '-', next_year) AS school_year
-FROM (
-    SELECT yr_awarded,
-           LEAD(yr_awarded) OVER (ORDER BY yr_awarded) AS next_year
-    FROM scholarship_info
-    WHERE yr_awarded IS NOT NULL AND yr_awarded != 0
-    GROUP BY yr_awarded
-) AS subquery
-WHERE next_year IS NOT NULL
+       yr_awarded + 1 AS next_year,
+       CONCAT(yr_awarded, '-', yr_awarded + 1) AS school_year
+FROM scholarship_info
+WHERE yr_awarded IS NOT NULL AND yr_awarded != 0
+GROUP BY yr_awarded
 ORDER BY yr_awarded;
 ");
         $stnt->execute();
@@ -3148,6 +3143,7 @@ ORDER BY yr_awarded ASC, full_name ASC;
     
     }
 
+// Nested Loop reading term ID's
 
 
     if(isset($_GET['readTermIds'])){
@@ -3451,8 +3447,8 @@ WHERE t.term_id = ? ");
         
                     "label" => $row['name'],
         
-                    "value" => $row['id']
-                    // "amount" => $row['amount'], 
+                    "value" => $row['id'],
+                    "item" => $row['name']
                     // "id" => $row['id']
         
                 );
@@ -3498,6 +3494,220 @@ if(isset($_GET['itemids'])){
     $pdo = null;
     
     }
+
+
+
+// Financial Statement Checker
+
+
+
+
+    if (isset($_GET['checkFinancial'])) {
+        $data = array();
+
+
+        $id = $_POST["id"];
+    
+   
+            $stnt = $pdo->prepare("SELECT spas_id FROM financial_r WHERE spas_id = ?");
+            $stnt->execute([$id]);
+            $count = $stnt->fetchColumn();
+
+
+            if($count > 0){
+                $result =  true;
+            } else{
+                
+                $result = false;
+            }
+        
+            echo json_encode($result);
+    
+      
+    }
+
+
+
+
+    // if(isset($_GET['readFinanceIds'])){
+
+    //     $data = array();
+    //     $id = $_POST["id"];
+    
+    //     try
+    //     {
+    //         $stnt = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fr.sy, fr.total_amt 
+    //         FROM financial_r  as fr
+
+    //         LEFT OUTER JOIN financial_s as fs ON fr.id = fs.financial_release_id
+            
+    //         WHERE spas_id = ?
+
+    //             GROUP BY fr.id, fs.financial_release_id, fr.total_amt, fr.sy
+    //             ORDER BY id DESC");
+    //         $params = array($id);
+    //         $stnt->execute($params);
+    
+    //     } catch (Exception $ex) {
+    //         die("Failed to run query: " . $ex->getMessage());
+    //     }
+    
+     
+    //     while ($row = $stnt->fetch(PDO::FETCH_ASSOC)) {          
+    //         $financeId[] = $row;
+    //     }
+    
+    //      echo json_encode($financeId); // Use json_encode to output JSON format
+
+
+    //     $final = [];
+    //     foreach ($financeId as $key => $value) {
+
+    //         $stnt2 = $pdo->prepare("SELECT DISTINCT fr.id, fs.financial_release_id 
+    //         FROM financial_r as fr 
+    //         LEFT OUTER JOIN financial_s as fs ON fr.id = fs.financial_release_id
+    //         WHERE fr.id = ?
+    //         ");
+
+    //         $params = array($value['financial_release_id']);
+    //         $stnt2->execute($params);
+
+    //         while ($rows2 = $stnt2->fetch(PDO::FETCH_ASSOC)){
+    //             $distinct[] = $rows2;
+    //         }
+
+    //         foreach($distinct as $key => $value2){
+    //             $final[$value['financial_release_id']] = $value2;
+    //         }
+
+
+
+    //         $stnt3 = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fs.term_id, fs.category, fs.year, fs.month, fs.date_process, fs.amount, fs.date_deposit, fs.remarks
+    //         FROM financial_s as fs
+
+    //         LEFT OUTER JOIN financial_r as fr ON fs.financial_release_id = fr.id
+
+    //         WHERE fr.id = ?
+            
+    //         ");
+
+    //             $params = array($value['financial_release_id']);
+    //             $stnt3->execute($params);
+
+    //             while ($rows = $stnt3->fetchAll(PDO::FETCH_ASSOC)){
+    //                 $readFinance[] = $rows;
+    //             }
+
+    //             foreach ($readFinance as $keys => $value3) {
+    //                 $final[$value['financial_release_id']]['financial_release_id'] = $value3;
+                  
+    //               }
+
+
+    //               echo json_encode($final);
+        
+    //               $stnt = null;
+    //               $pdo = null;
+
+            
+    //     }
+
+
+
+    // }
+
+
+
+    if (isset($_GET['readFinanceIds'])) {
+
+        $financeId = [];  // Initialize array
+        $final = [];      // Initialize array
+        $id = $_POST["id"];
+    
+        try {
+            // First query to get sy, total_amt, and financial_release_id
+            $stnt = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fr.sy, fr.total_amt 
+                FROM financial_r AS fr
+                LEFT OUTER JOIN financial_s AS fs ON fr.id = fs.financial_release_id
+                WHERE spas_id = ?
+                GROUP BY fr.id, fs.financial_release_id, fr.total_amt, fr.sy
+                ORDER BY id DESC");
+            $params = array($id);
+            $stnt->execute($params);
+    
+            while ($row = $stnt->fetch(PDO::FETCH_ASSOC)) {          
+                // Populate financeId with each row
+                $financeId[] = $row;
+    
+                // Initialize final array structure with sy and total_amt
+                $final[$row['financial_release_id']] = [
+                    'sy' => $row['sy'],
+                    'total_amt' => $row['total_amt'],
+                    'details' => []  // Placeholder for details to be populated later
+                ];
+            }
+        } catch (Exception $ex) {
+            die("Failed to run query: " . $ex->getMessage());
+        }
+    
+        foreach ($financeId as $value) {
+            $distinct = [];  // Reset $distinct array for each iteration
+            
+            // Second query to fetch distinct financial_release_id information
+            $stnt2 = $pdo->prepare("SELECT DISTINCT fr.id, fs.financial_release_id 
+                FROM financial_r AS fr 
+                LEFT OUTER JOIN financial_s AS fs ON fr.id = fs.financial_release_id
+                WHERE fr.id = ?");
+            $params = array($value['financial_release_id']);
+            $stnt2->execute($params);
+    
+            while ($rows2 = $stnt2->fetch(PDO::FETCH_ASSOC)) {
+                $distinct[] = $rows2;
+            }
+    
+            foreach ($distinct as $value2) {
+                $final[$value['financial_release_id']] = array_merge(
+                    $final[$value['financial_release_id']], 
+                    $value2
+                );
+            }
+    
+            $readFinance = [];  // Reset $readFinance array for each iteration
+    
+            // Third query to get detailed information for each financial_release_id
+            $stnt3 = $pdo->prepare("SELECT t.term, t.sy, al.name as category, fs.year, m.name as month,
+                fs.date_process, fs.amount, fs.date_deposit, fs.remarks
+                FROM financial_s AS fs
+                LEFT OUTER JOIN financial_r AS fr ON fs.financial_release_id = fr.id
+                LEFT OUTER JOIN term_record AS t ON fs.term_id = t.term_id
+                LEFT OUTER JOIN lu_allowances AS al ON fs.category = al.id
+                LEFT OUTER JOIN lu_months AS m ON fs.month = m.id
+
+
+
+
+
+                WHERE fr.id = ?");
+            $params = array($value['financial_release_id']);
+            $stnt3->execute($params);
+    
+            // Store detailed information in readFinance array
+            $readFinance = $stnt3->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Add the detailed information to the 'details' key in $final
+            $final[$value['financial_release_id']]['details'] = $readFinance;
+        }
+    
+        echo json_encode($final);  // Output final JSON result once
+    
+        // Close all PDO statements at the end
+        $stnt = null;
+        $stnt2 = null;
+        $stnt3 = null;
+        $pdo = null;
+    }
+    
+    
         
     
     
@@ -3531,5 +3741,5 @@ if(isset($_GET['itemids'])){
 
 
 
-
+// Developed By: CASTAÑARES, JONATHAN R.
 ?>
