@@ -3698,14 +3698,27 @@ ORDER BY id DESC");
             $readFinance = [];  // Reset $readFinance array for each iteration
     
             // Third query to get detailed information for each financial_release_id
-            $stnt3 = $pdo->prepare("SELECT t.term, t.sy, al.name as category, fs.year, m.name as month,
-                fs.date_process, fs.amount, fs.date_deposit, fs.remarks
-                FROM financial_statement AS fs
-                LEFT OUTER JOIN financial_release AS fr ON fs.financial_release_id = fr.id
-                LEFT OUTER JOIN term_record AS t ON fs.term_id = t.term_id
-                LEFT OUTER JOIN lu_allowances AS al ON fs.category = al.id
-                LEFT OUTER JOIN lu_months AS m ON fs.month = m.id
-                WHERE fr.id = ? AND fs.active_flag = true");
+            $stnt3 = $pdo->prepare("SELECT 
+    t.term, 
+    t.sy, 
+    al.name AS category, 
+    CASE 
+        WHEN fs.year = 0 THEN NULL 
+        ELSE fs.year 
+    END AS year,
+    m.name AS month,
+    fs.date_process, 
+    fs.amount, 
+    fs.date_deposit, 
+    fs.remarks
+FROM financial_statement AS fs
+LEFT OUTER JOIN financial_release AS fr ON fs.financial_release_id = fr.id
+LEFT OUTER JOIN term_record AS t ON fs.term_id = t.term_id
+LEFT OUTER JOIN lu_allowances AS al ON fs.category = al.id
+LEFT OUTER JOIN lu_months AS m ON fs.month = m.id
+WHERE fr.id = ? 
+  AND fs.active_flag = true;
+");
             $params = array($value['financial_release_id']);
             $stnt3->execute($params);
     

@@ -1295,8 +1295,8 @@ if(isset($_GET['updateReplySlip'])){
                             $financial_statement_ids = $todo['financial_statement_ids'] ?? null;
                             $term_ids = $todo['term_ids'] ?? null;
                             $category = (int) ($todo['category'] ?? 0);
-                            $year = (int) ($todo['year'] ?? null);
-                            $month = (int) ($todo['month'] ?? null);
+                            // $year = (int) ($todo['year'] ?? null);
+                            // $month = (int) ($todo['month'] ?? null);
                             $date_process = $todo['date_process'] ?? null;
                             $amount = (int) ($todo['amount'] ?? 0);
                             // $date_deposit = $todo['date_deposit'] ?? null;
@@ -1308,6 +1308,12 @@ if(isset($_GET['updateReplySlip'])){
                                         if (empty($date_deposit) || $date_deposit === 'mm/dd/yyyy') {
                                         $date_deposit = null; // Ensure NULL is passed
                                         }
+
+                                        $year = isset($todo['year']) && $todo['year'] !== '' ? (int) $todo['year'] : null;
+                                        $month = isset($todo['month']) && $todo['month'] !== '' ? (int) $todo['month'] : null;
+
+
+                                       
 
                     
                             // Add each todo to the $todos array
