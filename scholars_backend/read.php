@@ -2976,6 +2976,100 @@ ORDER BY yr_awarded;
 
 
 
+    // Select Specific School Year
+
+if(isset($_GET['specificSchoolYrs'])){
+    $data = array();
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT sy FROM term_record WHERE spas_id = ? GROUP BY sy ORDER BY sy");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['sy'],
+    
+                "value" => $row['sy']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+    // School Year Checker
+
+if(isset($_GET['checkSy'])){
+
+    $data = array();
+    $syinput = $_POST['syinput'];
+    $id = $_POST['id'];
+    
+    
+    
+    
+        $stnt = $pdo->prepare("SELECT sy FROM financial_release  WHERE spas_id = ? AND sy = ? ");
+        $stnt->execute([$id,$syinput]);
+        $count = $stnt->fetchColumn();
+    
+        if($count > 0){
+            $result =  false;
+        } else{
+            
+            $result = true;
+        }
+    
+        echo json_encode($result);
+    
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Select Standing
 
 if(isset($_GET['standing'])){
@@ -3509,7 +3603,7 @@ if(isset($_GET['itemids'])){
         $id = $_POST["id"];
     
    
-            $stnt = $pdo->prepare("SELECT spas_id FROM financial_r WHERE spas_id = ?");
+            $stnt = $pdo->prepare("SELECT spas_id FROM financial_release WHERE spas_id = ?");
             $stnt->execute([$id]);
             $count = $stnt->fetchColumn();
 
@@ -3529,94 +3623,6 @@ if(isset($_GET['itemids'])){
 
 
 
-    // if(isset($_GET['readFinanceIds'])){
-
-    //     $data = array();
-    //     $id = $_POST["id"];
-    
-    //     try
-    //     {
-    //         $stnt = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fr.sy, fr.total_amt 
-    //         FROM financial_r  as fr
-
-    //         LEFT OUTER JOIN financial_s as fs ON fr.id = fs.financial_release_id
-            
-    //         WHERE spas_id = ?
-
-    //             GROUP BY fr.id, fs.financial_release_id, fr.total_amt, fr.sy
-    //             ORDER BY id DESC");
-    //         $params = array($id);
-    //         $stnt->execute($params);
-    
-    //     } catch (Exception $ex) {
-    //         die("Failed to run query: " . $ex->getMessage());
-    //     }
-    
-     
-    //     while ($row = $stnt->fetch(PDO::FETCH_ASSOC)) {          
-    //         $financeId[] = $row;
-    //     }
-    
-    //      echo json_encode($financeId); // Use json_encode to output JSON format
-
-
-    //     $final = [];
-    //     foreach ($financeId as $key => $value) {
-
-    //         $stnt2 = $pdo->prepare("SELECT DISTINCT fr.id, fs.financial_release_id 
-    //         FROM financial_r as fr 
-    //         LEFT OUTER JOIN financial_s as fs ON fr.id = fs.financial_release_id
-    //         WHERE fr.id = ?
-    //         ");
-
-    //         $params = array($value['financial_release_id']);
-    //         $stnt2->execute($params);
-
-    //         while ($rows2 = $stnt2->fetch(PDO::FETCH_ASSOC)){
-    //             $distinct[] = $rows2;
-    //         }
-
-    //         foreach($distinct as $key => $value2){
-    //             $final[$value['financial_release_id']] = $value2;
-    //         }
-
-
-
-    //         $stnt3 = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fs.term_id, fs.category, fs.year, fs.month, fs.date_process, fs.amount, fs.date_deposit, fs.remarks
-    //         FROM financial_s as fs
-
-    //         LEFT OUTER JOIN financial_r as fr ON fs.financial_release_id = fr.id
-
-    //         WHERE fr.id = ?
-            
-    //         ");
-
-    //             $params = array($value['financial_release_id']);
-    //             $stnt3->execute($params);
-
-    //             while ($rows = $stnt3->fetchAll(PDO::FETCH_ASSOC)){
-    //                 $readFinance[] = $rows;
-    //             }
-
-    //             foreach ($readFinance as $keys => $value3) {
-    //                 $final[$value['financial_release_id']]['financial_release_id'] = $value3;
-                  
-    //               }
-
-
-    //               echo json_encode($final);
-        
-    //               $stnt = null;
-    //               $pdo = null;
-
-            
-    //     }
-
-
-
-    // }
-
-
 
     if (isset($_GET['readFinanceIds'])) {
 
@@ -3626,12 +3632,23 @@ if(isset($_GET['itemids'])){
     
         try {
             // First query to get sy, total_amt, and financial_release_id
-            $stnt = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fr.sy, fr.total_amt 
-                FROM financial_r AS fr
-                LEFT OUTER JOIN financial_s AS fs ON fr.id = fs.financial_release_id
-                WHERE spas_id = ?
-                GROUP BY fr.id, fs.financial_release_id, fr.total_amt, fr.sy
-                ORDER BY id DESC");
+            $stnt = $pdo->prepare("SELECT fr.id, fs.financial_release_id, fr.sy, fr.total_amt, fr.spas_id, s.full_name, 
+fs.term_id, c.name as course, u.name as schools, si.program
+FROM financial_release AS fr
+
+LEFT OUTER JOIN financial_statement AS fs ON fr.id = fs.financial_release_id
+LEFT OUTER JOIN scholars_record AS s ON fr.spas_id = s.spas_id
+LEFT OUTER JOIN course_record AS cr ON fs.term_id = cr.term_id
+LEFT OUTER JOIN courses AS c ON cr.course_code = c.id::text
+LEFT OUTER JOIN colleges AS u ON cr.school_code = u.id::text
+LEFT OUTER JOIN scholarship_info AS si ON fr.spas_id = si.spas_id
+
+                
+WHERE fr.spas_id = ?
+GROUP BY fr.id, fs.financial_release_id, fr.total_amt, fr.sy, fr.spas_id, 
+s.full_name, fs.term_id,  cr.sy_start, c.name, u.name, si.program
+
+ORDER BY id DESC");
             $params = array($id);
             $stnt->execute($params);
     
@@ -3643,6 +3660,12 @@ if(isset($_GET['itemids'])){
                 $final[$row['financial_release_id']] = [
                     'sy' => $row['sy'],
                     'total_amt' => $row['total_amt'],
+                    'spas_id' => $row['spas_id'],
+                    'full_name' => $row['full_name'],
+                    'course' => $row['course'],
+                    'schools' => $row['schools'],
+                    'term_id' => $row['term_id'],
+                    'program' => $row['program'],
                     'details' => []  // Placeholder for details to be populated later
                 ];
             }
@@ -3655,8 +3678,8 @@ if(isset($_GET['itemids'])){
             
             // Second query to fetch distinct financial_release_id information
             $stnt2 = $pdo->prepare("SELECT DISTINCT fr.id, fs.financial_release_id 
-                FROM financial_r AS fr 
-                LEFT OUTER JOIN financial_s AS fs ON fr.id = fs.financial_release_id
+                FROM financial_release AS fr 
+                LEFT OUTER JOIN financial_statement AS fs ON fr.id = fs.financial_release_id
                 WHERE fr.id = ?");
             $params = array($value['financial_release_id']);
             $stnt2->execute($params);
@@ -3677,17 +3700,12 @@ if(isset($_GET['itemids'])){
             // Third query to get detailed information for each financial_release_id
             $stnt3 = $pdo->prepare("SELECT t.term, t.sy, al.name as category, fs.year, m.name as month,
                 fs.date_process, fs.amount, fs.date_deposit, fs.remarks
-                FROM financial_s AS fs
-                LEFT OUTER JOIN financial_r AS fr ON fs.financial_release_id = fr.id
+                FROM financial_statement AS fs
+                LEFT OUTER JOIN financial_release AS fr ON fs.financial_release_id = fr.id
                 LEFT OUTER JOIN term_record AS t ON fs.term_id = t.term_id
                 LEFT OUTER JOIN lu_allowances AS al ON fs.category = al.id
                 LEFT OUTER JOIN lu_months AS m ON fs.month = m.id
-
-
-
-
-
-                WHERE fr.id = ?");
+                WHERE fr.id = ? AND fs.active_flag = true");
             $params = array($value['financial_release_id']);
             $stnt3->execute($params);
     
@@ -3706,6 +3724,77 @@ if(isset($_GET['itemids'])){
         $stnt3 = null;
         $pdo = null;
     }
+
+
+
+    // Read Financials
+
+if(isset($_GET['readFinancial'])){
+
+    $data = array();
+
+    $id = $_POST["finance_id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM financial_statement WHERE financial_release_id = ? 
+AND active_flag = true
+ORDER BY term_id DESC");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+    // Read Financials
+
+if(isset($_GET['readFinancialRelease'])){
+
+    $data = array();
+
+    $id = $_POST["finance_id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT * FROM financial_release WHERE id = ?");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+    
     
     
         

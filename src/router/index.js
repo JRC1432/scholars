@@ -148,6 +148,16 @@ const router = createRouter({
           component: () => import("../views/FinancialAssistView.vue"),
         },
         {
+          path: "/addfinancial/:id",
+          name: "addfinancial",
+          component: () => import("../views/AddFinancialView.vue"),
+        },
+        {
+          path: "/updatefinancial/:id",
+          name: "updatefinancial",
+          component: () => import("../views/UpdateFinancialView.vue"),
+        },
+        {
           path: "/editgrades/:id",
           name: "editgrades",
           component: () => import("../views/EditGradesView.vue"),

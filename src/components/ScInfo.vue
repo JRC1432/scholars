@@ -1,12 +1,20 @@
 <template>
   <div class="q-mb-md q-px-lg">
-    <q-btn
+    <!-- <q-btn
       color="primary"
       icon="reply"
       label="BACK"
       rounded
       flat
       to="/scholar"
+    /> -->
+    <q-btn
+      color="primary"
+      icon="reply"
+      label="BACK"
+      rounded
+      flat
+      @click="backBtn"
     />
   </div>
   <div class="q-px-lg">
@@ -160,5 +168,9 @@ const readscholar = () => {
     fnameScholar.value = response.data.full_name;
     spasid.value = response.data.spas_id;
   });
+};
+
+const backBtn = () => {
+  history.back();
 };
 </script>

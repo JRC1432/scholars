@@ -226,6 +226,32 @@ if(isset($_GET['delUserInfo'])){
 
 
 
+        // Delete Financial Statement
+
+
+if(isset($_GET['delFinancial'])){
+
+    
+    $userid = $_POST["id"];
+    
+    
+    $stnt = $pdo->prepare("UPDATE financial_statement SET active_flag = false
+    WHERE financial_statement_id = ?");
+    $stnt->execute([$userid]);
+    
+     if($stnt){
+            $result =  true;
+        } else{
+            
+            $result = false;
+        }
+    
+        echo json_encode($result);
+    
+    }
+
+
+
 
 
 

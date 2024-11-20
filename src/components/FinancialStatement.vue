@@ -35,20 +35,21 @@
             input-debounce="0"
             :options="syoptions"
             @filter="filtersy"
-            :rules="[myRule]"
+            :rules="[checkSy, myRule]"
             mask="#### - ####"
             clearable
             style="width: 300px; margin-left: 10px"
-          ></q-select>
+          >
+          </q-select>
 
-          <q-btn
+          <!-- <q-btn
             unelevated
             icon="print"
             color="positive"
             @click="printReceipt"
             rounded
             class="row justify-end"
-          ></q-btn>
+          ></q-btn> -->
         </div>
       </div>
 
@@ -65,7 +66,7 @@
                 <span class="text-bold">Term Record:</span>
                 <q-select
                   ref="reftermRec"
-                  :options="termRecoptions"
+                  :options="filteredTermRecOptions"
                   v-model="card.termwthRec"
                   name="termwthRec"
                   emit-value
@@ -126,7 +127,6 @@
                     hide-bottom-space
                     mask="####"
                     label="Year"
-                    :rules="inputRules"
                   />
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-2">
@@ -142,7 +142,6 @@
                     use-input
                     map-options
                     hide-bottom-space
-                    :rules="[myRule]"
                   />
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-2">
@@ -220,14 +219,6 @@
       </q-card-section>
 
       <q-card-section>
-        <!-- <q-input
-          standout
-          hint="Total Amount"
-          :dense="dense"
-          readonly
-          v-model="totalAmount"
-          name="totalAmount"
-        /> -->
         <q-chip outline color="teal" text-color="white" icon="payments">
           Total Amount: ₱ {{ formattedTotalAmount }}
         </q-chip>
@@ -251,6 +242,7 @@
 import { ref, onMounted, reactive, inject, computed } from "vue";
 import { useQuasar } from "quasar";
 import { useRoute } from "vue-router";
+import router from "../router";
 
 import Swal from "sweetalert2";
 
@@ -272,6 +264,29 @@ const inputRulesAmount = [
     (val !== null && val !== undefined && val !== "") ||
     "Please type something",
 ];
+
+// Validation for Usernames for Create
+
+const checkSy = async (value) => {
+  const formData = new FormData(document.getElementById("saveSuccessForm"));
+  formData.append("syinput", state.sy);
+  formData.append("id", globalSPAS);
+  try {
+    const response = await axios.post("/read.php?checkSy", formData);
+    if (response.data === true) {
+      // Do something if username is available
+    } else {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("Financial Stament for school year is  already created!!!");
+        }, 1500);
+      });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error("Error:", error);
+  }
+};
 
 const refsy = ref(null);
 const reftermRec = ref(null);
@@ -341,7 +356,7 @@ const populateAll = async () => {
   });
 
   // Select School Year
-  await axios.get("/read.php?school_years").then((response) => {
+  await axios.post("/read.php?specificSchoolYrs", formData).then((response) => {
     syoptions2 = response.data;
   });
 };
@@ -363,6 +378,26 @@ const filtersy = (val, update) => {
     });
   });
 };
+
+// Auto filter
+
+const filteredTermRecOptions = computed(() => {
+  if (state.sy) {
+    // Ensure termRecoptions is an array before attempting to filter
+    const selectedYear = state.sy.split("-")[0]; // Get the first year of the SY
+
+    // Guard against termRecoptions being undefined or not an array
+    if (Array.isArray(termRecoptions.value)) {
+      return termRecoptions.value.filter(
+        (option) => option.label.includes(selectedYear) // Match the year with the term label
+      );
+    } else {
+      console.error("termRecoptions is not an array", termRecoptions.value);
+      return []; // Return an empty array if termRecoptions is not an array
+    }
+  }
+  return termRecoptions.value || []; // If no school year is selected, return all terms
+});
 
 const populateitems = (item) => {
   // Ensure the item passed is the current item
@@ -625,6 +660,9 @@ const saveSuccess = () => {
                   title: "Success!",
                   text: "Financial Statement has been created.",
                   icon: "success",
+                });
+                router.push({
+                  path: "/financeassists/" + globalSPAS,
                 });
               } else {
                 $q.notify({

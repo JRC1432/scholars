@@ -1274,6 +1274,117 @@ if(isset($_GET['updateReplySlip'])){
                     }
 
 
+                        // Updating Financials
+
+                    if (isset($_GET['updateFinancials'])) {
+                        date_default_timezone_set('Asia/Manila');
+                        $date = date("Y-m-d h:i:s a");
+                    
+                        $updatedby = $_POST["user"];
+                        $finance_release = $_POST["finance_id"];
+                        $totalamt = $_POST["totalamt"];
+
+                    
+                        // Initialize an empty array to hold todos
+                        $todos = [];
+                        $results = [];
+                    
+                        // Loop through the posted 'todos' data and collect them into the array
+                        foreach ($_POST['todos'] as $index => $todo) {
+         
+                            $financial_statement_ids = $todo['financial_statement_ids'] ?? null;
+                            $term_ids = $todo['term_ids'] ?? null;
+                            $category = (int) ($todo['category'] ?? 0);
+                            $year = (int) ($todo['year'] ?? null);
+                            $month = (int) ($todo['month'] ?? null);
+                            $date_process = $todo['date_process'] ?? null;
+                            $amount = (int) ($todo['amount'] ?? 0);
+                            // $date_deposit = $todo['date_deposit'] ?? null;
+                            $remarks = $todo['remarks'] ?? null;
+
+
+
+                                        $date_deposit = $todo['date_deposit'];
+                                        if (empty($date_deposit) || $date_deposit === 'mm/dd/yyyy') {
+                                        $date_deposit = null; // Ensure NULL is passed
+                                        }
+
+                    
+                            // Add each todo to the $todos array
+                            $todos[] = [
+                                'financial_statement_ids' => $financial_statement_ids,
+                                'term_ids' => $term_ids,
+                                'category' => $category,
+                                'year' => $year,
+                                'month' => $month,
+                                'date_process' => $date_process,
+                                'amount' => $amount,
+                                'date_deposit' => $date_deposit,
+                                'remarks' => $remarks
+                            ];
+
+
+                            if ( $financial_statement_ids == 'undefined') {
+
+                                $stnt = $pdo->prepare("INSERT INTO financial_statement(financial_release_id,term_id,category,year,month,date_process,amount,date_deposit,remarks,created_by,created_at) 
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+                                $params = array($finance_release,$term_ids,$category,$year,$month,$date_process,$amount,$date_deposit,$remarks,$updatedby,$date);
+                               $success =  $stnt -> execute($params);
+
+                        
+                            } else {
+
+
+
+                                // Prepare the SQL statement for each item in the todos array
+                         $stnt = $pdo->prepare("UPDATE financial_statement SET term_id = ?, category = ?, year = ?, month = ?, date_process = ?, amount = ?, date_deposit = ?, remarks = ?,
+                         update_by = ?, update_at = ? WHERE financial_statement_id = ?");
+        
+                            // Execute the statement with the current todo's values
+                         $success = $stnt->execute([$term_ids, $category, $year, $month, $date_process, $amount, $date_deposit, $remarks, $updatedby, $date, $financial_statement_ids]);
+
+
+                        }
+                        $results[] = $success;
+
+                            }
+                            $result = !in_array(false, $results);
+
+                            echo json_encode($result);
+    
+                    }
+
+
+                    
+                    // Update Financal Release
+
+
+
+                    if(isset($_GET['upFinancialRelease'])){
+                        date_default_timezone_set('Asia/Manila');
+                        $date = date("Y-m-d h:i:s a");
+                        $update_by = $_POST["user"];
+                    
+                        $finance_id = $_POST["finance_id"];
+                        $totalamt = $_POST["totalamt"];
+                       
+        
+                        $stnt = $pdo->prepare("UPDATE financial_release SET total_amt = ?, updated_at = ?, updated_by = ?
+                        WHERE id = ?");
+                        $stnt->execute([$totalamt,$date,$update_by,$finance_id]);
+                        
+                         if($stnt){
+                                $result =  true;
+                            } else{
+                                
+                                $result = false;
+                            }
+                        
+                            echo json_encode($result);
+                        
+                        }
+
+
 
                     
 

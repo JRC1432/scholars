@@ -1884,7 +1884,7 @@ $pdf->Output('Financial_Statement.pdf', 'I');
                     $pdo->beginTransaction();
         
                     // Insert into financial_r
-                    $stnt0 = $pdo->prepare("INSERT INTO financial_r(spas_id, sy, total_amt, created_at, created_by) VALUES (?,?,?,?,?)");
+                    $stnt0 = $pdo->prepare("INSERT INTO financial_release(spas_id, sy, total_amt, created_at, created_by) VALUES (?,?,?,?,?)");
                     if ($stnt0->execute([$spasid, $sy, $total_amt, $date, $createdby])) {
                         $sid = $pdo->lastInsertId();
         
@@ -1897,15 +1897,33 @@ $pdf->Output('Financial_Statement.pdf', 'I');
                                     // Check that all necessary fields are set
                                     if (isset($item['itemType'], $item['year'], $item['month'], $item['dateProcess'], $item['amount'], $item['dateDeposit'], $item['remarks'])) {
                                         $itemType = (int)$item['itemType'];
-                                        $year = $item['year'];
+                                        // $year = (int)$item['year'];
                                         $month = (int)$item['month'];
                                         $dateProcess = $item['dateProcess'];
                                         $amount = $item['amount'];
-                                        $dateDeposit = $item['dateDeposit'];
+                                        // $dateDeposit = $item['dateDeposit'];
                                         $remarks = $item['remarks'];
+
+
+                                        $year = $item['year'];
+                                        if (empty($year)) {
+                                        $year = null; // Ensure NULL is passed
+                                        }
+
+                                        $month = $item['month'];
+                                        if (empty($month)) {
+                                        $month = null; // Ensure NULL is passed
+                                        }
+
+                                        $dateDeposit = $item['dateDeposit'];
+                                        if (empty($dateDeposit) || $dateDeposit === 'mm/dd/yyyy') {
+                                        $dateDeposit = null; // Ensure NULL is passed
+                                        }
+
+
         
                                         // Prepare and execute the SQL statement
-                                        $stnt = $pdo->prepare("INSERT INTO financial_s(financial_release_id, term_id, category, year, month, date_process, amount, date_deposit, remarks, created_by, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+                                        $stnt = $pdo->prepare("INSERT INTO financial_statement(financial_release_id, term_id, category, year, month, date_process, amount, date_deposit, remarks, created_by, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
                                         $success = $stnt->execute([$sid, $termwthRec, $itemType, $year, $month, $dateProcess, $amount, $dateDeposit, $remarks, $createdby, $date]);
         
                                         // Collect the result of each update
@@ -1931,17 +1949,25 @@ $pdf->Output('Financial_Statement.pdf', 'I');
                             echo json_encode(false); // Failure response as JSON-encoded false
                         }
                     } else {
-                        throw new Exception('Failed to insert into financial_r.');
+                        throw new Exception('Failed to insert into financial_release.');
                     }
                 } catch (Exception $e) {
                     $pdo->rollBack();
-                    echo json_encode(false); // Error response as JSON-encoded false
+                    echo json_encode(["success" => false, "error" => $e->getMessage()]);
+                    // echo json_encode(false); // Error response as JSON-encoded false
                 }
             } else {
                 echo json_encode(false); // Missing required POST data response as JSON-encoded false
             }
         }
-        
+
+
+
+
+
+
+
+
 
 
 
