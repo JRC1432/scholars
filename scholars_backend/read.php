@@ -3807,6 +3807,40 @@ if(isset($_GET['readFinancialRelease'])){
     $pdo = null;
     
     }
+
+
+
+    // Read TotalGrades Info
+
+if(isset($_GET['readTotalGrades'])){
+    $data = array();
+    $id = $_POST["id"];
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT AVG(grade_ave) AS average_grad_ave
+        FROM term_record
+        WHERE spas_id = ?");
+        $params = array($id);
+        $stnt->execute($params);
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+        $data = $row;
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
     
     
     

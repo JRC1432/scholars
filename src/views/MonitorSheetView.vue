@@ -1,3 +1,4 @@
+script
 <template>
   <ScInfo />
   <div class="q-pa-lg">
@@ -44,26 +45,6 @@
       <q-card-section>
         <ShowGrades />
       </q-card-section>
-      <q-card-actions align="around">
-        <q-btn
-          rounded
-          push
-          color="accent"
-          @click="printPDF"
-          icon="print"
-          label="Print Overall Grades"
-          style="width: 40%"
-        />
-        <q-btn
-          rounded
-          push
-          color="warning"
-          @click="sendMail"
-          icon="send"
-          label="Send E-MAIL MEMO to SCHOLARS "
-          style="width: 40%"
-        />
-      </q-card-actions>
     </q-card>
   </div>
 
