@@ -38,7 +38,10 @@
             {{ props.row.spas_id }}
           </q-td>
           <q-td key="full_name" :props="props">
-            <q-badge class="primary" :label="props.value">
+            <q-badge
+              class="primary q-px-md q-py-xs rounded-borders-10"
+              :label="props.value"
+            >
               {{ props.row.full_name }}
             </q-badge>
           </q-td>
@@ -60,7 +63,7 @@
           <q-select
             ref="reftermtype"
             :options="regionOptions"
-            v-model="state.region"
+            v-model="region"
             name="region"
             outlined
             dense
@@ -83,7 +86,7 @@
             map-options
             use-input
             input-debounce="0"
-            v-model="state.school"
+            v-model="school"
             name="school"
             :options="schooloptions"
             @filter="filterschool"
@@ -126,6 +129,18 @@ const q$ = useQuasar();
 const $q = useQuasar();
 const axios = inject("$axios");
 
+const school = ref("All");
+const region = ref("All");
+
+//Rules
+
+const myRule = (val) => {
+  if (val === null || val === undefined || val === "") {
+    return "You must make a selection!";
+  }
+  return true;
+};
+
 // Items Variable
 
 const originalRows = ref([]);
@@ -137,11 +152,6 @@ const pagination = ref({
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 10,
-});
-
-const state = reactive({
-  school: "All",
-  region: "All",
 });
 
 const columns = [
@@ -271,8 +281,9 @@ const onRequest = (props) => {
 
 const readScholarsEligible = () => {
   var formData = new FormData();
-  formData.append("school", state.school);
-  formData.append("region", state.region);
+  formData.append("school", school.value);
+  formData.append("region", region.value);
+
   axios.post("/read.php?readEligible", formData).then((response) => {
     originalRows.value = response.data;
     tableRef.value.requestServerInteraction(); // Ensure this is called after data is fetched
@@ -280,7 +291,7 @@ const readScholarsEligible = () => {
 
   // Select School
 
-  axios.get("/read.php?school").then((response) => {
+  axios.get("/read.php?schoolNames").then((response) => {
     schooloptions2 = response.data;
     schooloptions2.unshift({ label: "All", value: "All" });
   });
@@ -345,10 +356,13 @@ const queryData = ref([]);
 const convertToCSV = (data) => {
   if (data.length === 0) return "";
 
-  // Ensure all keys are accounted for in case of missing fields in some objects
-  const headers = [...new Set(data.flatMap((obj) => Object.keys(obj)))].join(
-    ","
-  );
+  // Use map + reduce instead of flatMap for compatibility
+  const headers = Array.from(
+    data.reduce((set, obj) => {
+      Object.keys(obj).forEach((key) => set.add(key));
+      return set;
+    }, new Set())
+  ).join(",");
 
   const rows = data
     .map((row) =>

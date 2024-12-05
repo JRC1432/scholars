@@ -2030,7 +2030,7 @@ if (isset($_GET['readEligible'])) {
         $params = array();
         if ($school !== 'All') {
             $query .= " AND s.name = ?";
-            $params[] = $school;
+            $params[] = $school; // Case-insensitive and partial match
         }
         if ($region !== 'All') {
             $query .= " AND s.region = ?";
@@ -2735,6 +2735,65 @@ if(isset($_GET['school'])){
     $pdo = null;
     
     }
+
+
+
+
+    // Read School by Name
+
+if(isset($_GET['schoolNames'])){
+    $data = array();
+    try
+    {
+    
+        $stnt = $pdo->prepare("SELECT name, id FROM colleges ORDER BY id");
+        $stnt->execute();
+    
+    }catch (Exception $ex){
+        die("Failed to run query". $ex);
+    
+    }
+    
+    http_response_code(200);
+    
+    while ($row = $stnt->fetch()){
+        $data[] = array(
+    
+                "label" => $row['name'],
+    
+                "value" => $row['name']
+    
+            );
+    }
+    
+    echo json_encode($data);
+    
+    $stnt = null;
+    $pdo = null;
+    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Read Course

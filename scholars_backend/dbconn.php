@@ -27,9 +27,9 @@ if($_SERVER["REQUEST_METHOD"] == "OPTIONS")
 //From here, handle the request as it is ok
 
 try {
-  $dsn = "pgsql:host=172.16.2.12;port=5432;dbname=scholar_db;";
+  $dsn = "pgsql:host=localhost;port=5432;dbname=scholar_db;";
   // make a database connection
-  $pdo = new PDO($dsn, "jrdalit", "jrdalit", [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+  $pdo = new PDO($dsn, "postgres", "143297", [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
 
 } catch (PDOException $e) {
   die($e->getMessage());

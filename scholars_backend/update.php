@@ -1392,25 +1392,74 @@ if(isset($_GET['updateReplySlip'])){
 
 
 
+                        
+                    // Progress Status Batch Update
+
+
+                    if(isset($_GET['updateBatchProgressStats'])){
+                        date_default_timezone_set('Asia/Manila');
+                        $dates = date("Y-m-d h:i:s a");
+                        $date = date("Ymdhi");
                     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        $startEnd = $_POST["startEnd"];
+                        $stats = $_POST["stats"];
+                        $actflag = $_POST["actflag"];
+                        $validation = $_POST["validation"];
+                        $uname = $_POST["user"];
+                        $authid = $_POST["userid"];
+                    
+                        // Bulk Upload
+                        $bathcFile = $_FILES['fileUpload']['name'];
+                        $path = 'batch/';
+                        $allowed_extensions = array('csv');
+                        $extension = pathinfo($bathcFile, PATHINFO_EXTENSION);
+                        
+                        if(in_array(strtolower($extension), $allowed_extensions)) {
+                            if(!file_exists($path)){
+                                mkdir($path, 0775, true);
+                            }
+                    
+                            $temp_file = $_FILES['fileUpload']['tmp_name'];
+                            $newpath = $path . $authid . $uname . $date . "." . $extension;
+                    
+                            if(!move_uploaded_file($temp_file, $newpath)) {
+                                $newpath = "No_Files";
+                            }
+                        } else {
+                            $newpath = "No_Files";
+                        }
+                    
+                        $fileUploadedSuccessfully = ($newpath !== "No_Files");
+                        $result = true; // Assume success unless proven otherwise
+                    
+                        if ($fileUploadedSuccessfully) {
+                            $b = false;
+                            $file = fopen($newpath, "r");
+                    
+                            while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
+                                if (!$b) { // Skip the header row
+                                    $b = true;
+                                    continue;
+                                }
+                    
+                                $stnt = $pdo->prepare("INSERT INTO temp_record17508(spas_id, sy, term, term_type, course, school, progress_status, standing) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                                $executionResult = $stnt->execute([
+                                    $emapData[0], $emapData[1], $emapData[2], $emapData[3], 
+                                    $emapData[4], $emapData[5], $emapData[6], $emapData[7]
+                                ]);
+                    
+                                if (!$executionResult) {
+                                    $result = false; // Set result to false if any execution fails
+                                }
+                            }
+                            fclose($file);
+                        } else {
+                            $result = false; // File upload failed
+                        }
+                    
+                        echo json_encode($result); // Output the final result once
+                    }
+                    
 
 
 
