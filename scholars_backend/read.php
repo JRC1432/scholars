@@ -2295,6 +2295,7 @@ if(isset($_GET['readEditGrades'])){
     s.name as school,
 	 c.name as course,
 	 t.term_required,
+     t.reg_verified_flag,
 	 t.reg_verified_by,
 	 t.grades_verified_by,
     p1.progress_status AS pstart,
@@ -3900,6 +3901,72 @@ if(isset($_GET['readTotalGrades'])){
     $pdo = null;
     
     }
+
+    if(isset($_GET['readRegForm'])){
+        $data = array();
+        try
+        {
+        
+            $stnt = $pdo->prepare("SELECT t.term_id, t.spas_id, t.sy, t.term, t.term_type, s.full_name
+             FROM term_record as t
+
+             LEFT OUTER JOIN scholars_record as s ON t.spas_id = s.spas_id
+			 WHERE reg_verified_flag = 0
+             ORDER BY s.full_name
+             ");
+            $stnt->execute();
+        
+        }catch (Exception $ex){
+            die("Failed to run query". $ex);
+        
+        }
+        
+        http_response_code(200);
+        
+        while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+            $data[] = $row;
+        }
+        
+        echo json_encode($data);
+        
+        $stnt = null;
+        $pdo = null;
+        
+        }
+
+
+
+        if(isset($_GET['readGradeForm'])){
+            $data = array();
+            try
+            {
+            
+                $stnt = $pdo->prepare("SELECT t.term_id, t.spas_id, t.sy, t.term, t.term_type, s.full_name
+                 FROM term_record as t
+    
+                 LEFT OUTER JOIN scholars_record as s ON t.spas_id = s.spas_id
+                 WHERE grades_verified_flag = 0
+                 ORDER BY s.full_name
+                 ");
+                $stnt->execute();
+            
+            }catch (Exception $ex){
+                die("Failed to run query". $ex);
+            
+            }
+            
+            http_response_code(200);
+            
+            while ($row = $stnt->fetch(PDO::FETCH_ASSOC)){
+                $data[] = $row;
+            }
+            
+            echo json_encode($data);
+            
+            $stnt = null;
+            $pdo = null;
+            
+            }
     
     
     

@@ -167,6 +167,16 @@ const router = createRouter({
           name: "editgrades",
           component: () => import("../views/EditGradesView.vue"),
         },
+        {
+          path: "/regform/",
+          name: "regform",
+          component: () => import("../views/RegFormView.vue"),
+        },
+        {
+          path: "/gradeform/",
+          name: "gradeform",
+          component: () => import("../views/GradesFormView.vue"),
+        },
       ],
     },
   ],

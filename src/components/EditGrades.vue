@@ -1,25 +1,46 @@
 <template>
-  <div class="q-pa-sm">
-    <q-card flat class="my-card surface-container rounded-borders-20">
-      <q-banner dense class="rounded-borders-10 glass" v-if="verif === 1">
-        <template v-slot:avatar>
-          <q-icon name="verified" color="teal" />
-        </template>
-        <text class="text-h6">Verified Grades</text>
-      </q-banner>
-      <q-banner dense class="rounded-borders-10 glass2" v-else>
-        <template v-slot:avatar>
-          <q-icon name="warning" color="orange" />
-        </template>
-        <text class="text-h6 text-center">Unverified Grades</text>
-      </q-banner>
-    </q-card>
-  </div>
-
   <q-card flat class="my-card surface-container rounded-borders-20">
     <q-card-section>
       <q-page class="q-pa-md">
         <q-card class="q-pa-md rounded-borders-20 banner-5">
+          <q-card-section>
+            <q-chip
+              outline
+              color="teal"
+              text-color="white"
+              icon="verified"
+              v-if="verif === 1"
+            >
+              Verified Grades
+            </q-chip>
+            <q-chip
+              outline
+              color="red"
+              text-color="white"
+              icon="warning"
+              v-if="verif === 0 || verif === null"
+            >
+              Unverified Grades
+            </q-chip>
+            <q-chip
+              outline
+              color="teal"
+              text-color="white"
+              icon="verified"
+              v-if="verifReg === 1"
+            >
+              Verified Registration Form
+            </q-chip>
+            <q-chip
+              outline
+              color="red"
+              text-color="white"
+              icon="warning"
+              v-if="verifReg === 0 || verifReg === null"
+            >
+              Unverified Registration Form
+            </q-chip>
+          </q-card-section>
           <q-card-section>
             <div class="col-12">
               <div class="q-col-gutter-md row items-start">
@@ -51,7 +72,7 @@
                       <q-btn
                         v-if="verif === 0 || verif === null"
                         color="positive"
-                        label="Verify Grades"
+                        label="Grades"
                         icon="verified"
                         @click="verifyBtn"
                         rounded
@@ -59,10 +80,27 @@
                       <q-btn
                         v-else
                         color="negative"
-                        label="Disallow Grades"
+                        label="Grades"
                         icon="cancel"
                         rounded
                         @click="disAllowBtn"
+                      />
+
+                      <q-btn
+                        v-if="verifReg === 0 || verifReg === null"
+                        color="positive"
+                        label="Register Form"
+                        icon="verified"
+                        @click="verifyRegBtn"
+                        rounded
+                      />
+                      <q-btn
+                        v-else
+                        color="negative"
+                        label="Register Form"
+                        icon="cancel"
+                        @click="disAllowRegBtn"
+                        rounded
                       />
 
                       <q-btn
@@ -1810,6 +1848,7 @@ const gradeVerified = ref("");
 const statStart = ref("");
 const statEnd = ref("");
 const verif = ref();
+const verifReg = ref();
 const toggle = ref();
 const course_id = ref();
 
@@ -2087,6 +2126,7 @@ const populateEditGrades = () => {
     statEnd.value = response.data.sstanding;
     toggle.value = response.data.latest_flag == 1 ? true : false;
     verif.value = response.data.grades_verified_flag;
+    verifReg.value = response.data.reg_verified_flag;
     course_id.value = response.data.id;
   });
 
@@ -2218,6 +2258,32 @@ const verifyBtn = () => {
   });
 };
 
+const verifyRegBtn = () => {
+  var formData = new FormData();
+
+  formData.append("termid", global_Termid);
+  formData.append("user", user.username);
+
+  axios.post("/update.php?verifReg", formData).then(function (response) {
+    if (response.data == true) {
+      populateEditGrades();
+      Swal.fire({
+        icon: "success",
+        title: "Verified",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      populateEditGrades();
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "No Changes Made",
+      });
+    }
+  });
+};
+
 const disAllowBtn = () => {
   var formData = new FormData();
 
@@ -2225,6 +2291,32 @@ const disAllowBtn = () => {
   formData.append("user", user.username);
 
   axios.post("/update.php?disGrades", formData).then(function (response) {
+    if (response.data == true) {
+      populateEditGrades();
+      Swal.fire({
+        icon: "error",
+        title: "Disalllowed Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      populateEditGrades();
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "No Changes Made",
+      });
+    }
+  });
+};
+
+const disAllowRegBtn = () => {
+  var formData = new FormData();
+
+  formData.append("termid", global_Termid);
+  formData.append("user", user.username);
+
+  axios.post("/update.php?disRefForm", formData).then(function (response) {
     if (response.data == true) {
       populateEditGrades();
       Swal.fire({
@@ -2371,7 +2463,7 @@ const handleTermChange = (value) => {
       if (response.data == true) {
         $q.notify({
           color: "green",
-          message: "Term required has been set to YES",
+          message: "Term Required",
         });
         populateEditGrades();
       } else {
@@ -2387,7 +2479,7 @@ const handleTermChange = (value) => {
       if (response.data == true) {
         $q.notify({
           color: "orange",
-          message: "Term required has been set to NO",
+          message: "Term Not Required",
         });
         populateEditGrades();
       } else {

@@ -97,7 +97,7 @@
             icon="screen_search_desktop"
           >
             <q-list>
-              <q-item clickable active-class="my-menu-link" to="">
+              <q-item clickable active-class="my-menu-link" to="/regform">
                 <q-item-section avatar>
                   <IconFiles :size="30" stroke-width="2" />
                 </q-item-section>
@@ -105,7 +105,7 @@
                   >Registration Forms For Validation</q-item-section
                 >
               </q-item>
-              <q-item clickable active-class="my-menu-link" to="">
+              <q-item clickable active-class="my-menu-link" to="/gradeform">
                 <q-item-section avatar>
                   <IconStar :size="30" stroke-width="2" />
                 </q-item-section>

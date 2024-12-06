@@ -902,16 +902,6 @@ if(isset($_GET['updateReplySlip'])){
 
 
 
-
-
-
-
-
-
-
-
-
-
                      // Disallow Grades
 
 
@@ -926,6 +916,36 @@ if(isset($_GET['updateReplySlip'])){
     
     
                     $stnt = $pdo->prepare("UPDATE term_record SET grades_verified_flag = ?, updated_at = ?, updated_by = ? , grades_verified_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$verif,$date,$updatedby,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+                    // Disallow Registration Form
+
+
+                if(isset($_GET['disRefForm'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $verif = 0;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET reg_verified_flag = ?, updated_at = ?, updated_by = ? , reg_verified_by = ?
                     WHERE term_id = ?");
                     $stnt->execute([$verif,$date,$updatedby,$updatedby,$termid]);
                     
@@ -969,6 +989,56 @@ if(isset($_GET['updateReplySlip'])){
                         echo json_encode($result);
                     
                     }
+
+
+
+                    // Verify Grades
+
+
+                if(isset($_GET['verifReg'])){
+                    date_default_timezone_set('Asia/Manila');
+                    $date = date("Y-m-d h:i:s a");
+                
+                    $updatedby = $_POST["user"];
+                    $termid = $_POST["termid"];
+                    $verif = 1;
+
+    
+    
+                    $stnt = $pdo->prepare("UPDATE term_record SET reg_verified_flag = ?, updated_at = ?, updated_by = ? , reg_verified_by = ?
+                    WHERE term_id = ?");
+                    $stnt->execute([$verif,$date,$updatedby,$updatedby,$termid]);
+                    
+                     if($stnt){
+                            $result =  true;
+                        } else{
+                            
+                            $result = false;
+                        }
+                    
+                        echo json_encode($result);
+                    
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
