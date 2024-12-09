@@ -2,13 +2,35 @@
   <q-card flat bordered class="my-card">
     <q-card-section>
       <div class="q-pa-md q-gutter-sm">
-        <q-btn icon="download" color="primary" unelevated label="Availing" />
-        <q-btn icon="download" color="primary" unelevated label="Deferred" />
+        <q-btn
+          icon="download"
+          color="primary"
+          unelevated
+          label="Availing"
+          no-caps
+          tag="a"
+          href="http://localhost/scholars/scholars_backend/upload/template_availing.csv"
+          target="_blank"
+        />
+        <q-btn
+          icon="download"
+          color="primary"
+          unelevated
+          label="Deferred"
+          no-caps
+          tag="a"
+          href="http://localhost/scholars/scholars_backend/upload/template_deferred.csv"
+          target="_blank"
+        />
         <q-btn
           icon="download"
           color="primary"
           unelevated
           label="Did Not Avail"
+          no-caps
+          tag="a"
+          href="http://localhost/scholars/scholars_backend/upload/template_dna.csv"
+          target="_blank"
         />
       </div>
     </q-card-section>
@@ -93,7 +115,7 @@
             color="primary"
             type="submit"
             class="q-mb-sm"
-            style="width: 80%"
+            style="width: 40%"
           />
         </div>
       </q-card-actions>
