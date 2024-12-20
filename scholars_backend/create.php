@@ -1255,13 +1255,15 @@ if(isset($_GET['createUndergradRec'])){
 
 
 if(isset($_GET['createSubject'])){
+  try {
+
 
     date_default_timezone_set('Asia/Manila');
     $date = date("Y-m-d h:i:s a");
     $created_by = $_POST["user"];
 
     $term_id = $_POST["termid"];
-
+    $spasid = $_POST["spasid"];
     $subj_code = strtoupper($_POST["scode"]);
     $academic_type = $_POST["academic"];
     $unit = $_POST["units"];
@@ -1269,21 +1271,44 @@ if(isset($_GET['createSubject'])){
     $completion = strtoupper($_POST["completion"]);
     $remarks = strtoupper($_POST["remarks"]);
     $verified = 0;
+    $act_taken = "ADD";
+    $act_message = "The Grade was Added in " . $spasid. "with Term ID: ". $term_id;
+
+
+    $stntf = $pdo->prepare("SELECT full_name
+                    FROM scholars_record 
+                    WHERE spas_id = ?");
+
+                    $stntf->execute([$spasid]);
+         
+                    while ($row = $stntf->fetch(PDO::FETCH_ASSOC)){
+                 
+                        $fname = $row['full_name'];    
+                
+                    }
 
     
+    $pdo->beginTransaction();
     $stnt = $pdo->prepare("INSERT INTO grades(term_id,subj_code,academic_type,unit,grade,completion,remarks,created_at,created_by,verified_flag) VALUES 
     (?,?,?,?,?,?,?,?,?,?)");
     $params = array($term_id,$subj_code,$academic_type,$unit,$grade,$completion,$remarks,$date,$created_by,$verified);
     $stnt -> execute($params);
 
-    if($stnt){
-        $result =  true;
-    } else{
+    $stnt1 = $pdo->prepare("INSERT INTO activity_logs(spas_id,full_name,action_taken,action_message,action_taken_by,date_time) VALUES (?,?,?,?,?,?)");
+                    $params = array($spasid,$fname,$act_taken,$act_message,$created_by,$date);
+                    $stnt1 -> execute($params);
 
-        $result = false;
-    }
-
-    echo json_encode($result);
+   // Commit transaction
+   $pdo->commit();
+   echo json_encode(true);
+} catch (Exception $e) {
+   // Rollback transaction on failure
+   if ($pdo->inTransaction()) {
+           $pdo->rollBack();
+       }
+   // Log or return the error
+   echo json_encode(['error' => $e->getMessage()]);
+}
 
 
 }
@@ -1533,6 +1558,7 @@ if(isset($_GET['createLatest'])){
 
 
         if(isset($_GET['createPStatusEnd'])){
+          try {
 
             date_default_timezone_set('Asia/Manila');
             $date = date("Y-m-d h:i:s a");
@@ -1548,52 +1574,56 @@ if(isset($_GET['createLatest'])){
             $latest = $_POST["latest"] === 'YES' ? 1 : 0;
             $act_flag = true;
             $created_by = $_POST["user"];
+            $act_taken = "CREATE";
+            $act_message = "Created NEW Progress Status End in " . $spas_id. " with Term ID: " . $termid;
+
+            $stntf = $pdo->prepare("SELECT full_name
+            FROM scholars_record 
+            WHERE spas_id = ?");
+
+            $stntf->execute([$spas_id]); 
+ 
+            while ($row = $stntf->fetch(PDO::FETCH_ASSOC)){
+         
+                $fname = $row['full_name'];    
+        
+            }
 
 
         
             $pdo->beginTransaction();
             $stnt = $pdo->prepare("INSERT INTO progress_status_history(term_id,spas_id,sy,term,term_type,start_end,course_id,progress_status,active_flag,latest_flag,created_at,created_by) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id");
-
-            $stnt2 = $pdo->prepare("UPDATE term_record SET progress_status_end = ? WHERE term_id = ?");
-
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
             $params = array($termid,$spas_id,$sy,$term,$termtype,$startEnd,$course_id,$progress_status,$act_flag,$latest,$date,$created_by);
-            $stnt -> execute($params);
+            if ($stnt -> execute($params)){
+              $returnID = $pdo->lastInsertId();
 
 
-             if($stnt){
-                    $result =  true;
-                } else{
-                    
-                    $result = false;
-                }
-            
-            $sid = "";
-                try{
-
-                    $result = $stnt->fetch();
-                    $sid = $result["id"];
-                   }catch(Exception $e){
-                    echo $e;
-                    }
-
-                    $params1 = array($sid,$termid);
-                    $stnt2 -> execute($params1);
-                    if($stnt2){
-                        $errors[] =  true;
-                    } else{
-
-                     $errors[] = false;
-                    }
+              $stnt1 = $pdo->prepare("UPDATE term_record SET progress_status_end = ? WHERE term_id = ?");
+              $stnt1->execute([$returnID, $termid]);
 
 
-                    if(in_array(false, $errors)){
-                        echo "false";
-                        $pdo->rollback();
-                    } else{
-                       echo "true";
-                       $pdo->commit();
-                   }
+              $stnt2 = $pdo->prepare("INSERT INTO activity_logs(spas_id,full_name,action_taken,action_message,action_taken_by,date_time) VALUES (?,?,?,?,?,?)");
+              $params = array($spas_id,$fname,$act_taken,$act_message,$created_by,$date);
+              $stnt2 -> execute($params);
+
+
+            } else {
+              throw new Exception('Transaction Failed.');
+            }
+
+
+             // Commit transaction
+             $pdo->commit();
+             echo json_encode(true);
+         } catch (Exception $e) {
+             // Rollback transaction on failure
+             if ($pdo->inTransaction()) {
+                     $pdo->rollBack();
+                 }
+             // Log or return the error
+             echo json_encode(['error' => $e->getMessage()]);
+         }
             
             }
 
@@ -1604,6 +1634,7 @@ if(isset($_GET['createLatest'])){
 
 
              if(isset($_GET['createEndStanding'])){
+              try {
 
                 date_default_timezone_set('Asia/Manila');
                 $date = date("Y-m-d h:i:s a");
@@ -1618,54 +1649,54 @@ if(isset($_GET['createLatest'])){
                 $act_flag = true;
                 $latest = $_POST["latest"] === 'YES' ? 1 : 0;
                 $created_by = $_POST["user"];
-    
-    
+
+                $act_taken = "CREATE";
+                $act_message = "Created NEW Term Standing End in " . $spas_id. " with Term ID: " . $termid;
+
+
+
+                $stntf = $pdo->prepare("SELECT full_name
+                FROM scholars_record 
+                WHERE spas_id = ?");
+
+                  $stntf->execute([$spas_id]); 
+ 
+                while ($row = $stntf->fetch(PDO::FETCH_ASSOC)){
+         
+                $fname = $row['full_name'];    
+        
+                }
+
                 $pdo->beginTransaction();
                 $stnt = $pdo->prepare("INSERT INTO standing_history(term_id,spas_id,sy,term,term_type,start_end,standing,latest_flag,active_flag,created_at,created_by) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?) RETURNING id");
-
-                $stnt2 = $pdo->prepare("UPDATE term_record SET standing_end = ? WHERE term_id = ?");
-
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)");
                 $params = array($termid,$spas_id,$sy,$term,$termtype,$startEnd,$standing,$latest,$act_flag,$date,$created_by);
-                $stnt -> execute($params);
-        
-                
-                 if($stnt){
-                        $result =  true;
-                    } else{
-                        
-                        $result = false;
-                    }
+                if ($stnt -> execute($params)){
+                  $returnID = $pdo->lastInsertId();
+
+                  $stnt1 = $pdo->prepare("UPDATE term_record SET standing_end = ? WHERE term_id = ?");
+                  $stnt1->execute([$returnID, $termid]);
 
 
-                    $sid = "";
-                    try{
-    
-                        $result = $stnt->fetch();
-                        $sid = $result["id"];
-                       }catch(Exception $e){
-                        echo $e;
-                        }
-                        
-                        $params1 = array($sid,$termid);
-                        $stnt2 -> execute($params1);
-                        if($stnt2){
-                            $errors[] =  true;
-                        } else{
-    
-                         $errors[] = false;
-                        }
-                        
-                        
+                  $stnt2 = $pdo->prepare("INSERT INTO activity_logs(spas_id,full_name,action_taken,action_message,action_taken_by,date_time) VALUES (?,?,?,?,?,?)");
+                  $params = array($spas_id,$fname,$act_taken,$act_message,$created_by,$date);
+                  $stnt2 -> execute($params);
 
-                        if(in_array(false, $errors)){
-                            echo "false";
-                            $pdo->rollback();
-                        } else{
-                           echo "true";
-                           $pdo->commit();
-                       }
-                
+                } else {
+                  throw new Exception('Transaction Failed.');
+                }
+
+                // Commit transaction
+                $pdo->commit();
+                echo json_encode(true);
+                } catch (Exception $e) {
+                // Rollback transaction on failure
+                if ($pdo->inTransaction()) {
+                     $pdo->rollBack();
+                 }
+                // Log or return the error
+                echo json_encode(['error' => $e->getMessage()]);
+                }      
                             
                 }
 

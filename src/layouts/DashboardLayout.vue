@@ -147,7 +147,7 @@
                 <q-item-section>Quick Report</q-item-section>
               </q-item>
             </q-list>
-            <q-list>
+            <!-- <q-list>
               <q-item
                 clickable
                 active-class="my-menu-link"
@@ -157,6 +157,14 @@
                   <IconBuildingBank :size="30" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Scholars By Municipality</q-item-section>
+              </q-item>
+            </q-list> -->
+            <q-list>
+              <q-item clickable active-class="my-menu-link" to="/activityLogs">
+                <q-item-section avatar>
+                  <IconFileTime :size="30" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Activity Logs</q-item-section>
               </q-item>
             </q-list>
             <q-separator />
@@ -233,6 +241,7 @@ import {
   IconRosetteDiscountCheck,
   IconBuildingBank,
   IconRefresh,
+  IconFileTime,
   IconRotateClockwise2,
   IconShieldCheck,
 } from "@tabler/icons-vue";

@@ -274,6 +274,7 @@
                 color="primary"
                 class="q-mt-md"
                 rounded
+                :disable="verifReg === 1 || verif === 1"
               />
             </q-form>
           </q-card-section>
@@ -290,37 +291,50 @@
             >
               <template v-slot:body-cell-scode="props">
                 <q-td :props="props">
-                  <q-input v-model="props.row.scode" />
+                  <q-input
+                    v-model="props.row.scode"
+                    :disable="verifReg === 1"
+                  />
                 </q-td>
               </template>
 
               <template v-slot:body-cell-academic="props">
                 <q-td :props="props">
-                  <q-checkbox v-model="props.row.academic" />
+                  <q-checkbox
+                    v-model="props.row.academic"
+                    :disable="verifReg === 1"
+                  />
                 </q-td>
               </template>
 
               <template v-slot:body-cell-units="props">
                 <q-td :props="props">
-                  <q-input v-model="props.row.units" mask="##.##" />
+                  <q-input
+                    v-model="props.row.units"
+                    mask="##.##"
+                    :disable="verifReg === 1"
+                  />
                 </q-td>
               </template>
 
               <template v-slot:body-cell-grade="props">
                 <q-td :props="props">
-                  <q-input v-model="props.row.grade" />
+                  <q-input v-model="props.row.grade" :disable="verif === 1" />
                 </q-td>
               </template>
 
               <template v-slot:body-cell-completion="props">
                 <q-td :props="props">
-                  <q-input v-model="props.row.completion" />
+                  <q-input
+                    v-model="props.row.completion"
+                    :disable="verif === 1"
+                  />
                 </q-td>
               </template>
 
               <template v-slot:body-cell-remarks="props">
                 <q-td :props="props">
-                  <q-input v-model="props.row.remarks" />
+                  <q-input v-model="props.row.remarks" :disable="verif === 1" />
                 </q-td>
               </template>
 
@@ -331,6 +345,7 @@
                     icon="delete"
                     color="negative"
                     @click="removeTodo(props.row.id, props.row.subject_id)"
+                    :disable="verif === 1 && verifReg === 1"
                   />
                 </q-td>
               </template>
@@ -1952,6 +1967,7 @@ const addTodo = () => {
     formData.append("termid", global_Termid);
     formData.append("user", user.username);
     formData.append("academic", academic.value);
+    formData.append("spasid", spasids.value);
 
     axios.post("/create.php?createSubject", formData).then(function (response) {
       if (response.data == true) {
@@ -1981,6 +1997,9 @@ const removeTodo = (id, subject_id) => {
   var formData = new FormData();
   formData.append("subjectid", subject_id);
   const index = todos.value.findIndex((todo) => todo.id === id);
+  formData.append("spasid", spasids.value);
+  formData.append("termid", global_Termid);
+  formData.append("user", user.username);
 
   if (index !== -1) {
     console.log(subject_id); // Log subject_id
@@ -2237,6 +2256,7 @@ const verifyBtn = () => {
 
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
+  formData.append("spasid", spasids.value);
 
   axios.post("/update.php?verifGrades", formData).then(function (response) {
     if (response.data == true) {
@@ -2263,6 +2283,7 @@ const verifyRegBtn = () => {
 
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
+  formData.append("spasid", spasids.value);
 
   axios.post("/update.php?verifReg", formData).then(function (response) {
     if (response.data == true) {
@@ -2289,6 +2310,7 @@ const disAllowBtn = () => {
 
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
+  formData.append("spasid", spasids.value);
 
   axios.post("/update.php?disGrades", formData).then(function (response) {
     if (response.data == true) {
@@ -2315,6 +2337,7 @@ const disAllowRegBtn = () => {
 
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
+  formData.append("spasid", spasids.value);
 
   axios.post("/update.php?disRefForm", formData).then(function (response) {
     if (response.data == true) {
@@ -2351,6 +2374,7 @@ const saveBtn = () => {
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
   formData.append("computedGwa", computedGwa.value);
+  formData.append("spasid", spasids.value);
 
   todos.value.forEach((todo, index) => {
     formData.append(`todos[${index}][subj_id]`, todo.subject_id);
@@ -2384,24 +2408,6 @@ const saveBtn = () => {
             });
           }
         });
-      axios
-        .post("/update.php?updateGWAGrades", formData)
-        .then(function (response) {
-          if (response.data == true) {
-            $q.notify({
-              type: "positive",
-              message: "Grades and Term Record has been updated.",
-              position: "top-right",
-            });
-            populateEditGrades();
-          } else {
-            $q.notify({
-              color: "red",
-              textColor: "white",
-              message: "No Changes Made",
-            });
-          }
-        });
     } else if (result.isDenied) {
       Swal.fire("Changes are not saved", "", "info");
     }
@@ -2410,6 +2416,7 @@ const saveBtn = () => {
 const handleToggle = () => {
   var formData = new FormData();
 
+  formData.append("spasid", spasids.value);
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
 
@@ -2457,6 +2464,7 @@ const handleTermChange = (value) => {
 
   formData.append("termid", global_Termid);
   formData.append("user", user.username);
+  formData.append("spasid", spasids.value);
 
   if (value === "YES") {
     axios.post("/update.php?termReqYes", formData).then(function (response) {
@@ -2598,6 +2606,7 @@ const delPStart = () => {
   var formData = new FormData();
   formData.append("spasid", spasids.value);
   formData.append("deltermid", global_Termid);
+  formData.append("user", user.username);
 
   Swal.fire({
     title: "Are you sure?",
@@ -2794,6 +2803,7 @@ const delStartTerm = () => {
   var formData = new FormData();
   formData.append("spasid", spasids.value);
   formData.append("deltermid", global_Termid);
+  formData.append("user", user.username);
 
   Swal.fire({
     title: "Are you sure?",
@@ -2986,6 +2996,7 @@ const delPSEnd = () => {
   var formData = new FormData();
   formData.append("spasid", spasids.value);
   formData.append("deltermid", global_Termid);
+  formData.append("user", user.username);
 
   Swal.fire({
     title: "Are you sure?",
@@ -3180,6 +3191,7 @@ const delEndTerm = () => {
   var formData = new FormData();
   formData.append("spasid", spasids.value);
   formData.append("deltermid", global_Termid);
+  formData.append("user", user.username);
 
   Swal.fire({
     title: "Are you sure?",

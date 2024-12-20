@@ -94,7 +94,8 @@
       icon="hotel_class"
       size="lg"
     >
-      Total General Weighted Average: {{ totalGrades }}
+      Total General Weighted Average:
+      {{ totalGrades }}
     </q-chip>
   </div>
 
@@ -157,6 +158,8 @@ import { useRoute, useRouter } from "vue-router";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { IconMailFast } from "@tabler/icons-vue";
+
+import Swal from "sweetalert2";
 //
 const user = inject("$user");
 const q$ = useQuasar();
@@ -246,8 +249,9 @@ const populateAll = () => {
   });
 
   axios.post("/read.php?readTotalGrades", formData).then((response) => {
-    totalGrades.value = response.data.average_grad_ave;
-    console.log(totalGrades.value);
+    totalGrades.value = parseFloat(
+      parseFloat(response.data.average_grad_ave).toFixed(2)
+    );
   });
 
   axios.post("/read.php?readScholarID", formData).then((response) => {
@@ -271,16 +275,13 @@ const sendMail = () => {
 
 const sendMailNow = () => {
   var formData = new FormData();
+  showMail.value = false;
 
   formData.append("scholar_email", sendEmails.value);
 
   axios.post("/create.php?sendMailScholar", formData).then(function (response) {
     if (response.data == true) {
-      $q.notify({
-        color: "positive",
-        textColor: "white",
-        message: "E-mail Sent",
-      });
+      Swal.fire("E-mail Sent Successfully!", "", "success");
     } else {
       $q.notify({
         color: "red",

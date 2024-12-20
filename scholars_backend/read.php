@@ -21,7 +21,7 @@ if(isset($_GET['usnames'])){
         $row=$stnt->fetch();
     
     
-    
+       
         if ($row){
             $_SESSION['loggedInUser']=$row;
                     $out['message'] = "Login Successful";

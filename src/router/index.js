@@ -177,6 +177,11 @@ const router = createRouter({
           name: "gradeform",
           component: () => import("../views/GradesFormView.vue"),
         },
+        {
+          path: "/activityLogs/",
+          name: "activityLogs",
+          component: () => import("../views/ActLogView.vue"),
+        },
       ],
     },
   ],
