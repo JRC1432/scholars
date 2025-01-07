@@ -55,17 +55,27 @@
         </div>
         <q-list padding>
           <!-- Users Item -->
-          <q-expansion-item label="User Management" icon="groups">
-            <q-list>
-              <q-item clickable active-class="my-menu-link" to="/user">
+
+          <q-item-section header class="text-bold"
+            >USER MANAGEMENT</q-item-section
+          >
+
+          <q-expansion-item label="Users" icon="groups" dense>
+            <q-list dense>
+              <q-item
+                clickable
+                active-class="my-menu-link"
+                to="/user"
+                class="q-pl-none"
+              >
                 <q-item-section avatar>
-                  <IconUsers :size="30" stroke-width="2" />
+                  <IconUsers :size="25" stroke-width="2" />
                 </q-item-section>
-                <q-item-section>Staff Records</q-item-section>
+                <q-item-section header>Staff Records</q-item-section>
               </q-item>
               <q-item clickable active-class="my-menu-link" to="/scholarrec">
                 <q-item-section avatar>
-                  <IconUserStar :size="30" stroke-width="2" />
+                  <IconUserStar :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Scholar Records</q-item-section>
               </q-item>
@@ -73,6 +83,8 @@
           </q-expansion-item>
 
           <!-- Scholars -->
+
+          <q-item-section header class="text-bold">SCHOLARS</q-item-section>
           <q-item
             clickable
             v-ripple
@@ -82,24 +94,27 @@
             active-class="my-menu-link"
           >
             <q-item-section avatar>
-              <IconSchool :size="30" stroke-width="2" />
+              <IconSchool :size="25" stroke-width="2" />
             </q-item-section>
 
-            <q-item-section> Scholars</q-item-section>
+            <q-item-section> Scholar Lists</q-item-section>
           </q-item>
 
           <q-separator class="q-mt-md q-mb-xs" />
 
           <!-- Monitoring Information -->
 
+          <q-item-section header class="text-bold">MONITORING</q-item-section>
+
           <q-expansion-item
             label="Monitoring Information"
             icon="screen_search_desktop"
+            dense
           >
-            <q-list>
+            <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/regform">
                 <q-item-section avatar>
-                  <IconFiles :size="30" stroke-width="2" />
+                  <IconFiles :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section
                   >Registration Forms For Validation</q-item-section
@@ -107,26 +122,23 @@
               </q-item>
               <q-item clickable active-class="my-menu-link" to="/gradeform">
                 <q-item-section avatar>
-                  <IconStar :size="30" stroke-width="2" />
+                  <IconStar :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Grades For Validation</q-item-section>
               </q-item>
-              <!-- <q-item clickable active-class="my-menu-link" to="/forappeal">
-                <q-item-section avatar>
-                  <IconCertificate :size="30" stroke-width="2" />
-                </q-item-section>
-                <q-item-section>List of Scholars "FOR APPEAL"</q-item-section>
-              </q-item> -->
             </q-list>
           </q-expansion-item>
 
           <!-- Financial Information -->
 
+          <q-item-section header class="text-bold">FINANCIAL</q-item-section>
+
           <q-expansion-item
             label="Financial Information"
             icon="account_balance"
+            dense
           >
-            <q-list>
+            <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/financial">
                 <q-item-section avatar>
                   <q-icon name="volunteer_activism" />
@@ -138,80 +150,60 @@
 
           <!-- Reports-->
 
-          <q-expansion-item label="Reports" icon="query_stats">
-            <q-list>
+          <q-item-section header class="text-bold">REPORTS</q-item-section>
+
+          <q-expansion-item label="Data Reports" icon="query_stats" dense>
+            <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/reports">
                 <q-item-section avatar>
-                  <IconReport :size="30" stroke-width="2" />
+                  <IconReport :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Quick Report</q-item-section>
               </q-item>
-            </q-list>
-            <!-- <q-list>
-              <q-item
-                clickable
-                active-class="my-menu-link"
-                to="/scholarmunicipality"
-              >
-                <q-item-section avatar>
-                  <IconBuildingBank :size="30" stroke-width="2" />
-                </q-item-section>
-                <q-item-section>Scholars By Municipality</q-item-section>
-              </q-item>
-            </q-list> -->
-            <q-list>
               <q-item clickable active-class="my-menu-link" to="/activityLogs">
                 <q-item-section avatar>
-                  <IconFileTime :size="30" stroke-width="2" />
+                  <IconFileTime :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Activity Logs</q-item-section>
               </q-item>
-            </q-list>
-            <q-separator />
-            <q-list>
               <q-item clickable active-class="my-menu-link" to="/validate">
                 <q-item-section avatar>
-                  <IconRosetteDiscountCheck :size="30" stroke-width="2" />
+                  <IconRosetteDiscountCheck :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Validate Status</q-item-section>
               </q-item>
-            </q-list>
-
-            <q-separator />
-            <q-list>
-              <q-item clickable active-class="my-menu-link" to="">
+              <q-item clickable active-class="my-menu-link" to="/release">
                 <q-item-section avatar>
-                  <IconRotateClockwise2 :size="30" stroke-width="2" />
+                  <IconCash :size="25" stroke-width="2" />
                 </q-item-section>
-                <q-item-section>Ongoing Scholars</q-item-section>
+                <q-item-section>Release Allowance</q-item-section>
               </q-item>
             </q-list>
           </q-expansion-item>
 
           <!-- Batch Update -->
-          <q-expansion-item label="Batch Updates" icon="cached">
-            <q-list>
+
+          <q-item-section header class="text-bold"
+            >BATCH UPDATES</q-item-section
+          >
+
+          <q-expansion-item label="Batch Uploads" icon="cached" dense>
+            <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/contractstats">
                 <q-item-section avatar>
-                  <IconFileDescription :size="30" stroke-width="2" />
+                  <IconFileDescription :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Contract Status</q-item-section>
               </q-item>
-            </q-list>
-            <q-list>
               <q-item clickable active-class="my-menu-link" to="/progresstats">
                 <q-item-section avatar>
-                  <IconRosetteDiscountCheck :size="30" stroke-width="2" />
+                  <IconRosetteDiscountCheck :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Progress Status & Standing</q-item-section>
               </q-item>
-            </q-list>
-
-            <q-separator />
-            <q-list>
               <q-item clickable active-class="my-menu-link" to="">
                 <q-item-section avatar>
-                  <IconShieldCheck :size="30" stroke-width="2" />
+                  <IconShieldCheck :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Insurance</q-item-section>
               </q-item>
@@ -229,21 +221,18 @@ import UserOpt from "../components/UserOpt.vue";
 import { ref, inject, reactive, onMounted } from "vue";
 
 import {
-  IconUsersGroup,
   IconSchool,
   IconStar,
   IconFiles,
   IconFileDescription,
   IconReport,
-  IconCertificate,
   IconUsers,
   IconUserStar,
   IconRosetteDiscountCheck,
   IconBuildingBank,
-  IconRefresh,
   IconFileTime,
-  IconRotateClockwise2,
   IconShieldCheck,
+  IconCash,
 } from "@tabler/icons-vue";
 
 import router from "../router";
@@ -256,9 +245,6 @@ function toggleLeftDrawer() {
 </script>
 
 <style lang="sass" scoped>
-
-
-
 
 .my-menu-link
   color: white

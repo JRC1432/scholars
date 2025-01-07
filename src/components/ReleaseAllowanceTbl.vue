@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <q-card flat>
     <q-table
       flat
       bordered
@@ -38,32 +38,31 @@
               {{ props.row.full_name }}
             </q-badge>
           </q-td>
-          <q-td key="sex" :props="props">
-            {{ props.row.sex }}
+          <q-td key="sy" :props="props">
+            {{ props.row.sy }}
           </q-td>
-          <q-td key="dob" :props="props">
-            {{ props.row.dob }}
+          <q-td key="term" :props="props">
+            {{ props.row.term }}
           </q-td>
-          <q-td key="pob" :props="props">
-            {{ props.row.pob }}
+          <q-td key="term_type" :props="props">
+            {{ props.row.term_type }}
+          </q-td>
+          <q-td key="progress_status" :props="props">
+            {{ props.row.progress_status }}
+          </q-td>
+          <q-td key="standing" :props="props">
+            {{ props.row.standing }}
           </q-td>
         </q-tr>
       </template>
     </q-table>
-  </div>
+  </q-card>
 </template>
 <script setup>
 import { ref, onMounted, reactive, inject, computed } from "vue";
 import router from "../router";
 import { useQuasar } from "quasar";
-import {
-  IconUserEdit,
-  IconUserCancel,
-  IconSquareRoundedX,
-  IconUserMinus,
-  IconUserPlus,
-  IconFileTypeCsv,
-} from "@tabler/icons-vue";
+
 import Swal from "sweetalert2";
 
 const user = inject("$user");
@@ -71,8 +70,7 @@ const q$ = useQuasar();
 const $q = useQuasar();
 const axios = inject("$axios");
 
-// Items Variable
-
+const tableRef = ref(null);
 const originalRows = ref([]);
 const rows = ref([]);
 const filter = ref("");
@@ -102,61 +100,70 @@ const columns = [
     sortable: true,
   },
   {
-    name: "sex",
+    name: "sy",
     required: true,
-    label: "SEX",
+    label: "School Year",
     align: "left",
-    field: "sex",
+    field: "sy",
     sortable: true,
   },
   {
-    name: "dob",
+    name: "term",
     required: true,
-    label: "Date of Birth",
+    label: "Term",
     align: "left",
-    field: "dob",
+    field: "term",
     sortable: true,
   },
   {
-    name: "pob",
+    name: "term_type",
     required: true,
-    label: "Place of Birth",
+    label: "Term Type",
     align: "left",
-    field: "pob",
+    field: "term_type",
+    sortable: true,
+  },
+
+  {
+    name: "progress_status",
+    required: true,
+    label: "Progress Status",
+    align: "left",
+    field: "progress_status",
+    sortable: true,
+  },
+  {
+    name: "standing",
+    required: true,
+    label: "Standing",
+    align: "left",
+    field: "standing",
     sortable: true,
   },
 ];
 
-const showScholar = (props) => {
-  router.push({
-    path: "/personal/" + props.row.spas_id,
-  });
-};
-
-// Read Scholars
+// Read Registration Form For Validation
 
 const fetchFromServer = (startRow, count, filter, sortBy, descending) => {
   let data = originalRows.value;
-  const normalizedFilter = filter.toLowerCase().replace(/-/g, "");
+  const normalizedFilter = (filter || "").toLowerCase().replace(/-/g, "");
 
   if (filter) {
-    data = data.filter(
-      (row) =>
-        (row.full_name &&
-          row.full_name.toLowerCase().includes(normalizedFilter)) ||
-        (row.spas_id &&
-          row.spas_id
-            .toLowerCase()
-            .replace(/-/g, "")
-            .includes(normalizedFilter))
-    );
+    data = data.filter((row) => {
+      const fullName = row.full_name || ""; // Default to an empty string
+      const spasId = row.spas_id || ""; // Default to an empty string
+      return (
+        fullName.toLowerCase().includes(normalizedFilter) ||
+        spasId.toLowerCase().replace(/-/g, "").includes(normalizedFilter)
+      );
+    });
   }
 
   if (sortBy) {
     const sortField = sortBy;
     data.sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
+      const aValue = a[sortField] || ""; // Handle null values
+      const bValue = b[sortField] || ""; // Handle null values
       if (aValue === bValue) return 0;
       return (aValue > bValue ? 1 : -1) * (descending ? -1 : 1);
     });
@@ -166,10 +173,13 @@ const fetchFromServer = (startRow, count, filter, sortBy, descending) => {
 };
 
 const getRowsNumberCount = (filter) => {
+  const normalizedFilter = (filter || "").toLowerCase();
   if (!filter) return originalRows.value.length;
-  return originalRows.value.filter((row) =>
-    row.full_name.toLowerCase().includes(filter.toLowerCase())
-  ).length;
+
+  return originalRows.value.filter((row) => {
+    const fullName = row.full_name || "";
+    return fullName.toLowerCase().includes(normalizedFilter);
+  }).length;
 };
 
 const onRequest = (props) => {
@@ -203,17 +213,21 @@ const onRequest = (props) => {
   }, 1500);
 };
 
-const readcholars = () => {
-  axios.get("/read.php?readscholar").then((response) => {
+const readRegForm = () => {
+  axios.get("/read.php?readRelease").then((response) => {
     originalRows.value = response.data;
     tableRef.value.requestServerInteraction(); // Ensure this is called after data is fetched
   });
 };
 
-const tableRef = ref(null);
+const showScholar = (props) => {
+  router.push({
+    path: "/editgrades/" + props.row.term_id,
+  });
+};
 
 onMounted(() => {
-  readcholars();
+  readRegForm();
 });
 </script>
 <style scoped>

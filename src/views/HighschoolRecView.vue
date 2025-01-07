@@ -18,7 +18,6 @@
                 readonly
                 v-model="state.scname"
                 name="scname"
-                :rules="inputRules"
               />
             </div>
             <div class="col-xs-12">
@@ -30,7 +29,6 @@
                 readonly
                 v-model="state.sccode"
                 name="sccode"
-                :rules="inputRules"
               />
             </div>
             <div class="col-xs-12">

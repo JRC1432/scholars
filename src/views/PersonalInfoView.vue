@@ -7,11 +7,7 @@
       </div>
       <q-separator class="q-mt-md q-mb-xs" inset />
       <div class="q-pa-lg q-mb-md">
-        <q-scroll-area
-          :thumb-style="thumbStyle"
-          :bar-style="barStyle"
-          style="height: 800px; max-width: 5000px"
-        >
+        <q-scroll-area style="height: 800px; max-width: 5000px">
           <div class="col-12">
             <div class="q-col-gutter-md row items-start">
               <div class="col-xs-12">

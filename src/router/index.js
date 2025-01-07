@@ -182,6 +182,11 @@ const router = createRouter({
           name: "activityLogs",
           component: () => import("../views/ActLogView.vue"),
         },
+        {
+          path: "/release/",
+          name: "release",
+          component: () => import("../views/ReleaseAllowanceView.vue"),
+        },
       ],
     },
   ],

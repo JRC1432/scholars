@@ -1282,13 +1282,44 @@ if (isset($_GET['latestGrades'])) {
         $act_taken = "UPDATE";
         $act_message = "Latest Flag has been set to " . $spasid . "with Term ID: " . $termid . "";
 
+        $stntf = $pdo->prepare("SELECT full_name
+                    FROM scholars_record 
+                    WHERE spas_id = ?");
+
+        $stntf->execute([$spasid]);
+
+        while ($row = $stntf->fetch(PDO::FETCH_ASSOC)) {
+
+            $fname = $row['full_name'];
+        }
+
 
 
 
         $pdo->beginTransaction();
-        $stnt = $pdo->prepare("UPDATE term_record SET latest_flag = ?, updated_at = ?, updated_by = ?
-                    WHERE term_id = ?");
-        $stnt->execute([$latest, $date, $updatedby, $termid]);
+       $stnt = $pdo->prepare("
+    UPDATE term_record
+SET 
+    latest_flag = CASE
+        WHEN term_id = :termid THEN 1
+        ELSE 0
+    END,
+    updated_at = CASE
+        WHEN term_id = :termid THEN NOW()
+        ELSE updated_at
+    END,
+    updated_by = CASE
+        WHEN term_id = :termid THEN :updatedby
+        ELSE updated_by
+    END
+WHERE spas_id = :spasid;
+");
+
+$stnt->execute([
+    ':termid' => $termid,
+    ':updatedby' => $updatedby,
+    ':spasid' => $spasid,
+]);
 
 
         $stnt1 = $pdo->prepare("INSERT INTO activity_logs(spas_id,full_name,action_taken,action_message,action_taken_by,date_time) VALUES (?,?,?,?,?,?)");

@@ -123,8 +123,8 @@ const loading = ref(false);
 const pagination = ref({
   descending: false,
   page: 1,
-  rowsPerPage: 10,
-  rowsNumber: 10,
+  rowsPerPage: 13,
+  rowsNumber: 13,
 });
 
 const columns = [
