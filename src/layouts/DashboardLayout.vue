@@ -201,14 +201,43 @@
                 </q-item-section>
                 <q-item-section>Progress Status & Standing</q-item-section>
               </q-item>
-              <q-item clickable active-class="my-menu-link" to="">
+              <!-- <q-item clickable active-class="my-menu-link" to="">
                 <q-item-section avatar>
                   <IconShieldCheck :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Insurance</q-item-section>
+              </q-item> -->
+              <q-item
+                clickable
+                active-class="my-menu-link"
+                to="/financialbatch"
+              >
+                <q-item-section avatar>
+                  <IconCoins :size="25" stroke-width="2" />
+                </q-item-section>
+                <q-item-section>Financial</q-item-section>
               </q-item>
             </q-list>
           </q-expansion-item>
+
+          <!-- Batch Update -->
+
+          <q-item-section header class="text-bold">MEMORANDUM</q-item-section>
+
+          <q-item
+            clickable
+            v-ripple
+            tag="a"
+            to="/memo"
+            class="rounded-borders q-my-xs"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <IconContract :size="25" stroke-width="2" />
+            </q-item-section>
+
+            <q-item-section> Memos Templates </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -233,6 +262,8 @@ import {
   IconFileTime,
   IconShieldCheck,
   IconCash,
+  IconCoins,
+  IconContract,
 } from "@tabler/icons-vue";
 
 import router from "../router";

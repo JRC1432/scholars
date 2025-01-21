@@ -1909,7 +1909,7 @@ $pdf->Output('Financial_Statement.pdf', 'I');
 
 
 
-         // Create Financial Records 
+          // Create Financial Records 
 
 
          if (isset($_GET['createFinancialRec'])) {
@@ -2005,6 +2005,8 @@ $pdf->Output('Financial_Statement.pdf', 'I');
                 echo json_encode(false); // Missing required POST data response as JSON-encoded false
             }
         }
+
+
 
 
 
@@ -2499,6 +2501,124 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
 
 
         }
+
+
+
+
+
+        // Bulk Upload of Financials
+
+
+
+if (isset($_GET['batchUploadFinancial'])) {
+
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Ymdhi");
+    $dates = date("Y-m-d h:i:s a");
+    $uname = $_POST["usercreator"];
+    $authid = $_POST["authid"];
+
+    // Bulk Upload
+    $batchFile = $_FILES['fileUpload']['name'];
+    $path = 'batch/';
+    $allowed_extensions = array('csv');
+    $extension = pathinfo($batchFile, PATHINFO_EXTENSION);
+
+    if (in_array(strtolower($extension), $allowed_extensions)) {
+
+        if (!file_exists($path)) {
+            mkdir($path, 0775, true);
+        }
+
+        $temp_file = $_FILES['fileUpload']['tmp_name'];
+        $newpath = $path . $authid . $uname . $date . "." . $extension;
+
+        if (move_uploaded_file($temp_file, $newpath)) {
+            // File uploaded successfully
+        } else {
+            echo json_encode(false);
+            return;
+        }
+
+    } else {
+        echo json_encode(false);
+        return;
+    }
+
+    if ($newpath !== "No_Files") {
+        // Open the file for reading
+        $file = fopen($newpath, "r");
+        if ($file !== false) {
+            $b = false;
+            while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
+                if (!$b) {
+                    $b = true;
+                    continue; // Skip the header row
+                }
+
+                // Process each row
+                $termids = $emapData[0] . $emapData[1] . $emapData[2] . $emapData[3];
+
+                // Fetch the category ID
+                $stntf = $pdo->prepare("SELECT id FROM lu_allowances WHERE name = ?");
+                $stntf->execute([$emapData[4]]);
+                $categ_id = null;
+                if ($row = $stntf->fetch(PDO::FETCH_ASSOC)) {
+                    $categ_id = $row['id'];
+                }
+
+                if ($categ_id) {
+                    // Insert data into financial_statement table
+                    $stnt = $pdo->prepare("INSERT INTO financial_statement(term_id, category, year, month, date_process, amount, date_deposit, remarks, created_by, created_at) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $params = array($termids, $categ_id, $emapData[5], $emapData[6], $emapData[7], $emapData[8], $emapData[9], $emapData[10], $uname, $dates);
+                    $stnt->execute($params);
+                }
+            }
+            fclose($file); // Close the file after processing
+
+            // Echo true in JSON format
+            echo json_encode(true);
+            return;
+        } else {
+            echo json_encode(false);
+            return;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

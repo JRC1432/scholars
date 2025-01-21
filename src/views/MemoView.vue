@@ -77,91 +77,145 @@
           </q-toolbar>
 
           <q-card-section>
-            <div class="q-pa-sm">
-              <div class="row row_width q-col-gutter-xs">
-                <div class="col-xs-12">
-                  <div class="q-px-sm">
-                    <span class="text-bold">Scholar E-mail</span>
-                    <q-input outlined dense hide-bottom-space v-model="email" />
+            <q-scroll-area style="height: 600px; max-width: 800px">
+              <div class="q-pa-sm">
+                <div class="row row_width q-col-gutter-xs">
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Scholar E-mail</span>
+                      <q-input
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="email"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div class="col-xs-12">
-                  <div class="q-px-sm">
-                    <span class="text-bold">Full Name:</span>
-                    <q-input outlined dense hide-bottom-space v-model="name" />
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Full Name:</span>
+                      <q-input
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="name"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div class="col-xs-12">
-                  <div class="q-px-sm">
-                    <span class="text-bold">Subject:</span>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Coordinator Name:</span>
+                      <q-input
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="cname"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Position:</span>
+                      <q-input
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="position"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Address:</span>
+                      <q-input
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="address"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">City:</span>
+                      <q-input
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="city"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Subject:</span>
+                      <q-input
+                        readonly
+                        outlined
+                        dense
+                        hide-bottom-space
+                        v-model="subject"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12">
+                    <div class="q-px-sm">
+                      <span class="text-bold">Reasons:</span>
+                      <q-option-group
+                        :options="options"
+                        type="checkbox"
+                        v-model="group"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
                     <q-input
-                      readonly
                       outlined
                       dense
                       hide-bottom-space
-                      v-model="subject"
-                      label="S&T SCHOLARSHIP STATUS - TERMINATED WITH SERVICE OBLIGATION"
+                      v-model="sy"
+                      mask="####-####"
                     />
                   </div>
-                </div>
-
-                <div class="col-xs-12">
-                  <div class="q-px-sm">
-                    <span class="text-bold">Reasons:</span>
-                    <q-option-group
-                      :options="options"
-                      type="checkbox"
-                      v-model="group"
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="year"
+                      mask="##"
                     />
                   </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-6">
-                  <span class="text-bold">Semester:</span>
-                  <q-input outlined dense hide-bottom-space v-model="sem" />
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-6">
-                  <span class="text-bold">School Year:</span>
-                  <q-input
-                    outlined
-                    dense
-                    hide-bottom-space
-                    v-model="sy"
-                    mask="####-####"
-                  />
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-6">
-                  <span class="text-bold">Year:</span>
-                  <q-input
-                    outlined
-                    dense
-                    hide-bottom-space
-                    v-model="year"
-                    mask="##"
-                  />
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-6">
-                  <span class="text-bold">Months:</span>
-                  <q-input
-                    outlined
-                    dense
-                    hide-bottom-space
-                    v-model="months"
-                    mask="##"
-                  />
-                </div>
-                <div class="col-xs-12">
-                  <span class="text-bold">Signatory:</span>
-                  <q-input
-                    outlined
-                    dense
-                    readonly
-                    hide-bottom-space
-                    v-model="signatory"
-                    label="JAYEEL S. CORNELIO, PhD"
-                  />
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Months:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="months"
+                      mask="##"
+                    />
+                  </div>
+                  <div class="col-xs-12">
+                    <span class="text-bold">Signatory:</span>
+                    <q-input
+                      outlined
+                      dense
+                      readonly
+                      hide-bottom-space
+                      v-model="signatory"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            </q-scroll-area>
           </q-card-section>
 
           <q-card-actions class="row justify-center">
@@ -200,6 +254,12 @@ const terminate = ref(false);
 const email = ref("");
 const group = ref([]);
 const name = ref("");
+
+const cname = ref("");
+const position = ref("");
+const address = ref("");
+const city = ref("");
+
 const subject = ref(
   "S&T SCHOLARSHIP STATUS - TERMINATED WITH SERVICE OBLIGATION"
 );
@@ -329,12 +389,12 @@ const printTerminate = () => {
   doc.addImage(bpUrl, "PNG", 150, 5, 20, 20);
   doc.addImage(tuvUrl, "PNG", 170, 5, 33, 20);
 
-  doc.setLineWidth(0.8);
-  doc.line(10, 30, 203, 30); // x1, y1, x2, y2
+  doc.setLineWidth(0.5);
+  doc.line(10, 27, 203, 27); // x1, y1, x2, y2
 
   doc.setFontSize(8);
   doc.setFont("helvetica", "italic");
-  doc.text("Service. Excellence. Innovation.", 10, 34);
+  doc.text("Service. Excellence. Innovation.", 10, 30);
 
   doc.setFont("helvetica", "normal"); // Set font and style
   doc.setFontSize(12); // Set font size
@@ -353,13 +413,29 @@ const printTerminate = () => {
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
-  doc.text("FROM:", 15, 80);
+  doc.text(cname.value || "N/A", 50, 65);
+
   doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text((signatory.value || "N/A").toUpperCase(), 50, 80);
-  doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("DIRECTOR IV", 50, 85);
+  doc.text(position.value || "N/A", 50, 70);
+
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(address.value || "N/A", 50, 75);
+
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(city.value || "N/A", 50, 80);
+
+  // doc.setFontSize(12);
+  // doc.setFont("helvetica", "normal");
+  // doc.text("FROM:", 15, 80);
+  // doc.setFontSize(12);
+  // doc.setFont("helvetica", "bold");
+  // doc.text((signatory.value || "N/A").toUpperCase(), 50, 80);
+  // doc.setFontSize(10);
+  // doc.setFont("helvetica", "normal");
+  // doc.text("DIRECTOR IV", 50, 85);
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
@@ -404,7 +480,7 @@ const printTerminate = () => {
 
   // Set position for the input box
   const inputX = 160;
-  const inputY = 32;
+  const inputY = 30;
   const inputWidth = 42;
   const inputHeight = 7;
 
@@ -436,8 +512,75 @@ const printTerminate = () => {
   doc.setFont("helvetica", "normal");
   doc.text("DIRECTOR IV", 157, 235);
 
+  doc.setLineWidth(0.5);
+  doc.line(10, 275, 203, 275); // x1, y1, x2, y2
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("1st and 2nd Levels, Science Heritage Building", 10, 279);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("DOST Compound, General Santos Avenue", 10, 283);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("Bicutan, Taguig City, Philippines, 1631", 10, 287);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("URL: http://www.sei.dost.gov.ph", 10, 291);
+
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    "Office of the Director (OD): (02) 8775-9005; Office of the Deputy Director (ODD): (02) 8775-9003;",
+    112,
+    278
+  );
+
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    "Science Education Innovations Division (SEID): (02) 8330-8912; Science and Technology Scholarship",
+    107,
+    281
+  );
+
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text("Division (STSD): (02) 8330-8876, (02) 8330-8826;", 156, 284);
+
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    "Science and Technology Manpower Education and Promotion Division (STMERPD): (02)",
+    119,
+    287
+  );
+
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    "8710-7462; Finance and Administrative Division (FAD):(02) 8775-9043; OD - Planning Unit: (02) 8542-",
+    107,
+    290
+  );
+
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    "4627; FAD - General Service Unit (GSU): (02) 8775-9156; FAD - Records Unit: (02) 8330-8772",
+    114,
+    293
+  );
+
   // Save or open the PDF
-  doc.save("Termination_Notice.pdf");
+  // doc.save("Termination_Notice.pdf");
+
+  const blob = doc.output("blob");
+  const pdfUrl = URL.createObjectURL(blob);
+  window.open(pdfUrl, "_blank");
 };
 </script>
 

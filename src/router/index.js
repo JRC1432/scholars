@@ -187,6 +187,16 @@ const router = createRouter({
           name: "release",
           component: () => import("../views/ReleaseAllowanceView.vue"),
         },
+        {
+          path: "/financialbatch/",
+          name: "financialbatch",
+          component: () => import("../views/FinancialBatchView.vue"),
+        },
+        {
+          path: "/memo/",
+          name: "memo",
+          component: () => import("../views/MemoView.vue"),
+        },
       ],
     },
   ],
