@@ -15,12 +15,12 @@
       <q-scroll-area style="height: 600px; max-width: 800px">
         <div class="q-pa-sm">
           <div class="row row_width q-col-gutter-xs">
-            <div class="col-xs-12">
+            <!-- <div class="col-xs-12">
               <div class="q-px-sm">
                 <span class="text-bold">Scholar E-mail</span>
                 <q-input outlined dense hide-bottom-space v-model="email" />
               </div>
-            </div>
+            </div> -->
             <div class="col-xs-12">
               <div class="q-px-sm">
                 <span class="text-bold">Full Name:</span>
@@ -142,6 +142,61 @@
       </q-scroll-area>
     </q-card-section>
 
+    <q-dialog v-model="showMail">
+      <div class="q-pa-md">
+        <q-card
+          style="min-width: 500px; width: 500px"
+          class="rounded-borders-20"
+        >
+          <q-toolbar>
+            <IconMailFast :size="30" stroke-width="2" />
+
+            <q-toolbar-title
+              ><span class="text-weight-bold" color="primary">Send</span>
+              E-mail to Scholar
+            </q-toolbar-title>
+
+            <q-btn flat round dense icon="close" v-close-popup />
+          </q-toolbar>
+          <q-card-section>
+            <div class="q-pa-xs">
+              <span class="text-bold">E-Mail Address:</span>
+              <q-input v-model="sendEmails" filled type="email" />
+
+              <div class="q-pt-sm">
+                <span class="text-bold">Attached File:</span>
+                <q-file
+                  ref="refBulkUpload"
+                  filled
+                  v-model="attachFile"
+                  name="attachFile"
+                  label="*PDF FILES ONLY"
+                  color="primary"
+                  clearable
+                  counter
+                  :rules="[fileRules]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
+            </div>
+
+            <div></div>
+          </q-card-section>
+          <q-card-actions class="row justify-left"
+            ><q-btn
+              color="primary"
+              icon="send"
+              @click="sendMailNow"
+              rounded
+              label="Send Mail"
+          /></q-card-actions>
+        </q-card>
+      </div>
+    </q-dialog>
+
     <q-card-actions class="row justify-center">
       <q-btn
         rounded
@@ -154,6 +209,7 @@
       <q-btn
         rounded
         unelevated
+        @click="showMail = true"
         style="width: 80%"
         class="q-my-sm q-mx-sm inverse-primary"
         >Send e-mail to scholar</q-btn
@@ -162,15 +218,37 @@
   </q-card>
 </template>
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, inject } from "vue";
+
+import { useQuasar } from "quasar";
+import { useRoute, useRouter } from "vue-router";
+import router from "../router";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
 import "jspdf-autotable";
+import { IconUserCancel, IconMailFast } from "@tabler/icons-vue";
+
+const user = inject("$user");
+const q$ = useQuasar();
+const $q = useQuasar();
+const axios = inject("$axios");
+const route = useRoute();
+
+const attachFile = ref([]);
+
+const fileRules = (val) => {
+  if (val === null) {
+    return "Please Select a File!";
+  }
+  return true;
+};
 
 const email = ref("");
 const group = ref([]);
 const group2 = ref([]);
 const name = ref("");
+const showMail = ref(false);
+const sendEmails = ref("");
 
 const cname = ref("");
 const position = ref("");
@@ -178,7 +256,7 @@ const address = ref("");
 const city = ref("");
 
 const subject = ref(
-  "S&T SCHOLARSHIP STATUS - TERMINATED WITH SERVICE OBLIGATION"
+  "S&T SCHOLARSHIP STATUS CONTINUED: TO SUBMIT GRADES UPON COMPLETION"
 );
 const sem = ref("");
 const sy = ref("");
@@ -231,7 +309,9 @@ const printTerminate = async () => {
 
   const logoUrl = new URL("../assets/seilogopng.png", import.meta.url).href; // Replace with your image URL
   const bpUrl = new URL("../assets/pilipinas.png", import.meta.url).href; // Replace with your image URL
-  const tuvUrl = new URL("../assets/tuv.jpg", import.meta.url).href; // Replace with your image URL
+  const tuvUrl = new URL("../assets/tuv.png", import.meta.url).href; // Replace with your image URL
+
+  const imageCompression = 0.7;
 
   const canvas = barcodeCanvas.value;
 
@@ -244,7 +324,7 @@ const printTerminate = async () => {
   });
 
   // Add the image from the URL to the PDF
-  doc.addImage(logoUrl, "PNG", 10, 5, 20, 20);
+  doc.addImage(logoUrl, "PNG", 10, 5, 20, 20, null, "FAST", imageCompression);
 
   // Set a title for the PDF
 
@@ -261,8 +341,8 @@ const printTerminate = async () => {
   doc.text("SCIENCE EDUCATION INSTITUTE", 32, 23);
 
   // Add the image from the URL to the PDF
-  doc.addImage(bpUrl, "PNG", 150, 5, 20, 20);
-  doc.addImage(tuvUrl, "PNG", 170, 5, 33, 20);
+  doc.addImage(bpUrl, "PNG", 150, 5, 20, 20, null, "FAST", imageCompression);
+  doc.addImage(tuvUrl, "PNG", 170, 5, 33, 20, null, "FAST", imageCompression);
 
   doc.setLineWidth(0.5);
   doc.line(10, 27, 203, 27); // x1, y1, x2, y2
@@ -356,49 +436,12 @@ const printTerminate = async () => {
   const text = "SCHOLSTATForm5";
   doc.text(text, inputX + 2, inputY + 5); // Adjusted to fit inside the box
 
-  // Base paragraph text split into chunks
-  const paragraph2Parts = [
-    "In view of your unsatisfactory academic performance, you hereby advised that your DOST-SEI scholarship is TERMINATED WITH RETURN SERVICE effective end of the ",
-    `${sem.value}`, // Underline this
-    " Semester/Term of SY ",
-    `${sy.value}`, // Underline this
-    ". You are required to render service obligation after graduation for a period of ",
-    `${year.value}`, // Underline this
-    " year and ",
-    `${months.value}`, // Underline this
-    " months.",
-  ];
-
+  const paragraph2 = `        In view of your unsatisfactory academic performance, you hereby advised that your DOST-SEI scholarship is TERMINATED WITH RETURN SERVICE effective end of the ${sem.value} Semester/Term of SY ${sy.value}. You are required to render service obligation after graduation for a period of ${year.value} year and ${months.value} months.`;
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
 
-  let currentX = 34;
-  let currentY = 170; // Start position
-  const maxWidth = 150; // Max line width
-
-  paragraph2Parts.forEach((part, index) => {
-    const isUnderlined = index % 2 === 1; // Underline `.value` parts (odd indices)
-
-    // Measure text width to determine spacing
-    const textWidth = doc.getTextWidth(part);
-
-    // Render text
-    doc.text(part, currentX, currentY);
-
-    // If part is underlined, draw underline
-    if (isUnderlined) {
-      doc.line(currentX, currentY + 1.5, currentX + textWidth, currentY + 1.5); // Adjust Y+1.5 to align the underline
-    }
-
-    // Update X position for the next part
-    currentX += textWidth;
-
-    // Handle line wrapping if X exceeds maxWidth
-    if (currentX > 34 + maxWidth) {
-      currentX = 34; // Reset X to start of line
-      currentY += 6; // Move Y down by line height (adjust as needed)
-    }
-  });
+  // Wrap text inside a defined area
+  doc.text(paragraph2, 34, 170, { maxWidth: 150, align: "justify" });
 
   const paragraph3 = `        Thank you for your understanding. We wish you the best in your future endeavors.`;
   doc.setFontSize(12);
@@ -436,7 +479,7 @@ const printTerminate = async () => {
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("DOST Compound, General Santos Avenue", 15, 283);
+  doc.text("DOST Compound, General Santos Avenue", 10, 283);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -496,6 +539,31 @@ const printTerminate = async () => {
   const blob = doc.output("blob");
   const pdfUrl = URL.createObjectURL(blob);
   window.open(pdfUrl, "_blank");
+};
+
+const sendMailNow = () => {
+  var formData = new FormData();
+  showMail.value = false;
+
+  formData.append("scholar_email", sendEmails.value);
+  formData.append("attachFile", attachFile.value);
+
+  axios.post("/create.php?sendMailScholar", formData).then(function (response) {
+    if (response.data == true) {
+      $q.notify({
+        message: "E-MAIL SENT SUCCESSFULLY",
+        icon: "mark_email_read",
+        color: "green",
+        position: "top-right",
+      });
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to send the e-mail",
+      });
+    }
+  });
 };
 
 generateBarcode();

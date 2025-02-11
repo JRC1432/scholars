@@ -2015,23 +2015,51 @@ $pdf->Output('Financial_Statement.pdf', 'I');
 
 
             $emails = $_POST["scholar_email"];
+            
 
 
 
             $mail = new PHPMailer(true);
 
 
-    $mail->isSMTP();
-    $mail->Host = 'smtp.office365.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'jrcastanares@sei.dost.gov.ph';
-    $mail->Password = '@cc3$$D3n!3d1432';
-    $mail->SMTPSecure = 'tls';
-    $mail->Port = 587;
+            // Outlook E-mail Address
 
 
-    $mail->setFrom('jrcastanares@sei.dost.gov.ph');
+    // $mail->isSMTP();
+    // $mail->Host = 'smtp.office365.com';
+    // $mail->SMTPAuth = true;
+    // $mail->Username = 'jrcastanares@sei.dost.gov.ph';
+    // $mail->Password = '@cc3$$D3n!3d1432';
+    // $mail->SMTPSecure = 'tls';
+    // $mail->Port = 587;
+
+
+    // $mail->setFrom('jrcastanares@sei.dost.gov.ph');
+
+
+
+     $mail->isSMTP();
+     $mail->Host = 'smtp.gmail.com';
+     $mail->SMTPAuth = true;
+     $mail->Username = 'castanares.jonathan01@gmail.com';
+     $mail->Password = 'otmj sano ozit fmgi';
+     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+     $mail->Port = 587;
+
+
+     $mail->setFrom('castanares.jonathan01@gmail.com');
+    
     $mail->addAddress($emails);
+
+
+     if (isset($_FILES["attachFile"])) {
+    $attachfile = $_FILES["attachFile"];
+
+    if (!empty($attachfile) && $attachfile['error'] === UPLOAD_ERR_OK) {
+        $mail->addAttachment($attachfile['tmp_name'], $attachfile['name']);
+    }
+    }
+
 
     
 
@@ -2201,7 +2229,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:20px 10px 10px;font-family:arial,helvetica,sans-serif;" align="left">
         
   <!--[if mso]><table width="100%"><tr><td><![endif]-->
-    <h1 class="v-font-size" style="margin: 0px; line-height: 140%; text-align: center; word-wrap: break-word; font-size: 25px; font-weight: 400;"><span>A Journey of Success<br />Celebrate Our Milestone with Us!</span></h1>
+    <h1 class="v-font-size" style="margin: 0px; line-height: 140%; text-align: center; word-wrap: break-word; font-size: 25px; font-weight: 400;"><span>TERMINATION<br />NOTICE!!!</span></h1>
   <!--[if mso]></td></tr></table><![endif]-->
 
       </td>
@@ -2235,7 +2263,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 60px;font-family:arial,helvetica,sans-serif;" align="left">
         
   <div class="v-font-size" style="font-size: 14px; color: #616161; line-height: 140%; text-align: center; word-wrap: break-word;">
-    <p style="line-height: 140%;"><span style="font-family: Raleway, sans-serif; line-height: 19.6px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ut labore et dolore magna aliqua. Quis ipsum suspen disse ultrices gravida. Risus commodo viverra dolor sit.</span></p>
+    <p style="line-height: 140%;"><span style="font-family: Raleway, sans-serif; line-height: 19.6px;">We regret to inform you that your scholarship has been terminated. This decision has been taken in accordance with the rules and regulations outlined in the scholarship agreement signed</span></p>
   </div>
 
       </td>
@@ -2291,7 +2319,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:40px 80px 10px;font-family:arial,helvetica,sans-serif;" align="left">
         
   <div class="v-font-size" style="font-size: 14px; color: #5b5b5b; line-height: 160%; text-align: center; word-wrap: break-word;">
-    <p style="font-size: 14px; line-height: 160%;">if you have any questions, please email us at <a rel="noopener" href="https://sei.dost.gov.ph/#/" target="_blank">sei.dost.gov.ph</a> or visit our FAQS, you can also chat with a reel live human during our operating hours. They can answer questions about your account</p>
+    <p style="font-size: 14px; line-height: 160%;">We sincerely thank you for your participation in the scholarship program and encourage you to continue pursuing your academic goals. Should you have any questions or wish to appeal this decision, you may contact us at <a rel="noopener" href="https://sei.dost.gov.ph/#/" target="_blank">sei.dost.gov.ph</a> or visit our FAQS, you can also chat with a reel live human during our operating hours. They can answer questions about your account</p>
   </div>
 
       </td>
@@ -2327,48 +2355,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
 <div align="center" style="direction: ltr;">
   <div style="display: table; max-width:187px;">
   <!--[if (mso)|(IE)]><table width="187" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-collapse:collapse;" align="center"><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; mso-table-lspace: 0pt;mso-table-rspace: 0pt; width:187px;"><tr><![endif]-->
-  
-    
-    <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 15px;" valign="top"><![endif]-->
-    <table border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 15px">
-      <tbody><tr style="vertical-align: top"><td valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
-        <a href="https://www.facebook.com/unlayer" title="Facebook" target="_blank">
-          <img src="images/image-2.png" alt="Facebook" title="Facebook" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
-        </a>
-      </td></tr>
-    </tbody></table>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-    
-    <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 15px;" valign="top"><![endif]-->
-    <table border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 15px">
-      <tbody><tr style="vertical-align: top"><td valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
-        <a href="https://www.linkedin.com/company/unlayer/mycompany/" title="LinkedIn" target="_blank">
-          <img src="images/image-3.png" alt="LinkedIn" title="LinkedIn" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
-        </a>
-      </td></tr>
-    </tbody></table>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-    
-    <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 15px;" valign="top"><![endif]-->
-    <table border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 15px">
-      <tbody><tr style="vertical-align: top"><td valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
-        <a href="https://www.instagram.com/unlayer_official/" title="Instagram" target="_blank">
-          <img src="images/image-4.png" alt="Instagram" title="Instagram" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
-        </a>
-      </td></tr>
-    </tbody></table>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-    
-    <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 0px;" valign="top"><![endif]-->
-    <table border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 0px">
-      <tbody><tr style="vertical-align: top"><td valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
-        <a href="https://twitter.com/unlayerapp" title="X" target="_blank">
-          <img src="images/image-5.png" alt="X" title="X" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
-        </a>
-      </td></tr>
-    </tbody></table>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-    
+
     
     <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
   </div>
@@ -2379,75 +2366,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
   </tbody>
 </table>
 
-<table id="u_content_menu_1" style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-  <tbody>
-    <tr>
-      <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
-        
-<div class="menu" style="text-align:center;">
-<!--[if (mso)|(IE)]><table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style=""><tr><![endif]-->
 
-  <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-  
-    <a href="https://www.unlayer.com" target="_self" style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;text-decoration:none"  class="v-padding v-font-size">
-      Home
-    </a>
-  
-  <!--[if (mso)|(IE)]></td><![endif]-->
-  
-    <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-    <span style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;" class="v-padding v-font-size hide-mobile">
-      |
-    </span>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-  
-
-  <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-  
-    <a href="https://www.unlayer.com" target="_self" style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;text-decoration:none"  class="v-padding v-font-size">
-      Page
-    </a>
-  
-  <!--[if (mso)|(IE)]></td><![endif]-->
-  
-    <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-    <span style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;" class="v-padding v-font-size hide-mobile">
-      |
-    </span>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-  
-
-  <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-  
-    <a href="https://www.unlayer.com" target="_self" style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;text-decoration:none"  class="v-padding v-font-size">
-      About Us
-    </a>
-  
-  <!--[if (mso)|(IE)]></td><![endif]-->
-  
-    <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-    <span style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;" class="v-padding v-font-size hide-mobile">
-      |
-    </span>
-    <!--[if (mso)|(IE)]></td><![endif]-->
-  
-
-  <!--[if (mso)|(IE)]><td style="padding:5px 15px"><![endif]-->
-  
-    <a href="https://www.unlayer.com" target="_self" style="padding:5px 15px;display:inline-block;color:#5b5b5b;font-size:14px;text-decoration:none"  class="v-padding v-font-size">
-      Contact US
-    </a>
-  
-  <!--[if (mso)|(IE)]></td><![endif]-->
-  
-
-<!--[if (mso)|(IE)]></tr></table><![endif]-->
-</div>
-
-      </td>
-    </tr>
-  </tbody>
-</table>
 
 <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
@@ -2455,10 +2374,9 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 10px 40px;font-family:arial,helvetica,sans-serif;" align="left">
         
   <div class="v-font-size" style="font-size: 14px; color: #5b5b5b; line-height: 160%; text-align: center; word-wrap: break-word;">
-    <p style="font-size: 14px; line-height: 160%;">you have received this email as a registered user of <a rel="noopener" href="https://www.unlayer.com" target="_blank">yourcompany.com</a></p>
-<p style="font-size: 14px; line-height: 160%;">can <a rel="noopener" href="https://www.unlayer.com" target="_blank">unsubscribe</a> from these emails here.</p>
-<p style="font-size: 14px; line-height: 160%;"> </p>
-<p style="font-size: 14px; line-height: 160%;">2361 Market Street #4567 San Francisco, CA 94124 All rights reserved</p>
+    
+<p style="font-size: 14px; line-height: 160%;">Address:</p>
+<p style="font-size: 14px; line-height: 160%;">1st & 2nd Levels Science Heritage Building DOST Compound Bicutan, Taguig City</p>
   </div>
 
       </td>

@@ -207,7 +207,7 @@
                 </q-item-section>
                 <q-item-section>Insurance</q-item-section>
               </q-item> -->
-              <q-item
+              <!-- <q-item
                 clickable
                 active-class="my-menu-link"
                 to="/financialbatch"
@@ -216,7 +216,7 @@
                   <IconCoins :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Financial</q-item-section>
-              </q-item>
+              </q-item> -->
             </q-list>
           </q-expansion-item>
 

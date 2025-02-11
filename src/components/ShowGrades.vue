@@ -99,7 +99,7 @@
     </q-chip>
   </div>
 
-  <div class="q-pa-md q-gutter-md row justify-around">
+  <div class="row justify-center">
     <q-btn
       label="Print Grades"
       @click="printAllGrades"
@@ -109,39 +109,7 @@
       push
       color="accent"
     />
-    <q-btn
-      rounded
-      push
-      color="warning"
-      @click="sendMail"
-      icon="send"
-      label="Send E-MAIL MEMO to SCHOLARS"
-      style="width: 40%"
-    />
   </div>
-
-  <q-dialog v-model="showMail">
-    <div class="q-pa-md">
-      <q-card style="min-width: 500px; width: 500px" class="rounded-borders-20">
-        <q-toolbar>
-          <IconMailFast :size="30" stroke-width="2" />
-
-          <q-toolbar-title
-            ><span class="text-weight-bold" color="primary">Send</span>
-            E-mail to Scholar
-          </q-toolbar-title>
-
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-toolbar>
-        <q-card-section>
-          <q-input v-model="sendEmails" filled type="email" />
-        </q-card-section>
-        <q-card-actions
-          ><q-btn color="primary" icon="send" @click="sendMailNow" rounded
-        /></q-card-actions>
-      </q-card>
-    </div>
-  </q-dialog>
 
   <q-inner-loading
     :showing="visible"
@@ -171,8 +139,6 @@ const rows = ref([]);
 
 const showSimulatedReturnData = ref(false);
 const visible = ref(false);
-const showMail = ref(false);
-const sendEmails = ref("");
 
 // Automatically show the loading state when the component is mounted
 onMounted(() => {
@@ -265,31 +231,6 @@ const editGradesBtn = (key) => {
   });
 
   sessionStorage.setItem("spasid", JSON.stringify(globalSPAS.value));
-};
-
-// Send Email
-
-const sendMail = () => {
-  showMail.value = true;
-};
-
-const sendMailNow = () => {
-  var formData = new FormData();
-  showMail.value = false;
-
-  formData.append("scholar_email", sendEmails.value);
-
-  axios.post("/create.php?sendMailScholar", formData).then(function (response) {
-    if (response.data == true) {
-      Swal.fire("E-mail Sent Successfully!", "", "success");
-    } else {
-      $q.notify({
-        color: "red",
-        textColor: "white",
-        message: "Failed to create new user",
-      });
-    }
-  });
 };
 
 // Print Grades

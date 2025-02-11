@@ -1,11 +1,11 @@
 <template>
   <q-card class="rounded-borders-20" style="width: 700px; max-width: 80vw">
     <q-toolbar>
-      <IconUserCancel :size="30" stroke-width="2" />
+      <IconSchool :size="30" stroke-width="2" />
 
       <q-toolbar-title
-        ><span class="text-weight-bold" color="primary">TERMINATE</span>
-        SCHOLAR
+        ><span class="text-weight-bold" color="primary">SCHOLAR</span>
+        STATUS
       </q-toolbar-title>
 
       <q-btn flat round icon="close" v-close-popup />
@@ -15,12 +15,12 @@
       <q-scroll-area style="height: 600px; max-width: 800px">
         <div class="q-pa-sm">
           <div class="row row_width q-col-gutter-xs">
-            <div class="col-xs-12">
-              <div class="q-px-sm">
-                <span class="text-bold">Scholar E-mail</span>
-                <q-input outlined dense hide-bottom-space v-model="email" />
-              </div>
-            </div>
+            <!-- <div class="col-xs-12">
+                  <div class="q-px-sm">
+                    <span class="text-bold">Scholar E-mail</span>
+                    <q-input outlined dense hide-bottom-space v-model="email" />
+                  </div>
+                </div> -->
             <div class="col-xs-12">
               <div class="q-px-sm">
                 <span class="text-bold">Full Name:</span>
@@ -64,13 +64,33 @@
               </div>
             </div>
 
-            <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-6 col-md-6">
               <div class="q-px-sm">
-                <span class="text-bold">Reasons:</span>
+                <span class="text-bold">Deficiencies:</span>
                 <q-option-group
                   :options="options"
                   type="checkbox"
                   v-model="group"
+                />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6">
+              <div class="q-px-sm">
+                <!-- <span class="text-bold"></span> -->
+                <q-option-group
+                  :options="options2"
+                  type="checkbox"
+                  v-model="group2"
+                />
+              </div>
+            </div>
+            <div class="col-xs-12">
+              <div class="q-px-sm">
+                <span class="text-bold">Reconsidered:</span>
+                <q-option-group
+                  :options="options3"
+                  type="checkbox"
+                  v-model="group3"
                 />
               </div>
             </div>
@@ -88,26 +108,7 @@
                 mask="####-####"
               />
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-6">
-              <span class="text-bold">Year:</span>
-              <q-input
-                outlined
-                dense
-                hide-bottom-space
-                v-model="year"
-                mask="##"
-              />
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-6">
-              <span class="text-bold">Months:</span>
-              <q-input
-                outlined
-                dense
-                hide-bottom-space
-                v-model="months"
-                mask="##"
-              />
-            </div>
+
             <div class="col-xs-12">
               <span class="text-bold">Signatory:</span>
               <q-input
@@ -142,18 +143,74 @@
       </q-scroll-area>
     </q-card-section>
 
+    <q-dialog v-model="showMail">
+      <div class="q-pa-md">
+        <q-card
+          style="min-width: 500px; width: 500px"
+          class="rounded-borders-20"
+        >
+          <q-toolbar>
+            <IconMailFast :size="30" stroke-width="2" />
+
+            <q-toolbar-title
+              ><span class="text-weight-bold" color="primary">Send</span>
+              E-mail to Scholar
+            </q-toolbar-title>
+
+            <q-btn flat round dense icon="close" v-close-popup />
+          </q-toolbar>
+          <q-card-section>
+            <div class="q-pa-xs">
+              <span class="text-bold">E-Mail Address:</span>
+              <q-input v-model="sendEmails" filled type="email" />
+
+              <div class="q-pt-sm">
+                <span class="text-bold">Attached File:</span>
+                <q-file
+                  ref="refBulkUpload"
+                  filled
+                  v-model="attachFile"
+                  name="attachFile"
+                  label="*PDF FILES ONLY"
+                  color="primary"
+                  clearable
+                  counter
+                  :rules="[fileRules]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
+            </div>
+
+            <div></div>
+          </q-card-section>
+          <q-card-actions class="row justify-left"
+            ><q-btn
+              color="primary"
+              icon="send"
+              @click="sendMailNow"
+              rounded
+              label="Send Mail"
+          /></q-card-actions>
+        </q-card>
+      </div>
+    </q-dialog>
+
     <q-card-actions class="row justify-center">
       <q-btn
         rounded
         unelevated
         style="width: 80%"
         class="q-my-sm q-mx-sm inverse-primary"
-        @click="printTerminate"
+        @click="printScholarStatus"
         >Print</q-btn
       >
       <q-btn
         rounded
         unelevated
+        @click="showMail = true"
         style="width: 80%"
         class="q-my-sm q-mx-sm inverse-primary"
         >Send e-mail to scholar</q-btn
@@ -162,28 +219,48 @@
   </q-card>
 </template>
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, inject } from "vue";
+
+import { useQuasar } from "quasar";
+import { useRoute, useRouter } from "vue-router";
+import router from "../router";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
 import "jspdf-autotable";
+import { IconSchool, IconMailFast } from "@tabler/icons-vue";
+
+const user = inject("$user");
+const q$ = useQuasar();
+const $q = useQuasar();
+const axios = inject("$axios");
+const route = useRoute();
+
+const attachFile = ref([]);
+
+const fileRules = (val) => {
+  if (val === null) {
+    return "Please Select a File!";
+  }
+  return true;
+};
 
 const email = ref("");
 const group = ref([]);
 const group2 = ref([]);
+const group3 = ref([]);
 const name = ref("");
+const showMail = ref(false);
+const sendEmails = ref("");
 
 const cname = ref("");
 const position = ref("");
 const address = ref("");
 const city = ref("");
 
-const subject = ref(
-  "S&T SCHOLARSHIP STATUS - TERMINATED WITH SERVICE OBLIGATION"
-);
+const subject = ref("S&T SCHOLARSHIP STATUS");
 const sem = ref("");
 const sy = ref("");
-const year = ref("");
-const months = ref("");
+
 const signatory = ref("JAYEEL S. CORNELIO, PhD");
 
 const showBarcode = ref(true);
@@ -214,24 +291,68 @@ watch(showBarcode, (newValue) => {
 
 const options = [
   {
-    label: "Two (2) or more grades of 5.0 (F) at the end of the Semester/Term.",
-    value: "Two (2) or more grades of 5.0 (F) at the end of the Semester/Term.",
+    label: "Enrolled in an underload at the start of the semester/term",
+    value: "Enrolled in an underload at the start of the semester/term",
   },
   {
     label:
-      "Third gradeof 5.0 (F) in a semester and did NOT pass two (2) failing grades incurred in two (2) previous semesters.",
+      "Underload of 3 units in a semester/term by the end of the semester/term",
     value:
-      "Third gradeof 5.0 (F) in a semester and did NOT pass two (2) failing grades incurred in two (2) previous semesters.",
+      "Underload of 3 units in a semester/term by the end of the semester/term",
+  },
+  {
+    label: "Dropped more than 3 units in a semester/term",
+    value: "Dropped more than 3 units in a semester/term",
+  },
+  {
+    label: "General Weighted Average (GWA) below requirement",
+    value: "General Weighted Average (GWA) below requirement",
   },
 ];
 
-const printTerminate = async () => {
+const options2 = [
+  {
+    label: "One (1) grade of 4.0/INC",
+    value: "One (1) grade of 4.0/INC",
+  },
+  {
+    label: "Grades of 4.0/INC",
+    value: "Grades of 4.0/INC",
+  },
+  {
+    label: "Grade of 4.0/INC and 1 grade of 5.0/F",
+    value: "Grade of 4.0/INC and 1 grade of 5.0/F",
+  },
+  {
+    label: "One (1) grade of 5.0/F",
+    value: "One (1) grade of 5.0/F",
+  },
+  {
+    label: "Second grade of 5.0/F",
+    value: "Second grade of 5.0/F",
+  },
+];
+
+const options3 = [
+  {
+    label: "Continued",
+    value: "Continued",
+  },
+  {
+    label: "Continued under probation",
+    value: "Continued under probation",
+  },
+];
+
+const printScholarStatus = async () => {
   // Create a new instance of jsPDF
   const doc = new jsPDF();
 
   const logoUrl = new URL("../assets/seilogopng.png", import.meta.url).href; // Replace with your image URL
   const bpUrl = new URL("../assets/pilipinas.png", import.meta.url).href; // Replace with your image URL
-  const tuvUrl = new URL("../assets/tuv.jpg", import.meta.url).href; // Replace with your image URL
+  const tuvUrl = new URL("../assets/tuv.png", import.meta.url).href; // Replace with your image URL
+
+  const imageCompression = 0.7;
 
   const canvas = barcodeCanvas.value;
 
@@ -244,7 +365,7 @@ const printTerminate = async () => {
   });
 
   // Add the image from the URL to the PDF
-  doc.addImage(logoUrl, "PNG", 10, 5, 20, 20);
+  doc.addImage(logoUrl, "PNG", 10, 5, 20, 20, null, "FAST", imageCompression);
 
   // Set a title for the PDF
 
@@ -261,8 +382,8 @@ const printTerminate = async () => {
   doc.text("SCIENCE EDUCATION INSTITUTE", 32, 23);
 
   // Add the image from the URL to the PDF
-  doc.addImage(bpUrl, "PNG", 150, 5, 20, 20);
-  doc.addImage(tuvUrl, "PNG", 170, 5, 33, 20);
+  doc.addImage(bpUrl, "PNG", 150, 5, 20, 20, null, "FAST", imageCompression);
+  doc.addImage(tuvUrl, "PNG", 170, 5, 33, 20, null, "FAST", imageCompression);
 
   doc.setLineWidth(0.5);
   doc.line(10, 27, 203, 27); // x1, y1, x2, y2
@@ -312,33 +433,121 @@ const printTerminate = async () => {
   doc.setLineWidth(1.5);
   doc.line(30, 103, 190, 103); // x1, y1, x2, y2
 
-  const paragraph = `        Per evaluation of your academic performace, we regret to inform you that you have incurred the following deficiencies:`;
-  doc.setFontSize(12);
+  const paragraph = `Per evaluation of your academic performance, it is noted that you have incurred the following deficiency/ies;`;
+  doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
+
+  // Deficiencies Part 1
 
   // Wrap text inside a defined area
   doc.text(paragraph, 34, 110, { maxWidth: 150, align: "justify" });
 
   // Add checkboxes and selected reasons
-  const checkboxX = 44;
-  let checkboxY = 130;
+  const checkboxX = 36;
+  let checkboxY = 120;
 
   options.forEach((option) => {
     // Draw a checkbox
-    doc.rect(checkboxX, checkboxY, 5, 5);
+    doc.setLineWidth(0.5);
+    doc.rect(checkboxX, checkboxY, 3, 3);
 
     // Check if this option is selected
     if (group.value.includes(option.value)) {
       // Draw a checkmark inside the checkbox
-      doc.text("X", checkboxX + 1, checkboxY + 4);
+      doc.text("X", checkboxX + 0.5, checkboxY + 2.5);
     }
 
     // Render the label next to the checkbox
-    doc.text(option.label, checkboxX + 10, checkboxY + 4, { maxWidth: 140 });
+    doc.text(option.label, checkboxX + 8, checkboxY + 2, { maxWidth: 70 });
 
     // Move to the next line
     checkboxY += 10;
   });
+
+  // Deficiencies Part 2
+
+  // Add checkboxes and selected reasons
+  const checkboxXx = 120;
+  let checkboxYy = 120;
+
+  options2.forEach((option2) => {
+    doc.setLineWidth(0.5);
+    // Draw a checkbox
+    doc.rect(checkboxXx, checkboxYy, 3, 3);
+
+    // Check if this option is selected
+    if (group2.value.includes(option2.value)) {
+      // Draw a checkmark inside the checkbox
+      doc.text("X", checkboxXx + 0.5, checkboxYy + 2.5);
+    }
+
+    // Render the label next to the checkbox
+    doc.text(option2.label, checkboxXx + 10, checkboxYy + 4, { maxWidth: 140 });
+
+    // Move to the next line
+    checkboxYy += 8;
+  });
+
+  const paragraph2 = `In view of the merits of your appeal, your scholarship is hereby reconsidered with`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(paragraph2, 45, 165, { maxWidth: 150, align: "justify" });
+
+  // Reconsidered
+
+  // Add checkboxes and selected reasons
+  const checkboxXxx = 45;
+  let checkboxYyy = 170;
+
+  options3.forEach((option3) => {
+    doc.setLineWidth(0.5);
+    // Draw a checkbox
+    doc.rect(checkboxXxx, checkboxYyy, 3, 3);
+
+    // Check if this option is selected
+    if (group3.value.includes(option3.value)) {
+      // Draw a checkmark inside the checkbox
+      doc.text("X", checkboxXxx + 0.5, checkboxYyy + 2.5);
+    }
+
+    // Render the label next to the checkbox
+    doc.text(option3.label, checkboxXxx + 8, checkboxYyy + 3, {
+      maxWidth: 140,
+    });
+
+    // Move to the next line
+    checkboxYyy += 8;
+  });
+
+  const paragraph3 = `status effective start of ${sem.value} Semester/Term of SY ${sy.value}.  You are still eligible for full scholarship benefits.`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(paragraph3, 45, 190, { maxWidth: 140, align: "justify" });
+
+  const paragraph4 = `   Please note that obtaining other academic deficiency/ies in the next semester(s)/term(s), may lead to the partial release of your financial assistance or even the termination of your scholarship grant. In connection to this, you are advised to prioritize your studies to improve your academic standing and maintain the required weighted average/QPI/QPA.`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(paragraph4, 34, 200, { maxWidth: 140, align: "justify" });
+
+  const paragraph5 = `    Henceforth, please observe all the scholarship policies. Kindly submit your requirements, including your registration form and the official copy of your grades for evaluation and continuation of your scholarship.`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(paragraph5, 34, 223, { maxWidth: 140, align: "justify" });
+
+  const paragraph6 = `For strict compliance.`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(paragraph6, 34, 238, { maxWidth: 140, align: "justify" });
 
   // Set line thickness (border width)
   doc.setLineWidth(0.1);
@@ -353,76 +562,25 @@ const printTerminate = async () => {
   doc.rect(inputX, inputY, inputWidth, inputHeight);
 
   // Add text inside the box (like the content inside an input box)
-  const text = "SCHOLSTATForm5";
+  const text = "SCHOLSTATForm1";
   doc.text(text, inputX + 2, inputY + 5); // Adjusted to fit inside the box
-
-  // Base paragraph text split into chunks
-  const paragraph2Parts = [
-    "In view of your unsatisfactory academic performance, you hereby advised that your DOST-SEI scholarship is TERMINATED WITH RETURN SERVICE effective end of the ",
-    `${sem.value}`, // Underline this
-    " Semester/Term of SY ",
-    `${sy.value}`, // Underline this
-    ". You are required to render service obligation after graduation for a period of ",
-    `${year.value}`, // Underline this
-    " year and ",
-    `${months.value}`, // Underline this
-    " months.",
-  ];
-
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-
-  let currentX = 34;
-  let currentY = 170; // Start position
-  const maxWidth = 150; // Max line width
-
-  paragraph2Parts.forEach((part, index) => {
-    const isUnderlined = index % 2 === 1; // Underline `.value` parts (odd indices)
-
-    // Measure text width to determine spacing
-    const textWidth = doc.getTextWidth(part);
-
-    // Render text
-    doc.text(part, currentX, currentY);
-
-    // If part is underlined, draw underline
-    if (isUnderlined) {
-      doc.line(currentX, currentY + 1.5, currentX + textWidth, currentY + 1.5); // Adjust Y+1.5 to align the underline
-    }
-
-    // Update X position for the next part
-    currentX += textWidth;
-
-    // Handle line wrapping if X exceeds maxWidth
-    if (currentX > 34 + maxWidth) {
-      currentX = 34; // Reset X to start of line
-      currentY += 6; // Move Y down by line height (adjust as needed)
-    }
-  });
-
-  const paragraph3 = `        Thank you for your understanding. We wish you the best in your future endeavors.`;
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-
-  // Wrap text inside a defined area
-  doc.text(paragraph3, 34, 200, { maxWidth: 150, align: "justify" });
 
   doc.setFont("helvetica", "bold"); // Set font and style
   doc.setFontSize(12); // Set font size
-  doc.text(`${signatory.value}`, 128, 230); // Add the date to position (10, 10)
+  doc.text(`${signatory.value}`, 128, 255); // Add the date to position (10, 10)
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("DIRECTOR IV", 148, 235);
+  doc.text("DIRECTOR IV", 148, 259);
 
   // BarCode
 
   if (showBarcode.value && canvas) {
     const barcodeDataUrl = canvas.toDataURL("image/png");
     // Add the barcode to the PDF
-    doc.addImage(barcodeDataUrl, "PNG", 34, 240, 70, 20);
+    doc.addImage(barcodeDataUrl, "PNG", 34, 255, 70, 20);
   } else {
     // Add only the input code as text
-    doc.text(inputCode.value, 34, 250);
+    doc.text(inputCode.value, 34, 265);
   }
 
   // Footer
@@ -436,7 +594,7 @@ const printTerminate = async () => {
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text("DOST Compound, General Santos Avenue", 15, 283);
+  doc.text("DOST Compound, General Santos Avenue", 10, 283);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -496,6 +654,31 @@ const printTerminate = async () => {
   const blob = doc.output("blob");
   const pdfUrl = URL.createObjectURL(blob);
   window.open(pdfUrl, "_blank");
+};
+
+const sendMailNow = () => {
+  var formData = new FormData();
+  showMail.value = false;
+
+  formData.append("scholar_email", sendEmails.value);
+  formData.append("attachFile", attachFile.value);
+
+  axios.post("/create.php?sendMailScholar", formData).then(function (response) {
+    if (response.data == true) {
+      $q.notify({
+        message: "E-MAIL SENT SUCCESSFULLY",
+        icon: "mark_email_read",
+        color: "green",
+        position: "top-right",
+      });
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Failed to send the e-mail",
+      });
+    }
+  });
 };
 
 generateBarcode();

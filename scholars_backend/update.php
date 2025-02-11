@@ -1872,4 +1872,118 @@ if (isset($_GET['updateBatchProgressStats'])) {
 
 
 
+if (isset($_GET['updateContracts'])) {
+
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Ymdhi");
+
+    $authid = $_POST["userid"];
+    $uname = $_POST["user"];
+    $contract = $_POST["contract"];
+    $records = $_POST["records"] === 'YES' ? true : false;
+    $newstatus = $_POST["newstatus"] === 'YES' ? true : false;;
+
+    // File Upload
+    $batchFile = $_FILES['fileUpload']['name'];
+    $path = 'batch/';
+    $allowed_extensions = ['csv'];
+    $extension = pathinfo($batchFile, PATHINFO_EXTENSION);
+
+    if (!in_array(strtolower($extension), $allowed_extensions)) {
+        echo json_encode(false);
+        exit;
+    }
+
+    if (!file_exists($path)) {
+        mkdir($path, 0775, true);
+    }
+
+    $temp_file = $_FILES['fileUpload']['tmp_name'];
+    $newpath = $path . $authid . $uname . $date . "." . $extension;
+
+    if (!move_uploaded_file($temp_file, $newpath)) {
+        echo json_encode(false);
+        exit;
+    }
+
+    // Read and process CSV
+    $fileUploadedSuccessfully = ($newpath !== "No_Files");
+    $result = false;
+
+    if ($fileUploadedSuccessfully) {
+        $b = false;
+        $file = fopen($newpath, "r");
+
+        // Generate a unique temporary table name
+        $number = time();
+        $tempTableName = "temp_record_" . $number;
+
+        try {
+            // Create the temporary table
+            $create_temp_table_stmt = "CREATE TEMP TABLE \"$tempTableName\" (
+                spas_id VARCHAR(15) NOT NULL, 
+                avail_award VARCHAR(5),
+                other_schp VARCHAR(50),
+                contract_loc VARCHAR(6),
+                deferment_status BOOLEAN,
+                course_name VARCHAR(100),
+                school_name VARCHAR(100),
+                duration SMALLINT,  
+                etg SMALLINT,
+                sy_start VARCHAR(50),
+                term_start SMALLINT,  
+                term_type_start SMALLINT,  
+                latest_flag BOOLEAN,
+                sy VARCHAR(50),
+                term SMALLINT,  
+                term_type SMALLINT,  
+                remarks VARCHAR(255)
+            )";
+            $pdo->exec($create_temp_table_stmt);
+
+            // Insert CSV data
+            $stmt = $pdo->prepare("INSERT INTO $tempTableName (spas_id, avail_award, other_schp, contract_loc, deferment_status, course_name, school_name, duration, etg, sy_start, term_start, term_type_start, latest_flag, sy, term, term_type, remarks) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
+                if (!$b) {
+                    $b = true;
+                    continue;
+                }
+
+                // Convert boolean values
+                // $emapData[4] = ($emapData[4] == 1) ? 'true' : 'false'; 
+                // $emapData[12] = ($emapData[12] == 1) ? 'true' : 'false';
+
+                $stmt->execute([
+                    $emapData[0], $emapData[1], $emapData[2], $emapData[3], $records, 
+                    $emapData[5], $emapData[6], $emapData[7], $emapData[8], $emapData[9], 
+                    $emapData[10], $emapData[11], $newstatus, $emapData[13], $emapData[14], 
+                    $emapData[15], $emapData[16]
+                ]);
+            }
+
+            fclose($file);
+            $result = true;
+        } catch (Exception $e) {
+            echo json_encode(false);
+            exit;
+        }
+    }
+
+    echo json_encode($result);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Developed By: CASTAÑARES, JONATHAN R.

@@ -47,12 +47,12 @@
       <div class="q-px-sm">
         <span class="text-bold">Lists of Records</span>
         <q-file
-          ref="refavailingUpload"
+          ref="refFileUpload"
           outlined
           dense
           hide-bottom-space
-          v-model="availingUpload"
-          name="availingUpload"
+          v-model="fileUpload"
+          name="fileUpload"
           label="*CSV FILES ONLY"
           color="primary"
           clearable
@@ -70,7 +70,7 @@
         <q-select
           ref="refcontract"
           :options="contractoptions"
-          v-model="state.contract"
+          v-model="contract"
           emit-value
           name="gender"
           outlined
@@ -116,6 +116,7 @@
             type="submit"
             class="q-mb-sm"
             style="width: 40%"
+            @click="updateContract"
           />
         </div>
       </q-card-actions>
@@ -131,8 +132,11 @@ import Swal from "sweetalert2";
 const user = inject("$user");
 const q$ = useQuasar();
 const $q = useQuasar();
+const axios = inject("$axios");
 
-const availingUpload = ref(null);
+const refcontract = ref(null);
+const refFileUpload = ref(null);
+const fileUpload = ref("");
 
 const records = ref("NO");
 const newstatus = ref("NO");
@@ -164,4 +168,32 @@ const contractoptions = computed(() => [
   { label: "Deferred", value: "DEFERRED", color: "primary" },
   { label: "Did Not Avail", value: "DID NOT AVAIL", color: "primary" },
 ]);
+
+const updateContract = () => {
+  var formData = new FormData();
+
+  formData.append("fileUpload", fileUpload.value);
+  formData.append("contract", contract.value);
+  formData.append("records", records.value);
+  formData.append("newstatus", newstatus.value);
+  formData.append("user", user.username);
+  formData.append("userid", user.id);
+
+  axios.post("/update.php?updateContracts", formData).then(function (response) {
+    if (response.data == true) {
+      Swal.fire({
+        icon: "success",
+        title: "Uploaded Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } else {
+      $q.notify({
+        color: "red",
+        textColor: "white",
+        message: "Error uploading the csv",
+      });
+    }
+  });
+};
 </script>
