@@ -103,6 +103,61 @@
       </q-scroll-area>
     </q-card-section>
 
+    <q-dialog v-model="showMail">
+      <div class="q-pa-md">
+        <q-card
+          style="min-width: 500px; width: 500px"
+          class="rounded-borders-20"
+        >
+          <q-toolbar>
+            <IconMailFast :size="30" stroke-width="2" />
+
+            <q-toolbar-title
+              ><span class="text-weight-bold" color="primary">Completion</span>
+              E-mail to Scholar
+            </q-toolbar-title>
+
+            <q-btn flat round dense icon="close" v-close-popup />
+          </q-toolbar>
+          <q-card-section>
+            <div class="q-pa-xs">
+              <span class="text-bold">E-Mail Address:</span>
+              <q-input v-model="sendEmails" filled type="email" />
+
+              <div class="q-pt-sm">
+                <span class="text-bold">Attached File:</span>
+                <q-file
+                  ref="refBulkUpload"
+                  filled
+                  v-model="attachFile"
+                  name="attachFile"
+                  label="*PDF FILES ONLY"
+                  color="primary"
+                  clearable
+                  counter
+                  :rules="[fileRules]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
+            </div>
+
+            <div></div>
+          </q-card-section>
+          <q-card-actions class="row justify-left"
+            ><q-btn
+              color="primary"
+              icon="send"
+              @click="sendMailNow"
+              rounded
+              label="Send Mail"
+          /></q-card-actions>
+        </q-card>
+      </div>
+    </q-dialog>
+
     <q-card-actions class="row justify-center">
       <q-btn
         rounded
@@ -140,6 +195,10 @@ const q$ = useQuasar();
 const $q = useQuasar();
 const axios = inject("$axios");
 const route = useRoute();
+
+const showMail = ref(false);
+const attachFile = ref([]);
+const sendEmails = ref("");
 
 const name = ref("");
 const cname = ref("");
@@ -396,5 +455,33 @@ const printSubmitGrades = async () => {
   const pdfUrl = URL.createObjectURL(blob);
   window.open(pdfUrl, "_blank");
 };
+
+const sendMailNow = () => {
+  var formData = new FormData();
+  showMail.value = false;
+
+  formData.append("scholar_email", sendEmails.value);
+  formData.append("attachFile", attachFile.value);
+
+  axios
+    .post("/create.php?sendMailSubmitGrades", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        $q.notify({
+          message: "E-MAIL SENT SUCCESSFULLY",
+          icon: "mark_email_read",
+          color: "green",
+          position: "top-right",
+        });
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to send the e-mail",
+        });
+      }
+    });
+};
+
 generateBarcode();
 </script>

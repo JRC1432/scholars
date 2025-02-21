@@ -72,7 +72,7 @@
           :options="contractoptions"
           v-model="contract"
           emit-value
-          name="gender"
+          name="contract"
           outlined
           dense
           hide-bottom-space
@@ -158,16 +158,42 @@ const fileRules = (val) => {
   return true;
 };
 
-const state = reactive({
-  contract: "",
-});
-
 // SELECT OPTIONS
 const contractoptions = computed(() => [
   { label: "Availing", value: "AVAILING", color: "primary" },
   { label: "Deferred", value: "DEFERRED", color: "primary" },
   { label: "Did Not Avail", value: "DID NOT AVAIL", color: "primary" },
 ]);
+
+const timer = () => {
+  let timerInterval;
+  Swal.fire({
+    title: "Uploading!",
+    html: "Batch Upload is Currently In Progress.",
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+      const timer = Swal.getPopup().querySelector("b");
+      timerInterval = setInterval(() => {
+        timer.textContent = `${Swal.getTimerLeft()}`;
+      }, 100);
+    },
+    willClose: () => {
+      clearInterval(timerInterval);
+    },
+  }).then((result) => {
+    /* Read more about handling dismissals below */
+    if (result.dismiss === Swal.DismissReason.timer) {
+      Swal.fire({
+        icon: "success",
+        title: "Uploaded Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  });
+};
 
 const updateContract = () => {
   var formData = new FormData();
@@ -181,17 +207,13 @@ const updateContract = () => {
 
   axios.post("/update.php?updateContracts", formData).then(function (response) {
     if (response.data == true) {
-      Swal.fire({
-        icon: "success",
-        title: "Uploaded Successfully",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      timer();
     } else {
       $q.notify({
         color: "red",
         textColor: "white",
-        message: "Error uploading the csv",
+        message:
+          "Error uploading the csv. Please make sure inputs are corrected.",
       });
     }
   });

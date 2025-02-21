@@ -1803,6 +1803,11 @@ if (isset($_GET['updateBatchProgressStats'])) {
     $dates = date("Y-m-d h:i:s a");
     $date = date("Ymdhi");
 
+     if (!isset($pdo)) {
+        echo json_encode(false);
+        exit;
+    }
+
     $startEnd = $_POST["startEnd"];
     $stats = $_POST["stats"];
     $actflag = $_POST["actflag"];
@@ -1810,86 +1815,19 @@ if (isset($_GET['updateBatchProgressStats'])) {
     $uname = $_POST["user"];
     $authid = $_POST["userid"];
 
-    // Bulk Upload
-    $bathcFile = $_FILES['fileUpload']['name'];
-    $path = 'batch/';
-    $allowed_extensions = array('csv');
-    $extension = pathinfo($bathcFile, PATHINFO_EXTENSION);
+    // Upload Code
 
-    if (in_array(strtolower($extension), $allowed_extensions)) {
-        if (!file_exists($path)) {
-            mkdir($path, 0775, true);
-        }
-
-        $temp_file = $_FILES['fileUpload']['tmp_name'];
-        $newpath = $path . $authid . $uname . $date . "." . $extension;
-
-        if (!move_uploaded_file($temp_file, $newpath)) {
-            $newpath = "No_Files";
-        }
-    } else {
-        $newpath = "No_Files";
+    if (!isset($_FILES['fileUpload'])) {
+        echo json_encode(false);
+        exit;
     }
 
-    $fileUploadedSuccessfully = ($newpath !== "No_Files");
-    $result = true; // Assume success unless proven otherwise
-
-    if ($fileUploadedSuccessfully) {
-        $b = false;
-        $file = fopen($newpath, "r");
-
-        while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
-            if (!$b) { // Skip the header row
-                $b = true;
-                continue;
-            }
-
-            $stnt = $pdo->prepare("INSERT INTO temp_record17508(spas_id, sy, term, term_type, course, school, progress_status, standing) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $executionResult = $stnt->execute([
-                $emapData[0],
-                $emapData[1],
-                $emapData[2],
-                $emapData[3],
-                $emapData[4],
-                $emapData[5],
-                $emapData[6],
-                $emapData[7]
-            ]);
-
-            if (!$executionResult) {
-                $result = false; // Set result to false if any execution fails
-            }
-        }
-        fclose($file);
-    } else {
-        $result = false; // File upload failed
-    }
-
-    echo json_encode($result); // Output the final result once
-}
-
-
-
-
-
-if (isset($_GET['updateContracts'])) {
-
-    date_default_timezone_set('Asia/Manila');
-    $date = date("Ymdhi");
-
-    $authid = $_POST["userid"];
-    $uname = $_POST["user"];
-    $contract = $_POST["contract"];
-    $records = $_POST["records"] === 'YES' ? true : false;
-    $newstatus = $_POST["newstatus"] === 'YES' ? true : false;;
-
-    // File Upload
     $batchFile = $_FILES['fileUpload']['name'];
     $path = 'batch/';
     $allowed_extensions = ['csv'];
-    $extension = pathinfo($batchFile, PATHINFO_EXTENSION);
+    $extension = strtolower(pathinfo($batchFile, PATHINFO_EXTENSION));
 
-    if (!in_array(strtolower($extension), $allowed_extensions)) {
+    if (!in_array($extension, $allowed_extensions)) {
         echo json_encode(false);
         exit;
     }
@@ -1901,87 +1839,265 @@ if (isset($_GET['updateContracts'])) {
     $temp_file = $_FILES['fileUpload']['tmp_name'];
     $newpath = $path . $authid . $uname . $date . "." . $extension;
 
-    if (!move_uploaded_file($temp_file, $newpath)) {
+    if (!move_uploaded_file($temp_file, $newpath) || !file_exists($newpath)) {
         echo json_encode(false);
         exit;
     }
 
-    // Read and process CSV
-    $fileUploadedSuccessfully = ($newpath !== "No_Files");
+    // Read and process CSV file
     $result = false;
+    $firstRow = true;
 
-    if ($fileUploadedSuccessfully) {
-        $b = false;
-        $file = fopen($newpath, "r");
+    // Generate a unique temporary table name
+    $tempTableName = "temp_record_" . time();
 
-        // Generate a unique temporary table name
-        $number = time();
-        $tempTableName = "temp_record_" . $number;
+   
 
-        try {
-            // Create the temporary table
-            $create_temp_table_stmt = "CREATE TEMP TABLE \"$tempTableName\" (
-                spas_id VARCHAR(15) NOT NULL, 
-                avail_award VARCHAR(5),
-                other_schp VARCHAR(50),
-                contract_loc VARCHAR(6),
-                deferment_status BOOLEAN,
-                course_name VARCHAR(100),
-                school_name VARCHAR(100),
-                duration SMALLINT,  
-                etg SMALLINT,
-                sy_start VARCHAR(50),
-                term_start SMALLINT,  
-                term_type_start SMALLINT,  
-                latest_flag BOOLEAN,
-                sy VARCHAR(50),
-                term SMALLINT,  
-                term_type SMALLINT,  
-                remarks VARCHAR(255)
-            )";
-            $pdo->exec($create_temp_table_stmt);
+    try{
 
-            // Insert CSV data
-            $stmt = $pdo->prepare("INSERT INTO $tempTableName (spas_id, avail_award, other_schp, contract_loc, deferment_status, course_name, school_name, duration, etg, sy_start, term_start, term_type_start, latest_flag, sy, term, term_type, remarks) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS \"$tempTableName\" (
+            spas_id VARCHAR(15) NOT NULL, 
+            sy VARCHAR(15),
+            term SMALLINT,
+            term_type SMALLINT,
+            course VARCHAR(255),
+            school VARCHAR(255),
+            progress_status VARCHAR(50),
+            standing VARCHAR(50)
+        )");
 
+         $stmt = $pdo->prepare("INSERT INTO \"$tempTableName\" 
+            (spas_id, sy, term, term_type, course, 
+             school, progress_status, standing) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+
+         // Open CSV file
+        if (($file = fopen($newpath, "r")) !== FALSE) {
             while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
-                if (!$b) {
-                    $b = true;
-                    continue;
+                if ($firstRow) {
+                    $firstRow = false;
+                    continue; // Skip header row
                 }
 
-                // Convert boolean values
-                // $emapData[4] = ($emapData[4] == 1) ? 'true' : 'false'; 
-                // $emapData[12] = ($emapData[12] == 1) ? 'true' : 'false';
-
                 $stmt->execute([
-                    $emapData[0], $emapData[1], $emapData[2], $emapData[3], $records, 
-                    $emapData[5], $emapData[6], $emapData[7], $emapData[8], $emapData[9], 
-                    $emapData[10], $emapData[11], $newstatus, $emapData[13], $emapData[14], 
-                    $emapData[15], $emapData[16]
+                    $emapData[0], $emapData[1], $emapData[2], $emapData[3], $emapData[4],
+                    $emapData[5], $emapData[6], $emapData[7]
                 ]);
             }
-
             fclose($file);
-            $result = true;
-        } catch (Exception $e) {
-            echo json_encode(false);
-            exit;
         }
-    }
 
-    echo json_encode($result);
+        $result = true;
+} catch (Exception $e) {
+    echo json_encode(false);
+    exit;
+}
+ echo json_encode($result);
 }
 
 
 
 
 
+if (isset($_GET['updateContracts'])) {
+    date_default_timezone_set('Asia/Manila');
+    $date = date("Ymdhi");
+
+    if (!isset($pdo)) {
+        echo json_encode(false);
+        exit;
+    }
+
+    // Retrieve form data
+    $authid = $_POST["userid"] ?? null;
+    $uname = $_POST["user"] ?? null;
+    $contract = $_POST["contract"] ?? null;
+
+    // File Upload Handling
+    if (!isset($_FILES['fileUpload'])) {
+        echo json_encode(false);
+        exit;
+    }
+
+    $batchFile = $_FILES['fileUpload']['name'];
+    $path = 'batch/';
+    $allowed_extensions = ['csv'];
+    $extension = strtolower(pathinfo($batchFile, PATHINFO_EXTENSION));
+
+    if (!in_array($extension, $allowed_extensions)) {
+        echo json_encode(false);
+        exit;
+    }
+
+    if (!file_exists($path)) {
+        mkdir($path, 0775, true);
+    }
+
+    $temp_file = $_FILES['fileUpload']['tmp_name'];
+    $newpath = $path . $authid . $uname . $date . "." . $extension;
+
+    if (!move_uploaded_file($temp_file, $newpath) || !file_exists($newpath)) {
+        echo json_encode(false);
+        exit;
+    }
+
+    // Read and process CSV file
+    $result = false;
+    $firstRow = true;
+
+    // Generate a unique temporary table name
+    $tempTableName = "temp_record_" . time();
 
 
 
+if ($contract === "AVAILING") {
+
+    $records = $_POST["records"] === 'YES' ? 1 : 0;
+    $newstatus = $_POST["newstatus"] === 'YES' ? 1 : 0;
 
 
+    try {
+        // Create the temporary table
+        $pdo->exec("CREATE TABLE IF NOT EXISTS \"$tempTableName\" (
+            spas_id VARCHAR(15) NOT NULL, 
+            avail_award VARCHAR(5),
+            other_schp VARCHAR(50),
+            contract_loc VARCHAR(6),
+            deferment_status BOOLEAN,
+            course_name VARCHAR(100),
+            school_name VARCHAR(100),
+            duration SMALLINT,  
+            etg SMALLINT,
+            sy_start VARCHAR(50),
+            term_start SMALLINT,  
+            term_type_start SMALLINT,  
+            latest_flag BOOLEAN,
+            sy VARCHAR(50),
+            term SMALLINT,  
+            term_type SMALLINT,  
+            remarks VARCHAR(255)
+        )");
+
+        // Prepare the insert statement
+        $stmt = $pdo->prepare("INSERT INTO \"$tempTableName\" 
+            (spas_id, avail_award, other_schp, contract_loc, deferment_status, 
+             course_name, school_name, duration, etg, sy_start, term_start, 
+             term_type_start, latest_flag, sy, term, term_type, remarks) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        // Open CSV file
+        if (($file = fopen($newpath, "r")) !== FALSE) {
+            while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
+                if ($firstRow) {
+                    $firstRow = false;
+                    continue; // Skip header row
+                }
+
+                $stmt->execute([
+                    $emapData[0], $emapData[1], $emapData[2], $emapData[3], $records,
+                    $emapData[5], $emapData[6], $emapData[7], $emapData[8], $emapData[9],
+                    $emapData[10], $emapData[11], $newstatus, $emapData[13], $emapData[14],
+                    $emapData[15], $emapData[16]
+                ]);
+            }
+            fclose($file);
+        }
+
+        $result = true;
+    } catch (Exception $e) {
+        echo json_encode(false);
+        exit;
+    }
+
+
+} elseif ($contract === "DEFERRED") {
+
+    try{
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS \"$tempTableName\" (
+            spas_id VARCHAR(15) NOT NULL, 
+            with_deferment_form SMALLINT,
+            reason VARCHAR(255),
+            sy_new VARCHAR(50),
+            term_new SMALLINT,
+            term_type_new SMALLINT,
+            remarks VARCHAR(255)
+        )");
+
+         $stmt = $pdo->prepare("INSERT INTO \"$tempTableName\" 
+            (spas_id, with_deferment_form, reason, sy_new, term_new, 
+             term_type_new, remarks) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+
+         // Open CSV file
+        if (($file = fopen($newpath, "r")) !== FALSE) {
+            while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
+                if ($firstRow) {
+                    $firstRow = false;
+                    continue; // Skip header row
+                }
+
+                $stmt->execute([
+                    $emapData[0], $emapData[1], $emapData[2], $emapData[3], $emapData[4],
+                    $emapData[5], $emapData[6]
+                ]);
+            }
+            fclose($file);
+        }
+
+        $result = true;
+} catch (Exception $e) {
+    echo json_encode(false);
+    exit;
+}
+
+
+} else if ($contract === "DID NOT AVAIL") {
+
+    try{
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS \"$tempTableName\" (
+            spas_id VARCHAR(15) NOT NULL, 
+            deferment_status BOOLEAN,
+            reason VARCHAR(255),
+            remarks VARCHAR(255)
+        )");
+
+         $stmt = $pdo->prepare("INSERT INTO \"$tempTableName\" 
+            (spas_id, deferment_status, reason, remarks) 
+            VALUES (?, ?, ?, ?)");
+
+
+         // Open CSV file
+        if (($file = fopen($newpath, "r")) !== FALSE) {
+            while (($emapData = fgetcsv($file, 10000, ",")) !== FALSE) {
+                if ($firstRow) {
+                    $firstRow = false;
+                    continue; // Skip header row
+                }
+
+                $stmt->execute([
+                    $emapData[0], $emapData[1], $emapData[2], $emapData[3]
+                ]);
+            }
+            fclose($file);
+        }
+
+        $result = true;
+} catch (Exception $e) {
+    echo json_encode(false);
+    exit;
+}
+
+} else {
+    echo json_encode(["error" => "Invalid contract type"]);
+    exit;
+}
+
+    echo json_encode($result);
+}
 
 
 

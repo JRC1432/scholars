@@ -152,7 +152,7 @@
             <IconMailFast :size="30" stroke-width="2" />
 
             <q-toolbar-title
-              ><span class="text-weight-bold" color="primary">Send</span>
+              ><span class="text-weight-bold" color="primary">Terminate</span>
               E-mail to Scholar
             </q-toolbar-title>
 
@@ -256,7 +256,7 @@ const address = ref("");
 const city = ref("");
 
 const subject = ref(
-  "S&T SCHOLARSHIP STATUS CONTINUED: TO SUBMIT GRADES UPON COMPLETION"
+  "S&T SCHOLARSHIP STATUS: TERMINATED WITH SERVICE OBLIGATION"
 );
 const sem = ref("");
 const sy = ref("");

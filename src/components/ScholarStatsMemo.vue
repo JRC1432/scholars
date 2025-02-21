@@ -153,7 +153,9 @@
             <IconMailFast :size="30" stroke-width="2" />
 
             <q-toolbar-title
-              ><span class="text-weight-bold" color="primary">Send</span>
+              ><span class="text-weight-bold" color="primary"
+                >Scholar Status</span
+              >
               E-mail to Scholar
             </q-toolbar-title>
 
@@ -235,8 +237,6 @@ const $q = useQuasar();
 const axios = inject("$axios");
 const route = useRoute();
 
-const attachFile = ref([]);
-
 const fileRules = (val) => {
   if (val === null) {
     return "Please Select a File!";
@@ -249,7 +249,9 @@ const group = ref([]);
 const group2 = ref([]);
 const group3 = ref([]);
 const name = ref("");
+
 const showMail = ref(false);
+const attachFile = ref([]);
 const sendEmails = ref("");
 
 const cname = ref("");
@@ -663,22 +665,24 @@ const sendMailNow = () => {
   formData.append("scholar_email", sendEmails.value);
   formData.append("attachFile", attachFile.value);
 
-  axios.post("/create.php?sendMailScholar", formData).then(function (response) {
-    if (response.data == true) {
-      $q.notify({
-        message: "E-MAIL SENT SUCCESSFULLY",
-        icon: "mark_email_read",
-        color: "green",
-        position: "top-right",
-      });
-    } else {
-      $q.notify({
-        color: "red",
-        textColor: "white",
-        message: "Failed to send the e-mail",
-      });
-    }
-  });
+  axios
+    .post("/create.php?sendMailScholarStatus", formData)
+    .then(function (response) {
+      if (response.data == true) {
+        $q.notify({
+          message: "E-MAIL SENT SUCCESSFULLY",
+          icon: "mark_email_read",
+          color: "green",
+          position: "top-right",
+        });
+      } else {
+        $q.notify({
+          color: "red",
+          textColor: "white",
+          message: "Failed to send the e-mail",
+        });
+      }
+    });
 };
 
 generateBarcode();

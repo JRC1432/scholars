@@ -40,6 +40,13 @@
                 <img :src="template.preview" />
               </q-card>
             </q-popup-proxy>
+            <q-tooltip
+              transition-show="rotate"
+              transition-hide="rotate"
+              class="bg-primary"
+            >
+              Preview
+            </q-tooltip>
           </q-btn>
           <div class="row no-wrap items-center">
             <div class="col text-h6 ellipsis">{{ template.title }}</div>
@@ -63,7 +70,12 @@
         <q-separator />
 
         <q-card-actions class="row justify-center">
-          <q-btn flat color="primary" @click="callFunction(template.btn)">
+          <q-btn
+            rounded
+            flat
+            color="primary"
+            @click="callFunction(template.btn)"
+          >
             Use this template
           </q-btn>
         </q-card-actions>
@@ -137,7 +149,7 @@ const memoTemplates = ref([
     icon: "volunteer_activism",
     color: "orange-4",
     btn: "openPartialAllowance",
-    preview: new URL("../assets/continuedstats.png", import.meta.url).href,
+    preview: new URL("../assets/partialAllowance.png", import.meta.url).href,
   },
   {
     title: "Continued",

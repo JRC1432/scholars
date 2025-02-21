@@ -17,7 +17,7 @@
           narrow-indicator
         >
           <q-tab name="contract" label="Contract Status and Info" />
-          <q-tab name="didNAvail" label="DID NOT AVAIL" />
+          <!-- <q-tab name="didNAvail" label="DID NOT AVAIL" /> -->
         </q-tabs>
 
         <q-separator />
@@ -29,9 +29,9 @@
             </div>
           </q-tab-panel>
 
-          <q-tab-panel name="didNAvail">
+          <!-- <q-tab-panel name="didNAvail">
             <DidNotAvail />
-          </q-tab-panel>
+          </q-tab-panel> -->
         </q-tab-panels>
       </q-card-section>
     </q-card>

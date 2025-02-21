@@ -92,21 +92,119 @@
                   type="checkbox"
                   v-model="group3"
                 />
+                <div
+                  v-if="
+                    group3.includes(
+                      'Scholarship status is lifted effective start of the'
+                    ) && group3.includes('Continued with Partial Allowance')
+                  "
+                  class="row row_width q-col-gutter-xs"
+                >
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="sy"
+                      mask="####-####"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem1" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="sy1"
+                      mask="####-####"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem2" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="sy2"
+                      mask="####-####"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  v-else-if="
+                    group3.includes('Continued with Partial Allowance')
+                  "
+                  class="row row_width q-col-gutter-xs"
+                >
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="sy"
+                      mask="####-####"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  v-else-if="
+                    group3.includes(
+                      'Scholarship status is lifted effective start of the'
+                    )
+                  "
+                  class="row row_width q-col-gutter-xs"
+                >
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem1" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="sy1"
+                      mask="####-####"
+                    />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">Semester:</span>
+                    <q-input outlined dense hide-bottom-space v-model="sem2" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <span class="text-bold">School Year:</span>
+                    <q-input
+                      outlined
+                      dense
+                      hide-bottom-space
+                      v-model="sy2"
+                      mask="####-####"
+                    />
+                  </div>
+                </div>
+                <div v-else></div>
               </div>
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-6">
-              <span class="text-bold">Semester:</span>
-              <q-input outlined dense hide-bottom-space v-model="sem" />
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-6">
-              <span class="text-bold">School Year:</span>
-              <q-input
-                outlined
-                dense
-                hide-bottom-space
-                v-model="sy"
-                mask="####-####"
-              />
             </div>
 
             <div class="col-xs-12">
@@ -153,7 +251,9 @@
             <IconMailFast :size="30" stroke-width="2" />
 
             <q-toolbar-title
-              ><span class="text-weight-bold" color="primary">Send</span>
+              ><span class="text-weight-bold" color="primary"
+                >Partial Allowance</span
+              >
               E-mail to Scholar
             </q-toolbar-title>
 
@@ -235,8 +335,6 @@ const $q = useQuasar();
 const axios = inject("$axios");
 const route = useRoute();
 
-const attachFile = ref([]);
-
 const fileRules = (val) => {
   if (val === null) {
     return "Please Select a File!";
@@ -249,7 +347,9 @@ const group = ref([]);
 const group2 = ref([]);
 const group3 = ref([]);
 const name = ref("");
+
 const showMail = ref(false);
+const attachFile = ref([]);
 const sendEmails = ref("");
 
 const cname = ref("");
@@ -260,6 +360,10 @@ const city = ref("");
 const subject = ref("S&T SCHOLARSHIP STATUS CONTINUED WITH PARTIAL ALLOWANCE");
 const sem = ref("");
 const sy = ref("");
+const sem1 = ref("");
+const sy1 = ref("");
+const sem2 = ref("");
+const sy2 = ref("");
 
 const signatory = ref("JAYEEL S. CORNELIO, PhD");
 
@@ -332,12 +436,11 @@ const options2 = [
 const options3 = [
   {
     label: "Continued with Partial Allowance.",
-    value: `Continued with Partial Allowance Effective start of ${sem.value} Semester/Term of SY ${sy.value}.`,
+    value: "Continued with Partial Allowance",
   },
   {
     label: "Scholarship status is lifted.",
-    value:
-      "Scholarship status is lifted effective start of the _______________ Semester/Term of SY ___________ and continued with partial allowance effective start of the _______________ Semester/Term of SY _______________.",
+    value: "Scholarship status is lifted effective start of the",
   },
 ];
 
@@ -435,7 +538,7 @@ const printPartialAllowance = async () => {
   doc.setFont("helvetica", "normal");
 
   // Deficiencies Part 1
-
+  0;
   // Wrap text inside a defined area
   doc.text(paragraph, 34, 110, { maxWidth: 150, align: "justify" });
 
@@ -518,26 +621,47 @@ const printPartialAllowance = async () => {
     checkboxYyy += 8;
   });
 
+  const sentence = `Effective start of ${sem.value} Semester/Term of SY ${sy.value}.`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(sentence, 53, 166, { maxWidth: 130, align: "justify" });
+
+  const sentence1 = `${sem1.value} Semester/Term of SY ${sy1.value}`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(sentence1, 127, 170, { maxWidth: 130, align: "justify" });
+
+  const sentence2 = `and continued with partial allowance effective start of the ${sem2.value} Semester/Term of SY ${sy2.value}`;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  // Wrap text inside a defined area
+  doc.text(sentence2, 53, 174, { maxWidth: 130, align: "justify" });
+
   const paragraph3 = `           You are still eligible for 100% of the tuition and other school fees subsidy, but only 50% of your monthly stipend and learning materials and/or connectivity allowance.`;
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
   // Wrap text inside a defined area
-  doc.text(paragraph3, 34, 185, { maxWidth: 140, align: "justify" });
+  doc.text(paragraph3, 34, 185, { maxWidth: 150, align: "justify" });
 
   const paragraph4 = `           Please note that obtaining academic deficiency/ies in the next semester(s)/term(s), may lead again to the partial release of your financial assistance or the termination of your scholarship grant. In connection to this, you are advised to prioritize your studies to improve your academic standing and maintain the required weighted average/QPI/QPA. Once relieved from the incurred academic deficiency/ies, the partial financial assistance that was put on hold will be released.`;
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
   // Wrap text inside a defined area
-  doc.text(paragraph4, 34, 195, { maxWidth: 140, align: "justify" });
+  doc.text(paragraph4, 34, 195, { maxWidth: 150, align: "justify" });
 
   const paragraph5 = `    Henceforth, please observe all the scholarship policies. Kindly submit your requirements, including your registration form at the beginning of every semester and the official copy of your grades at the end of each semester for evaluation and continuation of your scholarship.`;
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
   // Wrap text inside a defined area
-  doc.text(paragraph5, 34, 222, { maxWidth: 140, align: "justify" });
+  doc.text(paragraph5, 34, 222, { maxWidth: 150, align: "justify" });
 
   const paragraph6 = `For strict compliance.`;
   doc.setFontSize(10);
@@ -660,7 +784,7 @@ const sendMailNow = () => {
   formData.append("scholar_email", sendEmails.value);
   formData.append("attachFile", attachFile.value);
 
-  axios.post("/create.php?sendMailScholar", formData).then(function (response) {
+  axios.post("/create.php?sendMailPartial", formData).then(function (response) {
     if (response.data == true) {
       $q.notify({
         message: "E-MAIL SENT SUCCESSFULLY",
