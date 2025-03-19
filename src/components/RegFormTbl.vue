@@ -34,7 +34,7 @@
             {{ props.row.spas_id }}
           </q-td>
           <q-td key="full_name" :props="props">
-            <q-badge class="primary" :label="props.value">
+            <q-badge color="purple" :label="props.value">
               {{ props.row.full_name }}
             </q-badge>
           </q-td>
@@ -201,6 +201,7 @@ const showScholar = (props) => {
   router.push({
     path: "/editgrades/" + props.row.term_id,
   });
+  sessionStorage.setItem("spasid", JSON.stringify(props.row.spas_id));
 };
 
 onMounted(() => {

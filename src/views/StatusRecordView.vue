@@ -35,7 +35,7 @@
               <q-td key="spas_id" :props="props">
                 <q-badge
                   @click="showSpas(props)"
-                  color="light-green-4"
+                  color="purple"
                   :label="props.value"
                   class="pointer-class"
                 >

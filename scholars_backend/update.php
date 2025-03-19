@@ -1278,9 +1278,15 @@ if (isset($_GET['latestGrades'])) {
         $spasid = $_POST["spasid"];
         $updatedby = $_POST["user"];
         $termid = $_POST["termid"];
+        // $spasid = !empty($_POST["spasid"]) ? $_POST["spasid"] : substr($termid, 0, 15);
+        // $spasid = substr($termid, 0, 15);
+
         $latest = 1;
         $act_taken = "UPDATE";
         $act_message = "Latest Flag has been set to " . $spasid . "with Term ID: " . $termid . "";
+
+ 
+
 
         $stntf = $pdo->prepare("SELECT full_name
                     FROM scholars_record 
@@ -1410,6 +1416,7 @@ if (isset($_GET['termReqYes'])) {
         $spasid = $_POST["spasid"];
         $updatedby = $_POST["user"];
         $termid = $_POST["termid"];
+        
         $term = 1;
         $act_taken = "UPDATE";
         $act_message = "Term Required has been set to " . $spasid . "";
@@ -1465,6 +1472,7 @@ if (isset($_GET['termReqNo'])) {
         $spasid = $_POST["spasid"];
         $updatedby = $_POST["user"];
         $termid = $_POST["termid"];
+       
         $term = 0;
         $act_taken = "UPDATE";
         $act_message = "Term NOT Required has been set to " . $spasid . "";

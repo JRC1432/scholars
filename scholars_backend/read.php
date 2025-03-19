@@ -24,7 +24,9 @@ if(isset($_GET['usnames'])){
        
         if ($row){
             $_SESSION['loggedInUser']=$row;
-                    $out['message'] = "Login Successful";
+                       $out['message'] = "Login Successful";
+    $out['account_type'] = $row['account_type']; // Include account type
+    $out['user'] = $row; // Send user details
         }else{
             $out['error'] = true;
             $out['message'] = "Login Failed";

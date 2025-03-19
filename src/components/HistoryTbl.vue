@@ -84,7 +84,7 @@
                 <q-badge
                   v-else
                   @click="openSC(props)"
-                  color="light-green-4"
+                  color="purple"
                   :label="props.row.schoolcourse"
                   class="pointer-class"
                 >
@@ -117,7 +117,7 @@
                 <q-badge
                   v-else
                   @click="openpstart(props)"
-                  color="light-green-4"
+                  color="purple"
                   :label="props.row.pstart"
                   class="pointer-class"
                 >
@@ -151,7 +151,7 @@
                 <q-badge
                   v-else
                   @click="opensstanding(props)"
-                  color="light-green-4"
+                  color="purple"
                   :label="props.row.sstanding"
                   class="pointer-class"
                 >
@@ -186,7 +186,7 @@
                 <q-badge
                   v-else
                   @click="openpend(props)"
-                  color="light-green-4"
+                  color="purple"
                   :label="props.row.pend"
                   class="pointer-class"
                 >
@@ -219,7 +219,7 @@
                 <q-badge
                   v-else
                   @click="opensend(props)"
-                  color="light-green-4"
+                  color="purple"
                   :label="props.row.send"
                   class="pointer-class"
                 >

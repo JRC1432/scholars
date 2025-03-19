@@ -64,7 +64,7 @@
           <q-badge
             v-else
             @click="gotoPS(props)"
-            color="light-green-4"
+            color="purple"
             :label="props.row.progress_status"
             class="pointer-class"
           >
@@ -83,7 +83,7 @@
           <q-badge
             v-else
             @click="gotoStanding(props)"
-            color="light-green-4"
+            color="purple"
             :label="props.row.standing"
             class="pointer-class"
           >

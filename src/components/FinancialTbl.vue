@@ -39,7 +39,8 @@
           </q-td>
           <q-td key="full_name" :props="props">
             <q-badge
-              class="primary q-px-md q-py-xs rounded-borders-10"
+              class="q-px-md q-py-xs rounded-borders-10"
+              color="purple"
               :label="props.value"
             >
               {{ props.row.full_name }}

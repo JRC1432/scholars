@@ -74,7 +74,7 @@
           {{ props.row.spas_id }}
         </q-td>
         <q-td key="username" :props="props">
-          <q-badge color="light-green-4" :label="props.value">
+          <q-badge color="purple" :label="props.value">
             {{ props.row.username }}
           </q-badge>
         </q-td>

@@ -2,7 +2,7 @@
   <q-card flat class="my-card surface-container rounded-borders-20">
     <q-card-section>
       <q-page class="q-pa-md">
-        <q-card class="q-pa-md rounded-borders-20 banner-5">
+        <q-card flat class="q-pa-md rounded-borders-20 banner-5">
           <q-card-section>
             <q-chip
               outline
@@ -2424,9 +2424,12 @@ const handleToggle = () => {
     axios.post("/update.php?latestGrades", formData).then(function (response) {
       if (response.data == true) {
         $q.notify({
-          color: "green",
-          textColor: "white",
-          message: "Latest grades has been set",
+          message: "Grades has been set to latest!",
+          color: "light-green-5",
+          icon: "check_circle", // Adds a check icon in front
+          position: "top-right", // Shows the toast at the top
+          timeout: 2000, // Auto-closes in 2 seconds
+          progress: true,
         });
         populateEditGrades();
       } else {
@@ -2443,9 +2446,12 @@ const handleToggle = () => {
       .then(function (response) {
         if (response.data == true) {
           $q.notify({
-            color: "orange",
-            textColor: "white",
-            message: "Changes has been made",
+            message: "Not the latest grades!",
+            color: "orange-4",
+            icon: "check_circle", // Adds a check icon in front
+            position: "top-right", // Shows the toast at the top
+            timeout: 2000, // Auto-closes in 2 seconds
+            progress: true,
           });
           populateEditGrades();
         } else {
@@ -2470,8 +2476,12 @@ const handleTermChange = (value) => {
     axios.post("/update.php?termReqYes", formData).then(function (response) {
       if (response.data == true) {
         $q.notify({
-          color: "green",
-          message: "Term Required",
+          message: "Term Required!",
+          color: "light-green-5",
+          icon: "check_circle", // Adds a check icon in front
+          position: "top-right", // Shows the toast at the top
+          timeout: 2000, // Auto-closes in 2 seconds
+          progress: true,
         });
         populateEditGrades();
       } else {
@@ -2486,8 +2496,12 @@ const handleTermChange = (value) => {
     axios.post("/update.php?termReqNo", formData).then(function (response) {
       if (response.data == true) {
         $q.notify({
-          color: "orange",
-          message: "Term Not Required",
+          message: "Term Not Required!",
+          color: "orange-4",
+          icon: "check_circle", // Adds a check icon in front
+          position: "top-right", // Shows the toast at the top
+          timeout: 2000, // Auto-closes in 2 seconds
+          progress: true,
         });
         populateEditGrades();
       } else {

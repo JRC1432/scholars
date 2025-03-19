@@ -57,7 +57,7 @@
               <q-td key="reply_slip" :props="props">
                 <template v-if="props.row.reply_slip === 'AVAILING'">
                   <q-badge
-                    color="light-green-4"
+                    color="purple"
                     :label="props.value"
                     @click="showReply(props)"
                     class="pointer-class"
@@ -136,7 +136,7 @@
                 </template>
                 <template v-else-if="props.row.contract_status === 'AVAILING'">
                   <q-badge
-                    color="light-green-4"
+                    color="purple"
                     :label="props.value"
                     @click="showContractStats(props)"
                     class="pointer-class"

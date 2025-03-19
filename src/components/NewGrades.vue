@@ -31,7 +31,7 @@
           <q-chip outline color="teal" text-color="white" icon="badge">
             {{ termId }}
           </q-chip>
-          <q-card class="q-pa-md rounded-borders-20 banner-5">
+          <q-card flat class="q-pa-md rounded-borders-20 banner-5">
             <q-card-section>
               <div class="col-12">
                 <div class="q-col-gutter-md row items-start">

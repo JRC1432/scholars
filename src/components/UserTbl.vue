@@ -74,7 +74,7 @@
           {{ props.row.internal_id }}
         </q-td>
         <q-td key="username" :props="props">
-          <q-badge color="light-green-4" :label="props.value">
+          <q-badge color="purple" :label="props.value">
             {{ props.row.username }}
           </q-badge>
         </q-td>
@@ -2019,7 +2019,7 @@ const showUpdateUser = (props) => {
 
 const UpdateUser = () => {
   refUpId.value.validate();
-  refUpUsername.value.validate();
+
   refUpPassword.value.validate();
   refUpConfPassword.value.validate();
   refUpActType.value.validate();
@@ -2027,7 +2027,6 @@ const UpdateUser = () => {
 
   if (
     refUpId.value.hasError ||
-    refUpUsername.value.hasError ||
     refUpPassword.value.hasError ||
     refUpConfPassword.value.hasError ||
     refUpActType.value.hasError ||

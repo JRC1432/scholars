@@ -56,11 +56,16 @@
         <q-list padding>
           <!-- Users Item -->
 
-          <q-item-section header class="text-bold"
+          <q-item-section header class="text-bold" v-show="isAllowed"
             >USER MANAGEMENT</q-item-section
           >
 
-          <q-expansion-item label="Users" icon="groups" dense>
+          <q-expansion-item
+            label="Users"
+            icon="groups"
+            dense
+            v-show="isAllowed"
+          >
             <q-list dense>
               <q-item
                 clickable
@@ -104,12 +109,15 @@
 
           <!-- Monitoring Information -->
 
-          <q-item-section header class="text-bold">MONITORING</q-item-section>
+          <q-item-section header class="text-bold" v-show="isAllowed"
+            >MONITORING</q-item-section
+          >
 
           <q-expansion-item
             label="Monitoring Information"
             icon="screen_search_desktop"
             dense
+            v-show="isAllowed"
           >
             <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/regform">
@@ -131,12 +139,15 @@
 
           <!-- Financial Information -->
 
-          <q-item-section header class="text-bold">FINANCIAL</q-item-section>
+          <q-item-section header class="text-bold" v-show="isAllowed"
+            >FINANCIAL</q-item-section
+          >
 
           <q-expansion-item
             label="Financial Information"
             icon="account_balance"
             dense
+            v-show="isAllowed"
           >
             <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/financial">
@@ -160,19 +171,34 @@
                 </q-item-section>
                 <q-item-section>Quick Report</q-item-section>
               </q-item>
-              <q-item clickable active-class="my-menu-link" to="/activityLogs">
+              <q-item
+                clickable
+                active-class="my-menu-link"
+                to="/activityLogs"
+                v-show="isAllowed"
+              >
                 <q-item-section avatar>
                   <IconFileTime :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Activity Logs</q-item-section>
               </q-item>
-              <q-item clickable active-class="my-menu-link" to="/validate">
+              <q-item
+                clickable
+                active-class="my-menu-link"
+                to="/validate"
+                v-show="isAllowed"
+              >
                 <q-item-section avatar>
                   <IconRosetteDiscountCheck :size="25" stroke-width="2" />
                 </q-item-section>
                 <q-item-section>Validate Status</q-item-section>
               </q-item>
-              <q-item clickable active-class="my-menu-link" to="/release">
+              <q-item
+                clickable
+                active-class="my-menu-link"
+                to="/release"
+                v-show="isAllowed"
+              >
                 <q-item-section avatar>
                   <IconCash :size="25" stroke-width="2" />
                 </q-item-section>
@@ -183,11 +209,16 @@
 
           <!-- Batch Update -->
 
-          <q-item-section header class="text-bold"
+          <q-item-section header class="text-bold" v-show="isAllowed"
             >BATCH UPDATES</q-item-section
           >
 
-          <q-expansion-item label="Batch Uploads" icon="cached" dense>
+          <q-expansion-item
+            label="Batch Uploads"
+            icon="cached"
+            dense
+            v-show="isAllowed"
+          >
             <q-list dense>
               <q-item clickable active-class="my-menu-link" to="/contractstats">
                 <q-item-section avatar>
@@ -222,7 +253,9 @@
 
           <!-- Batch Update -->
 
-          <q-item-section header class="text-bold">MEMORANDUM</q-item-section>
+          <q-item-section header class="text-bold" v-show="isAllowed"
+            >MEMORANDUM</q-item-section
+          >
 
           <q-item
             clickable
@@ -231,6 +264,7 @@
             to="/memo"
             class="rounded-borders q-my-xs"
             active-class="my-menu-link"
+            v-show="isAllowed"
           >
             <q-item-section avatar>
               <IconContract :size="25" stroke-width="2" />
@@ -247,7 +281,7 @@
 import DarkMode from "../components/DarkMode.vue";
 import UserOpt from "../components/UserOpt.vue";
 
-import { ref, inject, reactive, onMounted } from "vue";
+import { ref, inject, computed, onMounted } from "vue";
 
 import {
   IconSchool,
@@ -267,6 +301,10 @@ import {
 } from "@tabler/icons-vue";
 
 import router from "../router";
+
+const user = inject("$user");
+
+const isAllowed = computed(() => [300].includes(user.account_type));
 
 const leftDrawerOpen = ref(false);
 

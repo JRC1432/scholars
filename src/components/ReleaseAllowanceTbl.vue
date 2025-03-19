@@ -34,7 +34,7 @@
             {{ props.row.spas_id }}
           </q-td>
           <q-td key="full_name" :props="props">
-            <q-badge class="primary" :label="props.value">
+            <q-badge color="purple" :label="props.value">
               {{ props.row.full_name }}
             </q-badge>
           </q-td>

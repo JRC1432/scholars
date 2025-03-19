@@ -34,13 +34,12 @@ import "quasar/src/css/index.sass";
 
 var user = [];
 var rootDomain = "http://localhost/scholars";
-const myApp = createApp(App);
 
 // const baseURL =
 //   process.env.NODE_ENV === "development"
 //     ? rootDomain + "/scholars_backend/"
 //     : "/scholars_backend/";
-const baseURL = import.meta.env.DEV
+export const baseURL = import.meta.env.DEV
   ? "http://localhost/scholars/scholars_backend/"
   : "../scholars/scholars_backend/";
 
@@ -48,52 +47,46 @@ const axios = axiosMain.create({
   baseURL,
   withCredentials: true,
 });
+const myApp = createApp(App);
 myApp.provide("$axios", axios);
-router.beforeEach((to, from, next) => {
-  // console.log("text");
-  // ...
-  // explicitly return false to cancel the navigation
-  axios
-    .get("/read.php?authLog", {
+
+router.beforeEach(async (to, from, next) => {
+  try {
+    const response = await axios.get("/read.php?authLog", {
       withCredentials: true,
-    })
-    .then(function (response) {
-      user = response.data;
-      // console.log(user);
-      myApp.provide("$user", user);
-
-      // console.log(response.data);
-      // next();
-      // return;
-
-      if (response.data == false || response.data?.username == undefined) {
-        // console.log(to);
-        // next();
-
-        if (to.path !== "/") {
-          router.push("/");
-          //   next();
-        } else {
-          next();
-        }
-      } else {
-        if (to.path == "/") {
-          router.push("/reports");
-          //   next();
-        }
-
-        if (to?.meta?.access_level) {
-          if (to?.meta?.access_level == user.access_level) {
-            next();
-          } else {
-            router.push("/reports");
-            // next();
-          }
-        } else {
-          next();
-        }
-      }
     });
+    const user = response.data;
+
+    myApp.provide("$user", user);
+
+    if (!user || !user.username) {
+      // Redirect to login if not logged in
+      if (to.meta.requiresAuth) {
+        return next("/");
+      }
+      return next();
+    }
+
+    if (to.path === "/") {
+      return next("/reports");
+    }
+
+    // Check if the route has access restrictions
+    if (to.meta.requiresAuth && to.meta.accountType) {
+      if (!to.meta.accountType.includes(user.account_type)) {
+        Notify.create({
+          type: "negative",
+          message: "Unauthorized access!",
+        });
+        return next("/reports"); // Redirect unauthorized users
+      }
+    }
+
+    return next();
+  } catch (error) {
+    console.error("Auth Check Error:", error);
+    return next("/");
+  }
 });
 
 myApp.use(router);
