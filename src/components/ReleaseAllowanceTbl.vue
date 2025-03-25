@@ -224,6 +224,7 @@ const showScholar = (props) => {
   router.push({
     path: "/editgrades/" + props.row.term_id,
   });
+  sessionStorage.setItem("spasid", JSON.stringify(props.row.spas_id));
 };
 
 onMounted(() => {
